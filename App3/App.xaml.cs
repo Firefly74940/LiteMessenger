@@ -16,7 +16,6 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using App1;
 using HtmlAgilityPack;
 using System.Collections.ObjectModel;
 
@@ -98,7 +97,7 @@ namespace App3
 
 
         }
-
+        
         private void App_BackRequested(object sender, BackRequestedEventArgs e)
         {
             Frame rootFrame = Window.Current.Content as Frame;

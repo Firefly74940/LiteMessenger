@@ -5,11 +5,65 @@
     xmlns:local="using:App3"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:app3="using:App3"
     mc:Ignorable="d">
+    <Page.Resources>
+
+        <DataTemplate x:Key="OtherMessageDataTemplate" x:DataType="app3:ChatMessage">
+            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="0,7,150,7"  HorizontalAlignment="Left" Padding="7">
+                <TextBlock Text="{Binding Message}" HorizontalAlignment="Right" TextAlignment="Left" TextWrapping="WrapWholeWords" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="SelfMessageDataTemplate" x:DataType="local:ChatMessage">
+            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="150,7,0,7"  HorizontalAlignment="Right" Padding="7">
+                <TextBlock Text="{Binding Message}" HorizontalAlignment="Right" TextAlignment="Right" TextWrapping="WrapWholeWords" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="InfoMessageDataTemplate" x:DataType="local:ChatMessage">
+            <StackPanel  UseLayoutRounding="True"  Margin="50,7,50,7"  HorizontalAlignment="Right" Padding="7">
+                <TextBlock Text="{Binding Message}" Foreground="#FF5F5F5F" HorizontalAlignment="Center" FocusVisualPrimaryBrush="#FF5F5F5F" TextAlignment="Center" TextWrapping="WrapWholeWords" />
+            </StackPanel>
+        </DataTemplate>
+
+        <local:MessageDataTemplateSelector x:Key="myMessageDataTemplateSelector" InfoMessage="{StaticResource InfoMessageDataTemplate}" OtherMessage="{StaticResource OtherMessageDataTemplate}" SelfMessage="{StaticResource SelfMessageDataTemplate}"/>
+    </Page.Resources>
+
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <ListView x:Name="listView" Margin="10,10,10,55"/>
+        <TextBlock x:Name="ChatName" TextWrapping="Wrap" Text="TextBox" FontSize="35" Margin="20" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+        <ScrollViewer>
+            <ListView x:Name="listView" Margin="10,10,10,55" IsDoubleTapEnabled="False" IsRightTapEnabled="False" IsTapEnabled="False" ItemTemplateSelector="{StaticResource myMessageDataTemplateSelector}">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <!-- Setting VerticalAlignment="Bottom" causes the contents to be bottom-aligned,
+                         which is appropriate for a chat window but perhaps not for a logging window. -->
+                        <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView" VerticalAlignment="Bottom"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment"  Value="Stretch"></Setter>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <!--<ListView.ItemTemplate>
+                    
+                    <DataTemplate x:Name="TableDataTemplate" x:DataType="app3:ChatTextSelfMessage">
+
+                            <TextBlock  VerticalAlignment="Center" Text="{x:Bind Message}" HorizontalAlignment="Right"/>
+
+                    </DataTemplate>
+                    
+                </ListView.ItemTemplate>-->
+                <StackPanel>
+                    <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}"  HorizontalAlignment="Right" Padding="7">
+                        <TextBlock Text="AJDAJDPOAODJPPJDJPOAJOPD" HorizontalAlignment="Right" Margin="0,0,0,0" TextAlignment="Right" TextWrapping="WrapWholeWords" />
+                    </StackPanel>
+                </StackPanel>
+            </ListView>
+        </ScrollViewer>
         <TextBox x:Name="NewMessageBox" Margin="10,0,80,10" TextWrapping="Wrap"  Height="35" VerticalAlignment="Bottom" TextChanged="NewMessageBox_TextChanged"/>
-        <Button Name="Send" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="35" HorizontalAlignment="Right" Background="{ThemeResource SystemAccentColor}"  Width="65" Content="&gt;" Click="Send_Click" IsEnabled="False" BorderBrush="{ThemeResource SystemAccentColorDark1}" FocusVisualPrimaryBrush="{ThemeResource SystemAccentColorLight1}" FocusVisualSecondaryBrush="{ThemeResource AccentButtonBorderBrush}" />
+        <Button Name="Send" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="35" HorizontalAlignment="Right" Background="{ThemeResource SystemAccentColorLight1}"  Width="65" Content="&gt;" Click="Send_Click" IsEnabled="False" BorderBrush="{ThemeResource SystemAccentColorDark1}" FocusVisualPrimaryBrush="{ThemeResource SystemAccentColorLight1}" FocusVisualSecondaryBrush="{ThemeResource AccentButtonBorderBrush}" />
     </Grid>
 </Page>

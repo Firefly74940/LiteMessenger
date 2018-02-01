@@ -7,6 +7,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -15,7 +16,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.Web.Http;
-using App1;
+
 using HtmlAgilityPack;
 
 // Pour plus d'informations sur le modèle d'élément Page vierge, consultez la page https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -28,6 +29,7 @@ namespace App3
     public class ChatHeader
     {
         public string Name { get; set; }
+        public bool IsGroup { get; set; }
         public string Href { get; set; }
         public override string ToString()
         {
@@ -59,6 +61,8 @@ namespace App3
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                AppViewBackButtonVisibility.Visible;
         }
 
         private async void ShowStatusBar()

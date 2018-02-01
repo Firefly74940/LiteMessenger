@@ -8,6 +8,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage.Streams;
+using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -44,6 +45,67 @@ namespace App3
             return DisplayName + ": " + Message;
         }
     }
+
+    public class ChatinfoMessage : ChatMessage
+    {
+
+    }
+    public class ChatImgMessage : ChatMessage
+    {
+
+    }
+    public class ChatTextSelfMessage : ChatMessage
+    {
+        
+    }
+    public class ChatTextOtherMessage : ChatMessage
+    {
+
+    }
+
+    public class MessageDataTemplateSelector : DataTemplateSelector
+    {
+        public DataTemplate SelfMessage
+        {
+            get;
+            set;
+        }
+
+        public DataTemplate InfoMessage
+        {
+            get;
+            set;
+        }
+        public DataTemplate OtherMessage
+        {
+            get;
+            set;
+        }
+
+        //public DataTemplate ReceivedTemplate
+        //{
+        //    get;
+        //    set;
+        //}
+        protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
+        {
+            FrameworkElement elemnt = container as FrameworkElement;
+            
+            if (item is ChatTextOtherMessage)
+            {
+                return OtherMessage;
+            }
+            else if( item is ChatTextSelfMessage)
+            {
+                return SelfMessage;
+            }
+            else
+            {
+                return InfoMessage;
+            }
+        }
+    }
+
     /// <summary>
     /// Une page vide peut être utilisée seule ou constituer une page de destination au sein d'un frame.
     /// </summary>
@@ -53,7 +115,7 @@ namespace App3
         {
             this.InitializeComponent();
 
-
+           
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -61,6 +123,7 @@ namespace App3
             if (e.Parameter is ChatHeader)
             {
                 RefreshConversation(e.Parameter as ChatHeader);
+                ChatName.Text = (e.Parameter as ChatHeader).Name;
             }
 
         }
@@ -91,7 +154,31 @@ namespace App3
         {
             if (htmlDoc == null)
                 htmlDoc = await MainPage.GetHtmlDoc(header.Href);
-
+            listView.Items.Clear();
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
+            //listView.Items.Add("");
             GetSubmitForm(htmlDoc);
             var messagePackNodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"messageGroup\"]/div[2]/div");
             foreach (var messagePackNode in messagePackNodes)
@@ -165,22 +252,23 @@ namespace App3
                                 }
                             }
 
-                            MessageTypes messageType = MessageTypes.Other;
+                            ChatMessage newMessage = null;
                             if (string.IsNullOrWhiteSpace(MessageUsername))
                             {
-                                messageType = MessageTypes.None;
+                                newMessage = new ChatinfoMessage(){MessageType = MessageTypes.None};
                             }
                             else if (string.Equals(MessageUsername, App.Username))
                             {
-                                messageType = MessageTypes.Self;
+                                newMessage = new ChatTextSelfMessage() { MessageType = MessageTypes.Self };
                             }
-                            listView.Items.Add(new ChatMessage()
+                            else
                             {
-                                Message = HtmlEntity.DeEntitize(buildedMessage),
-                                UserID = MessageUsername,
-                                DisplayName = MessageDisplayUsername,
-                                MessageType = messageType
-                            });
+                                newMessage =  new ChatTextOtherMessage() { MessageType = MessageTypes.Other };
+                            }
+                            newMessage.Message = HtmlEntity.DeEntitize(buildedMessage);
+                            newMessage.UserID = MessageUsername;
+                            newMessage.DisplayName = MessageDisplayUsername;
+                            listView.Items.Add(newMessage);
                         }
                         #endregion
                         #region MessageImg
@@ -200,7 +288,7 @@ namespace App3
                                     foreach (var otherImage in otherImages)
                                     {
                                         var imgSrc = otherImage.GetAttributeValue("src", "");
-                                        listView.Items.Add(new ChatMessage()
+                                        listView.Items.Add(new ChatinfoMessage()
                                         {
                                             Message = HtmlEntity.DeEntitize(otherImage.GetAttributeValue("alt", "")),
                                             MessageType = MessageTypes.Img,
@@ -217,16 +305,17 @@ namespace App3
                 }
                 else if (!string.IsNullOrEmpty(messagePackNode.InnerText))
                 {
-                    listView.Items.Add(new ChatMessage() { Message = HtmlEntity.DeEntitize(messagePackNode.InnerText), MessageType = MessageTypes.None });
+                    listView.Items.Add(new ChatinfoMessage() { Message = HtmlEntity.DeEntitize(messagePackNode.InnerText), MessageType = MessageTypes.None });
                 }
                 //   Names.Add(new ChatHeader() { Name = NameNode.InnerText, Href = NameNode.GetAttributeValue("href", "") });
             }
             //this.Frame.Navigate(typeof(ChatList));
+            listView.ScrollIntoView(listView.Items.Last());
         }
 
         private async void Send_Click(object sender, RoutedEventArgs e)
         {
-            listView.Items.Add(new ChatMessage() { Message = NewMessageBox.Text, UserID = App.Username, DisplayName = App.Username });
+            listView.Items.Add(new ChatTextSelfMessage() { Message = NewMessageBox.Text, UserID = App.Username, DisplayName = App.Username });
 
 
             Windows.Web.Http.HttpResponseMessage httpResponse = new Windows.Web.Http.HttpResponseMessage();
