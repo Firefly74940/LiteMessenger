@@ -26,31 +26,42 @@ namespace App3
 {
     public enum MessageTypes
     {
+        Text,
+        Info,
+        Img,
+        Link,
+    }
+    public enum MessageSources
+    {
         Self,
         Other,
         None,
-        Img,
-        Link,
     }
     public class ChatMessage
     {
         public MessageTypes MessageType { get; set; }
+        public MessageSources MessageSource { get; set; }
         public string DisplayName { get; set; }
         public string UserID { get; set; }
         public string Message { get; set; }
+        public string MessageData { get; set; }
         public override string ToString()
         {
-            if (MessageType == MessageTypes.None)
+            if (MessageSource == MessageSources.None)
                 return Message;
             return DisplayName + ": " + Message;
         }
     }
 
-    public class ChatinfoMessage : ChatMessage
+    public class ChatInfoMessage : ChatMessage
     {
 
     }
-    public class ChatImgMessage : ChatMessage
+    public class ChatImgOtherMessage : ChatMessage
+    {
+
+    }
+    public class ChatImgSelfMessage : ChatMessage
     {
 
     }
@@ -62,16 +73,34 @@ namespace App3
     {
 
     }
+    public class ChatLinkSelfMessage : ChatMessage
+    {
 
+    }
+    public class ChatLinkOtherMessage : ChatMessage
+    {
+
+    }
     public class MessageDataTemplateSelector : DataTemplateSelector
     {
+
+        public DataTemplate InfoMessage
+        {
+            get;
+            set;
+        }
         public DataTemplate SelfMessage
         {
             get;
             set;
         }
 
-        public DataTemplate InfoMessage
+        public DataTemplate SelfLinkMessage
+        {
+            get;
+            set;
+        }
+        public DataTemplate SelfImgMessage
         {
             get;
             set;
@@ -81,7 +110,16 @@ namespace App3
             get;
             set;
         }
-
+        public DataTemplate OtherLinkMessage
+        {
+            get;
+            set;
+        }
+        public DataTemplate OtherImgMessage
+        {
+            get;
+            set;
+        }
         //public DataTemplate ReceivedTemplate
         //{
         //    get;
@@ -98,6 +136,22 @@ namespace App3
             else if( item is ChatTextSelfMessage)
             {
                 return SelfMessage;
+            }
+            else if( item is ChatLinkOtherMessage)
+            {
+                return OtherLinkMessage;
+            }
+            else if( item is ChatLinkSelfMessage)
+            {
+                return SelfLinkMessage;
+            }
+            else if (item is ChatImgOtherMessage)
+            {
+                return OtherImgMessage;
+            }
+            else if (item is ChatImgSelfMessage)
+            {
+                return SelfImgMessage;
             }
             else
             {
@@ -181,6 +235,17 @@ namespace App3
             //listView.Items.Add("");
             GetSubmitForm(htmlDoc);
             var messagePackNodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"messageGroup\"]/div[2]/div");
+            if (messagePackNodes == null)
+            {
+               var newMessage = new ChatInfoMessage()
+                {
+                    MessageSource = MessageSources.None,
+                    MessageType = MessageTypes.Info,
+                    Message = "Error parsing messages"
+                };
+                listView.Items.Add(newMessage);
+                return;
+            }
             foreach (var messagePackNode in messagePackNodes)
             {
 
@@ -250,35 +315,107 @@ namespace App3
 
                                     }
                                 }
+                                else if (textNode.Name == "a")
+                                {
+                                    if (string.Equals(MessageUsername, App.Username))
+                                    {
+                                        listView.Items.Add(new ChatLinkSelfMessage()
+                                        {
+                                            MessageData = HtmlEntity.DeEntitize(textNode.GetAttributeValue("href", "")),
+                                            Message = HtmlEntity.DeEntitize(textNode.InnerText),
+                                            MessageType = MessageTypes.Link,
+                                            MessageSource = MessageSources.Self,
+                                            UserID = MessageUsername,
+                                            DisplayName = MessageDisplayUsername,
+                                        });
+                                    }
+                                    else
+                                    {
+                                        listView.Items.Add(new ChatLinkOtherMessage()
+                                        {
+                                            MessageData = HtmlEntity.DeEntitize(textNode.GetAttributeValue("href", "")),
+                                            Message = HtmlEntity.DeEntitize(textNode.InnerText),
+                                            MessageType = MessageTypes.Link,
+                                            MessageSource = MessageSources.Other,
+                                            UserID = MessageUsername,
+                                            DisplayName = MessageDisplayUsername,
+                                        });
+                                    }
+                                }
                             }
 
-                            ChatMessage newMessage = null;
-                            if (string.IsNullOrWhiteSpace(MessageUsername))
+                            if (!string.IsNullOrEmpty(buildedMessage))
                             {
-                                newMessage = new ChatinfoMessage(){MessageType = MessageTypes.None};
+                                ChatMessage newMessage = null;
+                                if (string.IsNullOrWhiteSpace(MessageUsername))
+                                {
+                                    newMessage = new ChatInfoMessage()
+                                    {
+                                        MessageSource = MessageSources.None,
+                                        MessageType = MessageTypes.Info
+                                    };
+                                }
+                                else if (string.Equals(MessageUsername, App.Username))
+                                {
+                                    newMessage = new ChatTextSelfMessage()
+                                    {
+                                        MessageSource = MessageSources.Self,
+                                        MessageType = MessageTypes.Text
+                                    };
+                                }
+                                else
+                                {
+                                    newMessage = new ChatTextOtherMessage()
+                                    {
+                                        MessageSource = MessageSources.Other,
+                                        MessageType = MessageTypes.Text
+                                    };
+                                }
+                                newMessage.Message = HtmlEntity.DeEntitize(buildedMessage);
+                                newMessage.UserID = MessageUsername;
+                                newMessage.DisplayName = MessageDisplayUsername;
+                                listView.Items.Add(newMessage);
                             }
-                            else if (string.Equals(MessageUsername, App.Username))
-                            {
-                                newMessage = new ChatTextSelfMessage() { MessageType = MessageTypes.Self };
-                            }
-                            else
-                            {
-                                newMessage =  new ChatTextOtherMessage() { MessageType = MessageTypes.Other };
-                            }
-                            newMessage.Message = HtmlEntity.DeEntitize(buildedMessage);
-                            newMessage.UserID = MessageUsername;
-                            newMessage.DisplayName = MessageDisplayUsername;
-                            listView.Items.Add(newMessage);
                         }
                         #endregion
-                        #region MessageImg
+                        #region MessageImg & link
 
                         if (messageNode.LastChild.Name == "div")
                         {
                             var userImages = messageNode.LastChild.SelectNodes("a");
                             if (userImages != null && userImages.Count > 0)
                             {
+                                if (!String.IsNullOrEmpty(userImages[0].InnerText))
+                                {
+                                    #region Link
 
+                                    if (string.Equals(MessageUsername, App.Username))
+                                    {
+                                        listView.Items.Add(new ChatLinkSelfMessage()
+                                        {
+                                            MessageData = HtmlEntity.DeEntitize(userImages[0].GetAttributeValue("href", "")),
+                                            Message = HtmlEntity.DeEntitize(userImages[0].InnerText),
+                                            MessageType = MessageTypes.Link,
+                                            MessageSource = MessageSources.Self,
+                                            UserID = MessageUsername,
+                                            DisplayName = MessageDisplayUsername,
+                                        });
+                                    }
+                                    else
+                                    {
+                                        listView.Items.Add(new ChatLinkOtherMessage()
+                                        {
+                                            MessageData = HtmlEntity.DeEntitize(userImages[0].GetAttributeValue("href", "")),
+                                            Message = HtmlEntity.DeEntitize(userImages[0].InnerText),
+                                            MessageType = MessageTypes.Link,
+                                            MessageSource = MessageSources.Other,
+                                            UserID = MessageUsername,
+                                            DisplayName = MessageDisplayUsername,
+                                        });
+                                    }
+                                        
+                                    #endregion
+                                }
                             }
                             else
                             {
@@ -287,14 +424,32 @@ namespace App3
                                 {
                                     foreach (var otherImage in otherImages)
                                     {
-                                        var imgSrc = otherImage.GetAttributeValue("src", "");
-                                        listView.Items.Add(new ChatinfoMessage()
+                                        var imgSrc = HtmlEntity.DeEntitize(otherImage.GetAttributeValue("src", ""));
+
+                                        if (string.Equals(MessageUsername, App.Username))
                                         {
-                                            Message = HtmlEntity.DeEntitize(otherImage.GetAttributeValue("alt", "")),
-                                            MessageType = MessageTypes.Img,
-                                            UserID = MessageUsername,
-                                            DisplayName = MessageDisplayUsername,
-                                        });
+                                            listView.Items.Add(new ChatImgSelfMessage()
+                                            {
+                                                MessageData = imgSrc,
+                                                Message = HtmlEntity.DeEntitize(otherImage.GetAttributeValue("alt", "")),
+                                                MessageType = MessageTypes.Img,
+                                                MessageSource = MessageSources.Self,
+                                                UserID = MessageUsername,
+                                                DisplayName = MessageDisplayUsername,
+                                            });
+                                        }
+                                        else
+                                        {
+                                            listView.Items.Add(new ChatImgOtherMessage()
+                                            {
+                                                MessageData = imgSrc,
+                                                Message = HtmlEntity.DeEntitize(otherImage.GetAttributeValue("alt", "")),
+                                                MessageType = MessageTypes.Img,
+                                                MessageSource = MessageSources.Other,
+                                                UserID = MessageUsername,
+                                                DisplayName = MessageDisplayUsername,
+                                            });
+                                        }
 
                                     }
                                 }
@@ -305,7 +460,7 @@ namespace App3
                 }
                 else if (!string.IsNullOrEmpty(messagePackNode.InnerText))
                 {
-                    listView.Items.Add(new ChatinfoMessage() { Message = HtmlEntity.DeEntitize(messagePackNode.InnerText), MessageType = MessageTypes.None });
+                    listView.Items.Add(new ChatInfoMessage() { Message = HtmlEntity.DeEntitize(messagePackNode.InnerText), MessageType = MessageTypes.Info});
                 }
                 //   Names.Add(new ChatHeader() { Name = NameNode.InnerText, Href = NameNode.GetAttributeValue("href", "") });
             }

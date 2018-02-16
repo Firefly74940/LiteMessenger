@@ -9,17 +9,72 @@
     mc:Ignorable="d">
     <Page.Resources>
 
-        <DataTemplate x:Key="OtherMessageDataTemplate" x:DataType="app3:ChatMessage">
+        <DataTemplate x:Key="OtherTextMessageDataTemplate" x:DataType="app3:ChatMessage">
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="0,7,150,7"  HorizontalAlignment="Left" Padding="7">
                 <TextBlock Text="{Binding Message}" HorizontalAlignment="Right" TextAlignment="Left" TextWrapping="WrapWholeWords" />
             </StackPanel>
         </DataTemplate>
+        
+        <DataTemplate x:Key="OtherLinkMessageDataTemplate" x:DataType="app3:ChatMessage">
+            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="0,7,150,7"  HorizontalAlignment="Left" Padding="7">
+                <TextBlock HorizontalAlignment="Right" TextAlignment="Left" TextWrapping="WrapWholeWords"  >
+                    <Hyperlink NavigateUri="{Binding MessageData}" >
+                        <Hyperlink.Inlines>
+                            <Run Text="{Binding Message}" />
+                        </Hyperlink.Inlines>
+                    </Hyperlink>
+                </TextBlock>
+            </StackPanel>
+        </DataTemplate>
 
-        <DataTemplate x:Key="SelfMessageDataTemplate" x:DataType="local:ChatMessage">
+        <DataTemplate x:Key="OtherImgMessageDataTemplate" x:DataType="app3:ChatMessage">
+            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="0,7,150,7"  HorizontalAlignment="Left" Padding="7">
+                <Image  HorizontalAlignment="Right">
+                    <ToolTipService.ToolTip>
+                        <TextBlock Text="{Binding Message}"/>
+                    </ToolTipService.ToolTip>
+                    <Image.Source>
+                        <BitmapImage UriSource="{Binding MessageData}"/>
+                    </Image.Source>
+                </Image>
+            </StackPanel>
+        </DataTemplate>
+        
+        
+        
+
+        <DataTemplate x:Key="SelfTextMessageDataTemplate" x:DataType="local:ChatMessage">
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="150,7,0,7"  HorizontalAlignment="Right" Padding="7">
                 <TextBlock Text="{Binding Message}" HorizontalAlignment="Right" TextAlignment="Right" TextWrapping="WrapWholeWords" />
             </StackPanel>
         </DataTemplate>
+        
+        <DataTemplate x:Key="SelfLinkMessageDataTemplate" x:DataType="local:ChatMessage">
+            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="150,7,0,7"  HorizontalAlignment="Right" Padding="7">
+                <TextBlock  HorizontalAlignment="Right" TextAlignment="Right" TextWrapping="WrapWholeWords" >
+                <Hyperlink NavigateUri="{Binding MessageData}" >
+                    <Hyperlink.Inlines>
+                        <Run Text="{Binding Message}" />
+                    </Hyperlink.Inlines>
+                </Hyperlink>
+                </TextBlock>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="SelfImgMessageDataTemplate" x:DataType="local:ChatMessage">
+            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="150,7,0,7"  HorizontalAlignment="Right" Padding="7">
+                <Image  HorizontalAlignment="Right" Height="100" Width="100">
+                    <ToolTipService.ToolTip>
+                        <TextBlock Text="{Binding Message}"/>
+                    </ToolTipService.ToolTip>
+                    <Image.Source>
+                        <BitmapImage UriSource="{Binding MessageData}"/>
+                    </Image.Source>
+
+                </Image>
+            </StackPanel>
+        </DataTemplate>
+
 
         <DataTemplate x:Key="InfoMessageDataTemplate" x:DataType="local:ChatMessage">
             <StackPanel  UseLayoutRounding="True"  Margin="50,7,50,7"  HorizontalAlignment="Right" Padding="7">
@@ -27,14 +82,54 @@
             </StackPanel>
         </DataTemplate>
 
-        <local:MessageDataTemplateSelector x:Key="myMessageDataTemplateSelector" InfoMessage="{StaticResource InfoMessageDataTemplate}" OtherMessage="{StaticResource OtherMessageDataTemplate}" SelfMessage="{StaticResource SelfMessageDataTemplate}"/>
+        <local:MessageDataTemplateSelector x:Key="myMessageDataTemplateSelector" 
+            InfoMessage="{StaticResource InfoMessageDataTemplate}" 
+                                           
+            OtherMessage="{StaticResource OtherTextMessageDataTemplate}" 
+            SelfMessage="{StaticResource SelfTextMessageDataTemplate}" 
+            
+            OtherLinkMessage="{StaticResource OtherLinkMessageDataTemplate}"
+            SelfLinkMessage="{StaticResource SelfLinkMessageDataTemplate}"   
+                                           
+            OtherImgMessage="{StaticResource OtherImgMessageDataTemplate}"
+            SelfImgMessage="{StaticResource SelfImgMessageDataTemplate}"                                           
+                                           />
+        
+        <Style x:Key="ListViewItemStyle1" TargetType="ListViewItem">
+            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
+            <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}"/>
+            <Setter Property="Background" Value="{ThemeResource ListViewItemBackground}"/>
+            <Setter Property="Foreground" Value="{ThemeResource ListViewItemForeground}"/>
+            <Setter Property="TabNavigation" Value="Local"/>
+            <Setter Property="IsHoldingEnabled" Value="True"/>
+            <Setter Property="Padding" Value="12,0,12,0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="MinWidth" Value="{ThemeResource ListViewItemMinWidth}"/>
+            <Setter Property="MinHeight" Value="{ThemeResource ListViewItemMinHeight}"/>
+            <Setter Property="AllowDrop" Value="False"/>
+            <Setter Property="UseSystemFocusVisuals" Value="True"/>
+            <Setter Property="FocusVisualMargin" Value="0"/>
+            <Setter Property="FocusVisualPrimaryBrush" Value="{ThemeResource ListViewItemFocusVisualPrimaryBrush}"/>
+            <Setter Property="FocusVisualPrimaryThickness" Value="2"/>
+            <Setter Property="FocusVisualSecondaryBrush" Value="{ThemeResource ListViewItemFocusVisualSecondaryBrush}"/>
+            <Setter Property="FocusVisualSecondaryThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <ListViewItemPresenter CheckBrush="{ThemeResource ListViewItemCheckBrush}" ContentMargin="{TemplateBinding Padding}" CheckMode="{ThemeResource ListViewItemCheckMode}" ContentTransitions="{TemplateBinding ContentTransitions}" CheckBoxBrush="{ThemeResource ListViewItemCheckBoxBrush}" DragForeground="{ThemeResource ListViewItemDragForeground}" DragOpacity="{ThemeResource ListViewItemDragThemeOpacity}" DragBackground="{ThemeResource ListViewItemDragBackground}" DisabledOpacity="{ThemeResource ListViewItemDisabledThemeOpacity}" FocusVisualPrimaryBrush="{TemplateBinding FocusVisualPrimaryBrush}" FocusVisualSecondaryThickness="{TemplateBinding FocusVisualSecondaryThickness}" FocusBorderBrush="{ThemeResource ListViewItemFocusBorderBrush}" FocusVisualMargin="{TemplateBinding FocusVisualMargin}" FocusVisualPrimaryThickness="{TemplateBinding FocusVisualPrimaryThickness}" FocusSecondaryBorderBrush="{ThemeResource ListViewItemFocusSecondaryBorderBrush}" FocusVisualSecondaryBrush="{TemplateBinding FocusVisualSecondaryBrush}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Control.IsTemplateFocusTarget="True" PointerOverForeground="{ThemeResource ListViewItemForegroundPointerOver}" PressedBackground="{ThemeResource ListViewItemBackgroundPressed}" PlaceholderBackground="{ThemeResource ListViewItemPlaceholderBackground}" PointerOverBackground="{ThemeResource ListViewItemBackgroundPointerOver}" ReorderHintOffset="{ThemeResource ListViewItemReorderHintThemeOffset}" SelectedPressedBackground="{ThemeResource ListViewItemBackgroundPressed}" SelectionCheckMarkVisualEnabled="{ThemeResource ListViewItemSelectionCheckMarkVisualEnabled}" SelectedForeground="{ThemeResource ListViewItemForegroundSelected}" SelectedPointerOverBackground="{ThemeResource ListViewItemBackgroundPointerOver}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Page.Resources>
 
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <TextBlock x:Name="ChatName" TextWrapping="Wrap" Text="TextBox" FontSize="35" Margin="20" VerticalAlignment="Top" HorizontalAlignment="Left"/>
         <ScrollViewer>
-            <ListView x:Name="listView" Margin="10,10,10,55" IsDoubleTapEnabled="False" IsRightTapEnabled="False" IsTapEnabled="False" ItemTemplateSelector="{StaticResource myMessageDataTemplateSelector}">
+            <ListView x:Name="listView" IsDoubleTapEnabled="False" IsRightTapEnabled="False" IsTapEnabled="False" ItemTemplateSelector="{StaticResource myMessageDataTemplateSelector}" Margin="0,66,0,62" ManipulationMode="None" ItemContainerStyle="{StaticResource ListViewItemStyle1}">
+
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <!-- Setting VerticalAlignment="Bottom" causes the contents to be bottom-aligned,
@@ -42,11 +137,6 @@
                         <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView" VerticalAlignment="Bottom"/>
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="HorizontalContentAlignment"  Value="Stretch"></Setter>
-                    </Style>
-                </ListView.ItemContainerStyle>
                 <!--<ListView.ItemTemplate>
                     
                     <DataTemplate x:Name="TableDataTemplate" x:DataType="app3:ChatTextSelfMessage">
@@ -61,6 +151,7 @@
                         <TextBlock Text="AJDAJDPOAODJPPJDJPOAJOPD" HorizontalAlignment="Right" Margin="0,0,0,0" TextAlignment="Right" TextWrapping="WrapWholeWords" />
                     </StackPanel>
                 </StackPanel>
+                <ListViewItem Content="ListViewItem"/>
             </ListView>
         </ScrollViewer>
         <TextBox x:Name="NewMessageBox" Margin="10,0,80,10" TextWrapping="Wrap"  Height="35" VerticalAlignment="Bottom" TextChanged="NewMessageBox_TextChanged"/>
