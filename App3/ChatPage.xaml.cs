@@ -67,7 +67,7 @@ namespace App3
     }
     public class ChatTextSelfMessage : ChatMessage
     {
-        
+
     }
     public class ChatTextOtherMessage : ChatMessage
     {
@@ -128,20 +128,20 @@ namespace App3
         protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
         {
             FrameworkElement elemnt = container as FrameworkElement;
-            
+
             if (item is ChatTextOtherMessage)
             {
                 return OtherMessage;
             }
-            else if( item is ChatTextSelfMessage)
+            else if (item is ChatTextSelfMessage)
             {
                 return SelfMessage;
             }
-            else if( item is ChatLinkOtherMessage)
+            else if (item is ChatLinkOtherMessage)
             {
                 return OtherLinkMessage;
             }
-            else if( item is ChatLinkSelfMessage)
+            else if (item is ChatLinkSelfMessage)
             {
                 return SelfLinkMessage;
             }
@@ -169,7 +169,7 @@ namespace App3
         {
             this.InitializeComponent();
 
-           
+
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -237,7 +237,7 @@ namespace App3
             var messagePackNodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"messageGroup\"]/div[2]/div");
             if (messagePackNodes == null)
             {
-               var newMessage = new ChatInfoMessage()
+                var newMessage = new ChatInfoMessage()
                 {
                     MessageSource = MessageSources.None,
                     MessageType = MessageTypes.Info,
@@ -413,7 +413,7 @@ namespace App3
                                             DisplayName = MessageDisplayUsername,
                                         });
                                     }
-                                        
+
                                     #endregion
                                 }
                             }
@@ -460,12 +460,13 @@ namespace App3
                 }
                 else if (!string.IsNullOrEmpty(messagePackNode.InnerText))
                 {
-                    listView.Items.Add(new ChatInfoMessage() { Message = HtmlEntity.DeEntitize(messagePackNode.InnerText), MessageType = MessageTypes.Info});
+                    listView.Items.Add(new ChatInfoMessage() { Message = HtmlEntity.DeEntitize(messagePackNode.InnerText), MessageType = MessageTypes.Info });
                 }
                 //   Names.Add(new ChatHeader() { Name = NameNode.InnerText, Href = NameNode.GetAttributeValue("href", "") });
             }
             //this.Frame.Navigate(typeof(ChatList));
-            listView.ScrollIntoView(listView.Items.Last());
+            if (listView.Items.Count > 0)
+                listView.ScrollIntoView(listView.Items.Last());
         }
 
         private async void Send_Click(object sender, RoutedEventArgs e)
@@ -512,6 +513,18 @@ namespace App3
         private void NewMessageBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             Send.IsEnabled = !string.IsNullOrEmpty(NewMessageBox.Text);
+        }
+
+        private void NewMessageBox_KeyUp(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == VirtualKey.Enter)
+            {
+                if (!string.IsNullOrEmpty(NewMessageBox.Text))
+                {
+                    Send_Click(null, null);
+                }
+            }
+
         }
     }
 

@@ -18,6 +18,11 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using HtmlAgilityPack;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using Windows.ApplicationModel.Contacts;
+using MetroLog;
+using MetroLog.Targets;
+
 
 namespace App3
 {
@@ -27,6 +32,7 @@ namespace App3
     sealed partial class App : Application
     {
         public static ObservableCollection<ChatHeader> Names = new ObservableCollection<ChatHeader>();
+        private ILogger log;
         public static string Username;
         public static Uri requestUri = new Uri("https://mbasic.facebook.com");
         public const string CustomUserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.71 Safari/537.36 OPR/51.0.2830.8 (Edition beta)";
@@ -39,10 +45,200 @@ namespace App3
         /// </summary>
         public App()
         {
+#if DEBUG
+            LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new FileStreamingTarget());
+#else
+LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal, new FileStreamingTarget());
+#endif
+            log = LogManagerFactory.DefaultLogManager.GetLogger<App>();
+            GlobalCrashHandler.Configure();
             this.InitializeComponent();
             this.Suspending += OnSuspending;
         }
 
+        protected override void OnActivated(IActivatedEventArgs e)
+        {
+            this.log.Trace("This is a trace message. On Activated");
+            if (e.Kind == ActivationKind.Protocol)
+            {
+                var args = e as ProtocolActivatedEventArgs;
+                // Display the result of the protocol activation if we got here as a result of being activated for a protocol.
+
+                ActivateFromURI(args);
+            }
+
+            if (e.Kind == ActivationKind.ContactPanel)
+            {
+                var args = e as ContactPanelActivatedEventArgs;
+
+                ActivateForContactPanel(args);
+            }
+        }
+
+        private async void ActivateFromURI(ProtocolActivatedEventArgs args)
+        {
+            // Parse the URI to extract the protocol and the contact ids
+            Uri uri = args.Uri;
+
+            string real = Uri.UnescapeDataString(uri.Query);
+            var userID = real.Replace("?ContactRemoteIds=", "");
+            if (uri.Scheme == "ms-ipmessaging")
+            {
+                Frame rootFrame = Window.Current.Content as Frame;
+
+                // Ne répétez pas l'initialisation de l'application lorsque la fenêtre comporte déjà du contenu,
+                // assurez-vous juste que la fenêtre est active
+                if (rootFrame == null)
+                {
+                    rootFrame = InitFrameLoginAndUserAgentAndBack(args);
+                }
+
+                // Quand la pile de navigation n'est pas restaurée, accédez à la première page,
+                // puis configurez la nouvelle page en transmettant les informations requises en tant que
+                // paramètre
+                if (!_isLogedIn)
+                    rootFrame.Navigate(typeof(MainPage));
+                else
+                {
+                    var name = await GetNameFromRemotId(userID);
+                    var header = new ChatHeader()
+                    {
+                        Href = userID,
+                        IsGroup = false,
+                        Name = name,
+                        UnreadCount = 2
+                    };
+                    rootFrame.Navigate(typeof(ChatPage), header);
+                }
+
+                // Vérifiez que la fenêtre actuelle est active
+                Window.Current.Activate();
+            }
+        }
+
+        protected async Task<string> GetNameFromRemotId(string remotID)
+        {
+            if (string.IsNullOrEmpty(remotID)) return "Unknown";
+            ContactList contactList;
+
+            //CleanUp
+            {
+                ContactStore store = await ContactManager.RequestStoreAsync(ContactStoreAccessType.AppContactsReadWrite);
+                IReadOnlyList<ContactList> contactLists = await store.FindContactListsAsync();
+
+                if (contactLists.Count > 0)
+                    contactList = contactLists[0];
+                else return "Unknown";
+
+            }
+
+            Contact contact = await contactList.GetContactFromRemoteIdAsync(remotID);
+            //ContactAnnotationList annotationList;
+
+            //{
+            //    ContactAnnotationStore annotationStore = await
+            //        ContactManager.RequestAnnotationStoreAsync(ContactAnnotationStoreAccessType.AppAnnotationsReadWrite);
+
+
+            //    IReadOnlyList<ContactAnnotationList> annotationLists = await annotationStore.FindAnnotationListsAsync();
+            //    if (annotationLists.Count > 0)
+            //        annotationList = annotationLists[0];
+            //    else
+            //        return "Unknown";
+
+            //}
+            //IReadOnlyList<ContactAnnotation> contactAnnotations =
+            //    await annotationList.FindAnnotationsByRemoteIdAsync(remotID);
+            //if (contactAnnotations.Count == 0)
+            //    return "Unknown";
+
+            //contactList.
+            if (contact != null)
+                return contact.Name;
+
+            return "Unknown";
+        }
+
+        protected async void ActivateForContactPanel(ContactPanelActivatedEventArgs e)
+        {
+
+            //IReadOnlyList<ContactAnnotation> contactAnnotations = null;
+            //////ContactList contactList=null;
+            //{
+
+
+
+            //    ContactStore store = await ContactManager.RequestStoreAsync(ContactStoreAccessType.AppContactsReadWrite);
+            //    var fullContact = await store.GetContactAsync(e.Contact.Id);
+
+            //    if (fullContact == null) return;
+            //    //if (contactLists.Count > 0)
+            //    //    contactList = contactLists[0];
+            //    //else return;
+            //}
+            //ContactAnnotationList annotationList=null;
+            string remoteId = await GetRemoteIdForContactIdAsync(e.Contact); //contactAnnotations[0].RemoteId;
+            //{
+
+            //    ContactAnnotationStore annotationStore = await
+            //        ContactManager.RequestAnnotationStoreAsync(ContactAnnotationStoreAccessType
+            //            .AppAnnotationsReadWrite);
+
+            //    //    IReadOnlyList<ContactAnnotationList> annotationLists = await annotationStore.FindAnnotationListsAsync();
+            //    //    if (annotationLists.Count > 0)
+            //    //        annotationList = annotationLists[0];
+            //    //    else return;
+
+            //    //    var allAnotations = await annotationList.FindAnnotationsAsync();
+            //    //    foreach (var contactAnnotation in allAnotations) // slow but official api throw error
+            //    //    {
+            //    //        if (contactAnnotation.ContactId == e.Contact.Id)
+            //    //        {
+            //    //            remoteId = contactAnnotation.RemoteId;
+            //    //        }
+            //    //    }
+            //    contactAnnotations = await annotationStore.FindAnnotationsForContactAsync(e.Contact);
+            //    if (contactAnnotations.Count > 0)
+            //        remoteId = contactAnnotations[0].RemoteId;
+            //}
+
+            // remoteId = contactAnnotations[0].RemoteId;
+            //var remoteId = e.Contact.RemoteId;
+            //e.ContactPanel.
+            if (string.IsNullOrEmpty(remoteId)) return;
+
+
+            {
+
+                Frame rootFrame = Window.Current.Content as Frame;
+
+                // Ne répétez pas l'initialisation de l'application lorsque la fenêtre comporte déjà du contenu,
+                // assurez-vous juste que la fenêtre est active
+                if (rootFrame == null)
+                {
+                    rootFrame = InitFrameLoginAndUserAgentAndBack(e);
+                }
+
+                if (!_isLogedIn)
+                    rootFrame.Navigate(typeof(MainPage));
+                else
+                {
+                    var header = new ChatHeader()
+                    {
+                        Href = remoteId,
+                        IsGroup = false,
+                        Name = e.Contact.Name,
+                        UnreadCount = 2
+                    };
+                    rootFrame.Navigate(typeof(ChatPage), header);
+
+                }
+
+                // Ensure the current window is active
+                Window.Current.Activate();
+            }
+
+        }
         /// <summary>
         /// Invoqué lorsque l'application est lancée normalement par l'utilisateur final.  D'autres points d'entrée
         /// seront utilisés par exemple au moment du lancement de l'application pour l'ouverture d'un fichier spécifique.
@@ -50,34 +246,16 @@ namespace App3
         /// <param name="e">Détails concernant la requête et le processus de lancement.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
+            this.log.Trace("This is a trace message. On Lunched");
             Frame rootFrame = Window.Current.Content as Frame;
 
             // Ne répétez pas l'initialisation de l'application lorsque la fenêtre comporte déjà du contenu,
             // assurez-vous juste que la fenêtre est active
             if (rootFrame == null)
             {
-                // Créez un Frame utilisable comme contexte de navigation et naviguez jusqu'à la première page
-                rootFrame = new Frame();
-
-                rootFrame.NavigationFailed += OnNavigationFailed;
-
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    //TODO: chargez l'état de l'application précédemment suspendue
-                }
-
-                // Placez le frame dans la fenêtre active
-                Window.Current.Content = rootFrame;
-
-                UserAgent.SetUserAgent(App.CustomUserAgent);
-                localSettings = ApplicationData.Current.LocalSettings;
-                if (localSettings.Values.ContainsKey("isLogin"))
-                    App._isLogedIn = (bool)localSettings.Values["isLogin"];
-
-               
+                rootFrame = InitFrameLoginAndUserAgentAndBack(e);
             }
-            SystemNavigationManager.GetForCurrentView().BackRequested +=
-                App_BackRequested;
+
             if (e.PrelaunchActivated == false)
             {
                 if (rootFrame.Content == null)
@@ -85,19 +263,62 @@ namespace App3
                     // Quand la pile de navigation n'est pas restaurée, accédez à la première page,
                     // puis configurez la nouvelle page en transmettant les informations requises en tant que
                     // paramètre
-                    if(!_isLogedIn)
-                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                    if (!_isLogedIn)
+                        rootFrame.Navigate(typeof(MainPage), e.Arguments);
                     else
-                    rootFrame.Navigate(typeof(ChatList), e.Arguments);
+                        rootFrame.Navigate(typeof(ChatList), e.Arguments);
                 }
+                else
+                {
+                    if (rootFrame.Content is ChatList)
+                    {
+                        var chat = rootFrame.Content as ChatList;
+                        chat.RefreshChatList();
+                    }
+                    else
+                    {
+                        if (!_isLogedIn)
+                            rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                        else
+                            rootFrame.Navigate(typeof(ChatList), e.Arguments);
+                    }
+                }
+
                 // Vérifiez que la fenêtre actuelle est active
                 Window.Current.Activate();
             }
-         
+
 
 
         }
-        
+
+        private Frame InitFrameLoginAndUserAgentAndBack(IActivatedEventArgs e)
+        {
+            this.log.Trace("This is a trace message. On InitFrame");
+            Frame rootFrame;
+            // Créez un Frame utilisable comme contexte de navigation et naviguez jusqu'à la première page
+            rootFrame = new Frame();
+
+            rootFrame.NavigationFailed += OnNavigationFailed;
+
+            if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+            {
+                //TODO: chargez l'état de l'application précédemment suspendue
+            }
+
+            // Placez le frame dans la fenêtre active
+            Window.Current.Content = rootFrame;
+
+            UserAgent.SetUserAgent(App.CustomUserAgent);
+            localSettings = ApplicationData.Current.LocalSettings;
+            if (localSettings.Values.ContainsKey("isLogin"))
+                App._isLogedIn = (bool)localSettings.Values["isLogin"];
+
+            SystemNavigationManager.GetForCurrentView().BackRequested +=
+                App_BackRequested;
+            return rootFrame;
+        }
+
         private void App_BackRequested(object sender, BackRequestedEventArgs e)
         {
             Frame rootFrame = Window.Current.Content as Frame;
@@ -135,6 +356,22 @@ namespace App3
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: enregistrez l'état de l'application et arrêtez toute activité en arrière-plan
             deferral.Complete();
+        }
+
+        public async Task<string> GetRemoteIdForContactIdAsync(Contact contactId)
+        {
+            ContactStore store = await ContactManager.RequestStoreAsync(ContactStoreAccessType.AppContactsReadWrite);
+            var fullContact = await store.GetContactAsync(contactId.Id);
+            ContactAnnotationStore annotationStore = await ContactManager.RequestAnnotationStoreAsync(ContactAnnotationStoreAccessType.AppAnnotationsReadWrite);
+
+          var contactAnnotations = await annotationStore.FindAnnotationsForContactAsync(fullContact);
+
+            if (contactAnnotations.Count > 0)
+            {
+                return contactAnnotations[0].RemoteId;
+            }
+
+            return string.Empty;
         }
     }
 }

@@ -31,6 +31,7 @@ namespace App3
         public string Name { get; set; }
         public bool IsGroup { get; set; }
         public string Href { get; set; }
+        public int UnreadCount { get; set; }
         public override string ToString()
         {
             return Name;
