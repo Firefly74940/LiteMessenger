@@ -313,6 +313,8 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
             localSettings = ApplicationData.Current.LocalSettings;
             if (localSettings.Values.ContainsKey("isLogin"))
                 App._isLogedIn = (bool)localSettings.Values["isLogin"];
+            if (localSettings.Values.ContainsKey("username"))
+                App.Username = (string)localSettings.Values["username"];
 
             SystemNavigationManager.GetForCurrentView().BackRequested +=
                 App_BackRequested;

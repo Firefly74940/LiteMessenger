@@ -55,7 +55,11 @@ namespace App3
                 var profileNode = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"header\"]/div/a[2]");
                 var namelink = profileNode.GetAttributeValue("href", "");
                 int end = namelink.IndexOf('?');
-                App.Username = namelink.Substring(1, end - 1);
+                if (string.IsNullOrEmpty(App.Username))
+                {
+                    App.Username = namelink.Substring(1, end - 1);
+                    App.localSettings.Values["username"] = App.Username;
+                }
             }
             //var node = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"root\"]/div[1]/div[2]/div[1]/table[1]/tbody");//*[@id="root"]/div[1]/div[2]/div[1]/table[1]/tbody/tr/td/div/h3[1]/a
             var nodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"root\"]/div[1]/div[2]/div[1]/table");//*[@id="root"]/div[1]/div[2]/div[1]/table[1]/tbody/tr/td/div/h3[1]/a
