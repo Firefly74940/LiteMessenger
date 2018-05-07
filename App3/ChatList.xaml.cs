@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.Web.Http;
 
 // Pour plus d'informations sur le modèle d'élément Page vierge, consultez la page https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -39,7 +40,7 @@ namespace App3
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            Frame.BackStack.Clear(); ;
+            Frame.BackStack.Clear();
 
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
                 AppViewBackButtonVisibility.Visible;
@@ -86,8 +87,12 @@ namespace App3
 
         }
 
-        private async void button_Click(object sender, RoutedEventArgs e)
+        private async void SyncContacts()
         {
+            //var ck = listView.Items[3];
+            //listView.Items[3] = listView.Items[0];
+            //listView.Items[0] = ck;
+            //return;
             ContactList contactList;
 
             //CleanUp
@@ -148,6 +153,45 @@ namespace App3
             }
 
 
+        }
+
+        private void CommandBar_Opening(object sender, object e)
+        {
+            BarButtonDisconect.Visibility = Visibility.Visible;
+            BarButtonSync.Visibility = Visibility.Visible;
+        }
+
+        private void CommandBar_Closing(object sender, object e)
+        {
+            BarButtonDisconect.Visibility = Visibility.Collapsed;
+            BarButtonSync.Visibility = Visibility.Collapsed;
+        }
+
+        private void BarButtonDisconect_Click(object sender, RoutedEventArgs e)
+        {
+            Windows.Web.Http.Filters.HttpBaseProtocolFilter myFilter = new Windows.Web.Http.Filters.HttpBaseProtocolFilter();
+
+
+            var cookieManager = myFilter.CookieManager;
+            HttpCookieCollection myCookieJar = cookieManager.GetCookies(new Uri("https://mbasic.facebook.com"));
+            foreach (HttpCookie cookie in myCookieJar)
+            {
+                cookieManager.DeleteCookie(cookie);
+            }
+            myCookieJar = cookieManager.GetCookies(new Uri("https://mbasic.facebook.com"));
+            foreach (HttpCookie cookie in myCookieJar)
+            {
+                cookieManager.DeleteCookie(cookie);
+            }
+
+            App._isLogedIn = false;
+            App.localSettings.Values["isLogin"] = false;
+            Frame.Navigate(typeof(MainPage));
+        }
+
+        private void BarButtonSync_Click(object sender, RoutedEventArgs e)
+        {
+            SyncContacts();
         }
     }
 }

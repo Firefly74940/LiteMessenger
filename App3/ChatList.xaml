@@ -8,8 +8,54 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <ListView x:Name="listView" Margin="10" ItemClick="listView_ItemClick" IsItemClickEnabled="True"/>
-        <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Margin="173,220,0,0" VerticalAlignment="Top" Click="button_Click"/>
+        <ListView x:Name="listView" Margin="10" ItemClick="listView_ItemClick" IsItemClickEnabled="True">
+            <ListView.Resources>
+                <Style x:Key="ListViewStyle1" TargetType="ListView">
+                    <Setter Property="IsTabStop" Value="False"/>
+                    <Setter Property="TabNavigation" Value="Once"/>
+                    <Setter Property="IsSwipeEnabled" Value="True"/>
+                    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+                    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+                    <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Disabled"/>
+                    <Setter Property="ScrollViewer.IsHorizontalRailEnabled" Value="False"/>
+                    <Setter Property="ScrollViewer.VerticalScrollMode" Value="Enabled"/>
+                    <Setter Property="ScrollViewer.IsVerticalRailEnabled" Value="True"/>
+                    <Setter Property="ScrollViewer.ZoomMode" Value="Disabled"/>
+                    <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False"/>
+                    <Setter Property="ScrollViewer.BringIntoViewOnFocusChange" Value="True"/>
+                    <Setter Property="UseSystemFocusVisuals" Value="True"/>
+           
+                    <Setter Property="ItemsPanel">
+                        <Setter.Value>
+                            <ItemsPanelTemplate>
+                                <ItemsStackPanel Orientation="Vertical"/>
+                            </ItemsPanelTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListView">
+                                <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
+                                    <ScrollViewer x:Name="ScrollViewer" AutomationProperties.AccessibilityView="Raw" BringIntoViewOnFocusChange="{TemplateBinding ScrollViewer.BringIntoViewOnFocusChange}" HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}" IsHorizontalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsHorizontalScrollChainingEnabled}" IsVerticalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsVerticalScrollChainingEnabled}" IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}" IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}" TabNavigation="{TemplateBinding TabNavigation}" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}" ZoomMode="{TemplateBinding ScrollViewer.ZoomMode}">
+                                        <ItemsPresenter FooterTransitions="{TemplateBinding FooterTransitions}" FooterTemplate="{TemplateBinding FooterTemplate}" Footer="{TemplateBinding Footer}" HeaderTemplate="{TemplateBinding HeaderTemplate}" Header="{TemplateBinding Header}" HeaderTransitions="{TemplateBinding HeaderTransitions}" Padding="{TemplateBinding Padding}"/>
+                                    </ScrollViewer>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListView.Resources>
+            <ListView.Style>
+                <StaticResource ResourceKey="ListViewStyle1"/>
+            </ListView.Style>
+        </ListView>
+        <CommandBar VerticalAlignment="Bottom" RequestedTheme="Dark" Opening="CommandBar_Opening" Closing="CommandBar_Closing" ClosedDisplayMode="Minimal" >
+            <CommandBar.Content>
+                <Grid/>
+            </CommandBar.Content>
+            <AppBarButton x:Name="BarButtonDisconect" Icon="Cancel" Label="Disconect"  RequestedTheme="Dark" Visibility="Collapsed" Click="BarButtonDisconect_Click"/>
+            <AppBarButton x:Name="BarButtonSync" Icon="Sync" Label="SyncContacts" RequestedTheme="Dark" Visibility="Collapsed" Click="BarButtonSync_Click" />
 
+        </CommandBar>
     </Grid>
 </Page>

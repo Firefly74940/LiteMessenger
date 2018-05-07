@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -9,6 +10,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage.Streams;
 using Windows.System;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -375,6 +377,7 @@ namespace App3
                                 newMessage.UserID = MessageUsername;
                                 newMessage.DisplayName = MessageDisplayUsername;
                                 listView.Items.Add(newMessage);
+                                
                             }
                         }
                         #endregion
@@ -471,6 +474,16 @@ namespace App3
 
         private async void Send_Click(object sender, RoutedEventArgs e)
         {
+          //  var bounds = ApplicationView.GetForCurrentView().VisibleBounds;
+          //var a =  listView.ContainerFromIndex(0) as ListViewItem;
+          //  Rect screenBounds = new Rect(0, 0,bounds.Width, bounds.Height);
+            
+          //  if (VisualTreeHelper.FindElementsInHostCoordinates(screenBounds, listView).Contains(a))
+          //      Debug.WriteLine("Element is now visible");
+          //  else
+          //      Debug.WriteLine("Element is no longer visible");
+
+          //  return;
             listView.Items.Add(new ChatTextSelfMessage() { Message = NewMessageBox.Text, UserID = App.Username, DisplayName = App.Username });
 
 
@@ -500,12 +513,6 @@ namespace App3
             {
                 httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
             }
-
-
-
-
-
-
 
             NewMessageBox.Text = "";
         }

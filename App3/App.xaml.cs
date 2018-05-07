@@ -36,7 +36,7 @@ namespace App3
         public static string Username;
         public static Uri requestUri = new Uri("https://mbasic.facebook.com");
         public const string CustomUserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.71 Safari/537.36 OPR/51.0.2830.8 (Edition beta)";
-        public static bool _isLogedIn = true;
+        public static bool _isLogedIn = false;
         public static Windows.Storage.ApplicationDataContainer localSettings;
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace App3
         public App()
         {
 #if DEBUG
-            LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new FileStreamingTarget());
+            LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new StreamingFileTarget());
 #else
 LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal, new FileStreamingTarget());
 #endif
@@ -116,7 +116,7 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
             }
         }
 
-        protected async Task<string> GetNameFromRemotId(string remotID)
+        async Task<string> GetNameFromRemotId(string remotID)
         {
             if (string.IsNullOrEmpty(remotID)) return "Unknown";
             ContactList contactList;
@@ -159,7 +159,7 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
             return "Unknown";
         }
 
-        protected async void ActivateForContactPanel(ContactPanelActivatedEventArgs e)
+        async void ActivateForContactPanel(ContactPanelActivatedEventArgs e)
         {
 
             //IReadOnlyList<ContactAnnotation> contactAnnotations = null;

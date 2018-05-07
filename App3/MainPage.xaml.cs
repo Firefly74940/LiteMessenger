@@ -39,31 +39,33 @@ namespace App3
     }
     public sealed partial class MainPage : Page
     {
+        private bool _skipFrist;
+        private NavigationEventArgs eventToForward;
         public MainPage()
         {
             
             this.InitializeComponent();
             ShowStatusBar();
-            UserAgent.SetUserAgent(App.CustomUserAgent);
-            App.localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-            if (App.localSettings.Values.ContainsKey("isLogin"))
-                App._isLogedIn = (bool) App.localSettings.Values["isLogin"];
-
-            if(!App._isLogedIn)
-            {
+         
+        
+           
                 HttpRequestMessage HttpRequestMessage =
                 new HttpRequestMessage(HttpMethod.Get,
                     new Uri("https://mbasic.facebook.com/messages/"));
-                
-            }
-           
-          
+
+            _skipFrist = true;
+            HttpRequestMessage.Headers.Add("User-Agent", App.CustomUserAgent);
+            LoginView.NavigateWithHttpRequestMessage(HttpRequestMessage);
         }
+
+   
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
                 AppViewBackButtonVisibility.Visible;
+            eventToForward = e;
+            Frame.BackStack.Clear();
         }
 
         private async void ShowStatusBar()
@@ -108,32 +110,24 @@ namespace App3
             htmlDoc.LoadHtml(httpResponseBody);
             return htmlDoc;
         }
-        //private async void AppBar()
-        //{
 
+        
 
-        //   var htmlDoc = await GetHtmlDoc("/messages/");
+        private void LoginView_NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
+        {
+            if (args.Uri.ToString().StartsWith("https://mbasic.facebook.com/messages/"))
+            {
+                if (!_skipFrist)
+                {
+                    args.Cancel = true;
+                    App._isLogedIn = true;
+                    App.localSettings.Values["isLogin"] = true;
+                    Frame.Navigate(typeof(ChatList), eventToForward);
 
-        //    {
-        //        var profileNode = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"header\"]/div/a[2]");
-        //        var namelink = profileNode.GetAttributeValue("href", "");
-        //        int end = namelink.IndexOf('?');
-        //        Username= namelink.Substring(1, end - 1);
-        //    }
-        //    //var node = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"root\"]/div[1]/div[2]/div[1]/table[1]/tbody");//*[@id="root"]/div[1]/div[2]/div[1]/table[1]/tbody/tr/td/div/h3[1]/a
-        //    var nodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"root\"]/div[1]/div[2]/div[1]/table");//*[@id="root"]/div[1]/div[2]/div[1]/table[1]/tbody/tr/td/div/h3[1]/a
-        //    foreach (var node in nodes)
-        //    {
-        //        var NameNode=node.SelectSingleNode("tr/td/div/h3[1]/a");
-        //        Names.Add(new ChatHeader(){Name = NameNode.InnerText ,Href = NameNode.GetAttributeValue("href","") });
-        //    }
-            
-        //}
-
-        //private void button_Click(object sender, RoutedEventArgs e)
-        //{
-        //    this.Frame.Navigate(typeof(ChatList));
-
-        //}
+                }
+                _skipFrist = false;
+            }
+        }
+        
     }
 }

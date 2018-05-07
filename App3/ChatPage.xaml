@@ -127,7 +127,7 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <TextBlock x:Name="ChatName" TextWrapping="Wrap" Text="TextBox" FontSize="35" Margin="20" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-        <ScrollViewer>
+        
             <ListView x:Name="listView" IsDoubleTapEnabled="False" IsRightTapEnabled="False" IsTapEnabled="False" ItemTemplateSelector="{StaticResource myMessageDataTemplateSelector}" Margin="0,66,0,62" ManipulationMode="None" ItemContainerStyle="{StaticResource ListViewItemStyle1}">
 
                 <ListView.ItemsPanel>
@@ -146,14 +146,14 @@
                     </DataTemplate>
                     
                 </ListView.ItemTemplate>-->
-                <StackPanel>
+                <!--<StackPanel>
                     <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}"  HorizontalAlignment="Right" Padding="7">
                         <TextBlock Text="AJDAJDPOAODJPPJDJPOAJOPD" HorizontalAlignment="Right" Margin="0,0,0,0" TextAlignment="Right" TextWrapping="WrapWholeWords" />
                     </StackPanel>
                 </StackPanel>
-                <ListViewItem Content="ListViewItem"/>
+                <ListViewItem Content="ListViewItem"/>-->
             </ListView>
-        </ScrollViewer>
+        
         <TextBox x:Name="NewMessageBox" Margin="10,0,80,10" TextWrapping="Wrap"  Height="35" VerticalAlignment="Bottom" TextChanged="NewMessageBox_TextChanged" KeyUp="NewMessageBox_KeyUp"/>
         <Button Name="Send" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="35" HorizontalAlignment="Right" Background="{ThemeResource SystemAccentColorLight1}"  Width="65" Content="&gt;" Click="Send_Click" IsEnabled="False" BorderBrush="{ThemeResource SystemAccentColorDark1}" FocusVisualPrimaryBrush="{ThemeResource SystemAccentColorLight1}" FocusVisualSecondaryBrush="{ThemeResource AccentButtonBorderBrush}" />
     </Grid>
