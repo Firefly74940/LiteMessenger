@@ -54,6 +54,8 @@ namespace App3
 
             {
                 var profileNode = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"header\"]/div/a[2]");
+                if(profileNode==null)return; //@TODO handle no internet 
+
                 var namelink = profileNode.GetAttributeValue("href", "");
                 int end = namelink.IndexOf('?');
                 if (string.IsNullOrEmpty(App.Username))
@@ -64,7 +66,15 @@ namespace App3
             }
             //var node = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"root\"]/div[1]/div[2]/div[1]/table[1]/tbody");//*[@id="root"]/div[1]/div[2]/div[1]/table[1]/tbody/tr/td/div/h3[1]/a
             var nodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"root\"]/div[1]/div[2]/div[1]/table");//*[@id="root"]/div[1]/div[2]/div[1]/table[1]/tbody/tr/td/div/h3[1]/a
-            App.Names.Clear();
+          //  App.Names.Clear();
+
+            // tag all for potential deletion
+            for (var index = 0; index < App.Names.Count; index++)
+            {
+                App.Names[index].Order = -1;
+            }
+
+            int order = 0;
             foreach (var node in nodes)
             {
                 var NameNode = node.SelectSingleNode("tr/td/div/h3[1]/a");
@@ -72,10 +82,44 @@ namespace App3
                 var split = NameNode.InnerText.Split(new[] { '(', ')' });
                 var name = split[0];
                 int badgeCount = split.Length > 1 ? int.Parse(split[1]) : 0;
-                App.Names.Add(new ChatHeader() { Name = name, Href = NameNode.GetAttributeValue("href", ""), UnreadCount = badgeCount });
+                var href = NameNode.GetAttributeValue("href", "");
+                var header = FindOrCreateHeader(href);
+                header.Name = name;
+                header.UnreadCount = badgeCount;
+                header.Order = order;
+                order++;
             }
+
+            //RemoveOthers: 
+            for (var index = 0; index < App.Names.Count; index++)
+            {
+                if (App.Names[index].Order == -1)
+                {
+                    App.Names.RemoveAt(index);
+                    index--;
+                }
+            }
+
+            App.Names.Sort((a, b) => { return a.Order.CompareTo(b.Order); });
+
             // listView.ItemsSource = App.Names;
             // this.Frame.Navigate(typeof(ChatList));
+        }
+
+        private ChatHeader FindOrCreateHeader(string href)
+        {
+            
+            foreach (var chatHeader in App.Names)
+            {
+                if (chatHeader.Href == href)
+                {
+                    return chatHeader;
+                }
+            }
+
+            var newHeader = new ChatHeader(){Href = href};
+            App.Names.Add(newHeader);
+            return newHeader;
         }
         private void listView_ItemClick(object sender, ItemClickEventArgs e)
         {

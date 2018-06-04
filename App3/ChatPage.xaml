@@ -29,11 +29,11 @@
 
         <DataTemplate x:Key="OtherImgMessageDataTemplate" x:DataType="app3:ChatMessage">
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="0,7,150,7"  HorizontalAlignment="Left" Padding="7">
-                <Image  HorizontalAlignment="Right">
+                <Image  HorizontalAlignment="Right" Height="100" Width="100">
                     <ToolTipService.ToolTip>
                         <TextBlock Text="{Binding Message}"/>
                     </ToolTipService.ToolTip>
-                    <Image.Source>
+                    <Image.Source >
                         <BitmapImage UriSource="{Binding MessageData}"/>
                     </Image.Source>
                 </Image>

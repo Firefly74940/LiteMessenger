@@ -197,7 +197,8 @@ namespace App3
             {
                 string name = element.GetAttributeValue("name", "undefined");
                 string value = element.GetAttributeValue("value", "");
-                if (!name.Equals("undefined"))
+                string type = element.GetAttributeValue("type", "");
+                if (!name.Equals("undefined") && (!type.Equals("submit") || name.Equals("send")))
                 {
                     inputsPost.Add(new Tuple<string, string>(name, value));
                     if (!string.IsNullOrEmpty(_formEncoded))
@@ -235,7 +236,8 @@ namespace App3
             //listView.Items.Add("");
             //listView.Items.Add("");
             //listView.Items.Add("");
-            GetSubmitForm(htmlDoc);
+           // if (header != null)
+                GetSubmitForm(htmlDoc);
             var messagePackNodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"messageGroup\"]/div[2]/div");
             if (messagePackNodes == null)
             {
@@ -377,7 +379,7 @@ namespace App3
                                 newMessage.UserID = MessageUsername;
                                 newMessage.DisplayName = MessageDisplayUsername;
                                 listView.Items.Add(newMessage);
-                                
+
                             }
                         }
                         #endregion
@@ -474,16 +476,16 @@ namespace App3
 
         private async void Send_Click(object sender, RoutedEventArgs e)
         {
-          //  var bounds = ApplicationView.GetForCurrentView().VisibleBounds;
-          //var a =  listView.ContainerFromIndex(0) as ListViewItem;
-          //  Rect screenBounds = new Rect(0, 0,bounds.Width, bounds.Height);
-            
-          //  if (VisualTreeHelper.FindElementsInHostCoordinates(screenBounds, listView).Contains(a))
-          //      Debug.WriteLine("Element is now visible");
-          //  else
-          //      Debug.WriteLine("Element is no longer visible");
+            //  var bounds = ApplicationView.GetForCurrentView().VisibleBounds;
+            //var a =  listView.ContainerFromIndex(0) as ListViewItem;
+            //  Rect screenBounds = new Rect(0, 0,bounds.Width, bounds.Height);
 
-          //  return;
+            //  if (VisualTreeHelper.FindElementsInHostCoordinates(screenBounds, listView).Contains(a))
+            //      Debug.WriteLine("Element is now visible");
+            //  else
+            //      Debug.WriteLine("Element is no longer visible");
+
+            //  return;
             listView.Items.Add(new ChatTextSelfMessage() { Message = NewMessageBox.Text, UserID = App.Username, DisplayName = App.Username });
 
 

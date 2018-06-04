@@ -35,7 +35,7 @@ namespace App3
         private ILogger log;
         public static string Username;
         public static Uri requestUri = new Uri("https://mbasic.facebook.com");
-        public const string CustomUserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.71 Safari/537.36 OPR/51.0.2830.8 (Edition beta)";
+        public const string CustomUserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.2490.71 Safari/537.36";
         public static bool _isLogedIn = false;
         public static Windows.Storage.ApplicationDataContainer localSettings;
 

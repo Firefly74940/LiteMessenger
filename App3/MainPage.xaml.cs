@@ -32,10 +32,13 @@ namespace App3
         public bool IsGroup { get; set; }
         public string Href { get; set; }
         public int UnreadCount { get; set; }
+
         public override string ToString()
         {
             return Name;
         }
+
+        public int Order = -1;
     }
     public sealed partial class MainPage : Page
     {
