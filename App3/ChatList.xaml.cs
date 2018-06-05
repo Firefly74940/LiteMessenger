@@ -60,19 +60,22 @@ namespace App3
             }
 
             int order = 0;
-            foreach (var node in nodes)
+            if (nodes != null)
             {
-                var NameNode = node.SelectSingleNode("tr/td/div/h3[1]/a");
+                foreach (var node in nodes)
+                {
+                    var NameNode = node.SelectSingleNode("tr/td/div/h3[1]/a");
 
-                var split = NameNode.InnerText.Split(new[] { '(', ')' });
-                var name = split[0];
-                int badgeCount = split.Length > 1 ? int.Parse(split[1]) : 0;
-                var href = NameNode.GetAttributeValue("href", "");
-                var header = FindOrCreateHeader(href);
-                header.Name = name;
-                header.UnreadCount = badgeCount;
-                header.Order = order;
-                order++;
+                    var split = NameNode.InnerText.Split(new[] { '(', ')' });
+                    var name = split[0];
+                    int badgeCount = split.Length > 1 ? int.Parse(split[1]) : 0;
+                    var href = NameNode.GetAttributeValue("href", "");
+                    var header = FindOrCreateHeader(href);
+                    header.Name = name;
+                    header.UnreadCount = badgeCount;
+                    header.Order = order;
+                    order++;
+                }
             }
 
             //RemoveOthers: 
@@ -166,7 +169,7 @@ namespace App3
 
                     annotation.ProviderProperties.Add("ContactPanelAppID", appId);
                     annotation.SupportedOperations = ContactAnnotationOperations.Message | ContactAnnotationOperations.ContactProfile;
-                   
+
                 }
                 await annotationList.TrySaveAnnotationAsync(annotation);
             }
@@ -205,6 +208,10 @@ namespace App3
 
             App._isLogedIn = false;
             App.localSettings.Values["isLogin"] = false;
+
+            App.Username = string.Empty;
+            App.localSettings.Values["username"] = string.Empty;
+            App.Names.Clear();
             Frame.Navigate(typeof(MainPage));
         }
 

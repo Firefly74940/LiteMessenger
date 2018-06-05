@@ -46,21 +46,21 @@ namespace App3
         private NavigationEventArgs eventToForward;
         public MainPage()
         {
-            
+
             this.InitializeComponent();
             ShowStatusBar();
-         
-       
-                HttpRequestMessage HttpRequestMessage =
-                new HttpRequestMessage(HttpMethod.Get,
-                    new Uri("https://mbasic.facebook.com/messages/"));
+
+
+            HttpRequestMessage HttpRequestMessage =
+            new HttpRequestMessage(HttpMethod.Get,
+                new Uri("https://mbasic.facebook.com/messages/"));
 
             _skipFrist = true;
             HttpRequestMessage.Headers.Add("User-Agent", App.CustomUserAgent);
             LoginView.NavigateWithHttpRequestMessage(HttpRequestMessage);
         }
 
-   
+
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
@@ -94,7 +94,7 @@ namespace App3
             Windows.Web.Http.HttpClient httpClient = new Windows.Web.Http.HttpClient();
             HttpRequestMessage HttpRequestMessage =
                 new HttpRequestMessage(HttpMethod.Get,
-                    new Uri(App.requestUri,relativeUri));
+                    new Uri(App.requestUri, relativeUri));
 
             HttpRequestMessage.Headers.Add("User-Agent", App.CustomUserAgent);
             try
@@ -113,7 +113,7 @@ namespace App3
             return htmlDoc;
         }
 
-        
+
 
         private void LoginView_NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
         {
@@ -130,6 +130,6 @@ namespace App3
                 _skipFrist = false;
             }
         }
-        
+
     }
 }

@@ -225,8 +225,8 @@ namespace App3
             //listView.Items.Add("");
             //listView.Items.Add("");
             //listView.Items.Add("");
-           // if (header != null)
-                GetSubmitForm(htmlDoc);
+            // if (header != null)
+            GetSubmitForm(htmlDoc);
             var messagePackNodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"messageGroup\"]/div[2]/div");
             if (messagePackNodes == null)
             {

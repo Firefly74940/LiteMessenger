@@ -111,7 +111,7 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
             if (string.IsNullOrEmpty(remotID)) return "Unknown";
             ContactList contactList;
 
-     
+
             {
                 ContactStore store = await ContactManager.RequestStoreAsync(ContactStoreAccessType.AppContactsReadWrite);
                 IReadOnlyList<ContactList> contactLists = await store.FindContactListsAsync();
@@ -123,7 +123,7 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
             }
 
             Contact contact = await contactList.GetContactFromRemoteIdAsync(remotID);
-          
+
             if (contact != null)
                 return contact.Name;
 
@@ -133,9 +133,9 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
         async void ActivateForContactPanel(ContactPanelActivatedEventArgs e)
         {
 
-          
+
             string remoteId = await GetRemoteIdForContactIdAsync(e.Contact);
-            
+
             if (string.IsNullOrEmpty(remoteId)) return;
             {
 
@@ -297,7 +297,7 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
             var fullContact = await store.GetContactAsync(contactId.Id);
             ContactAnnotationStore annotationStore = await ContactManager.RequestAnnotationStoreAsync(ContactAnnotationStoreAccessType.AppAnnotationsReadWrite);
 
-          var contactAnnotations = await annotationStore.FindAnnotationsForContactAsync(fullContact);
+            var contactAnnotations = await annotationStore.FindAnnotationsForContactAsync(fullContact);
 
             if (contactAnnotations.Count > 0)
             {
