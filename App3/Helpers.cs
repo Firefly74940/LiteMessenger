@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace App3
 {
@@ -13,7 +10,7 @@ namespace App3
     }
     static class Exts
     {
-        public static void Sort<T>(this ObservableCollection<T> collection, Comparison<T> comparison)
+        public static void SortSlow<T>(this ObservableCollection<T> collection, Comparison<T> comparison)
         {
             var sortableList = new List<T>(collection);
             sortableList.Sort(comparison);

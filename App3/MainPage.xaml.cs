@@ -50,8 +50,7 @@ namespace App3
             this.InitializeComponent();
             ShowStatusBar();
          
-        
-           
+       
                 HttpRequestMessage HttpRequestMessage =
                 new HttpRequestMessage(HttpMethod.Get,
                     new Uri("https://mbasic.facebook.com/messages/"));
@@ -79,7 +78,7 @@ namespace App3
             {
                 var statusbar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView();
                 await statusbar.ShowAsync();
-                //statusbar.BackgroundColor = Windows.UI.Colors.Transparent;
+
                 statusbar.BackgroundColor = Windows.UI.Colors.Black;
                 statusbar.BackgroundOpacity = 1;
                 statusbar.ForegroundColor = Windows.UI.Colors.White;

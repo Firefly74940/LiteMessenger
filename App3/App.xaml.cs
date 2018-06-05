@@ -1,22 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using HtmlAgilityPack;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Contacts;
@@ -121,7 +111,7 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
             if (string.IsNullOrEmpty(remotID)) return "Unknown";
             ContactList contactList;
 
-            //CleanUp
+     
             {
                 ContactStore store = await ContactManager.RequestStoreAsync(ContactStoreAccessType.AppContactsReadWrite);
                 IReadOnlyList<ContactList> contactLists = await store.FindContactListsAsync();
@@ -133,26 +123,7 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
             }
 
             Contact contact = await contactList.GetContactFromRemoteIdAsync(remotID);
-            //ContactAnnotationList annotationList;
-
-            //{
-            //    ContactAnnotationStore annotationStore = await
-            //        ContactManager.RequestAnnotationStoreAsync(ContactAnnotationStoreAccessType.AppAnnotationsReadWrite);
-
-
-            //    IReadOnlyList<ContactAnnotationList> annotationLists = await annotationStore.FindAnnotationListsAsync();
-            //    if (annotationLists.Count > 0)
-            //        annotationList = annotationLists[0];
-            //    else
-            //        return "Unknown";
-
-            //}
-            //IReadOnlyList<ContactAnnotation> contactAnnotations =
-            //    await annotationList.FindAnnotationsByRemoteIdAsync(remotID);
-            //if (contactAnnotations.Count == 0)
-            //    return "Unknown";
-
-            //contactList.
+          
             if (contact != null)
                 return contact.Name;
 
@@ -162,52 +133,10 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
         async void ActivateForContactPanel(ContactPanelActivatedEventArgs e)
         {
 
-            //IReadOnlyList<ContactAnnotation> contactAnnotations = null;
-            //////ContactList contactList=null;
-            //{
-
-
-
-            //    ContactStore store = await ContactManager.RequestStoreAsync(ContactStoreAccessType.AppContactsReadWrite);
-            //    var fullContact = await store.GetContactAsync(e.Contact.Id);
-
-            //    if (fullContact == null) return;
-            //    //if (contactLists.Count > 0)
-            //    //    contactList = contactLists[0];
-            //    //else return;
-            //}
-            //ContactAnnotationList annotationList=null;
-            string remoteId = await GetRemoteIdForContactIdAsync(e.Contact); //contactAnnotations[0].RemoteId;
-            //{
-
-            //    ContactAnnotationStore annotationStore = await
-            //        ContactManager.RequestAnnotationStoreAsync(ContactAnnotationStoreAccessType
-            //            .AppAnnotationsReadWrite);
-
-            //    //    IReadOnlyList<ContactAnnotationList> annotationLists = await annotationStore.FindAnnotationListsAsync();
-            //    //    if (annotationLists.Count > 0)
-            //    //        annotationList = annotationLists[0];
-            //    //    else return;
-
-            //    //    var allAnotations = await annotationList.FindAnnotationsAsync();
-            //    //    foreach (var contactAnnotation in allAnotations) // slow but official api throw error
-            //    //    {
-            //    //        if (contactAnnotation.ContactId == e.Contact.Id)
-            //    //        {
-            //    //            remoteId = contactAnnotation.RemoteId;
-            //    //        }
-            //    //    }
-            //    contactAnnotations = await annotationStore.FindAnnotationsForContactAsync(e.Contact);
-            //    if (contactAnnotations.Count > 0)
-            //        remoteId = contactAnnotations[0].RemoteId;
-            //}
-
-            // remoteId = contactAnnotations[0].RemoteId;
-            //var remoteId = e.Contact.RemoteId;
-            //e.ContactPanel.
+          
+            string remoteId = await GetRemoteIdForContactIdAsync(e.Contact);
+            
             if (string.IsNullOrEmpty(remoteId)) return;
-
-
             {
 
                 Frame rootFrame = Window.Current.Content as Frame;
@@ -239,6 +168,8 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
             }
 
         }
+
+
         /// <summary>
         /// Invoqué lorsque l'application est lancée normalement par l'utilisateur final.  D'autres points d'entrée
         /// seront utilisés par exemple au moment du lancement de l'application pour l'ouverture d'un fichier spécifique.

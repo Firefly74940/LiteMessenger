@@ -1,19 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel.Contacts;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Foundation.Metadata;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.Web.Http;
 
@@ -30,12 +21,6 @@ namespace App3
         {
             this.InitializeComponent();
             listView.ItemsSource = App.Names;
-
-            //foreach (var name in MainPage.Names )
-            //{
-            //    listView.
-            //}
-
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -54,7 +39,7 @@ namespace App3
 
             {
                 var profileNode = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"header\"]/div/a[2]");
-                if(profileNode==null)return; //@TODO handle no internet 
+                if (profileNode == null) return; //@TODO handle no internet 
 
                 var namelink = profileNode.GetAttributeValue("href", "");
                 int end = namelink.IndexOf('?');
@@ -64,9 +49,9 @@ namespace App3
                     App.localSettings.Values["username"] = App.Username;
                 }
             }
-            //var node = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"root\"]/div[1]/div[2]/div[1]/table[1]/tbody");//*[@id="root"]/div[1]/div[2]/div[1]/table[1]/tbody/tr/td/div/h3[1]/a
-            var nodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"root\"]/div[1]/div[2]/div[1]/table");//*[@id="root"]/div[1]/div[2]/div[1]/table[1]/tbody/tr/td/div/h3[1]/a
-          //  App.Names.Clear();
+
+            var nodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"root\"]/div[1]/div[2]/div[1]/table");
+
 
             // tag all for potential deletion
             for (var index = 0; index < App.Names.Count; index++)
@@ -100,15 +85,12 @@ namespace App3
                 }
             }
 
-            App.Names.Sort((a, b) => { return a.Order.CompareTo(b.Order); });
-
-            // listView.ItemsSource = App.Names;
-            // this.Frame.Navigate(typeof(ChatList));
+            App.Names.SortSlow((a, b) => { return a.Order.CompareTo(b.Order); });
         }
 
         private ChatHeader FindOrCreateHeader(string href)
         {
-            
+
             foreach (var chatHeader in App.Names)
             {
                 if (chatHeader.Href == href)
@@ -117,7 +99,7 @@ namespace App3
                 }
             }
 
-            var newHeader = new ChatHeader(){Href = href};
+            var newHeader = new ChatHeader() { Href = href };
             App.Names.Add(newHeader);
             return newHeader;
         }
@@ -133,10 +115,6 @@ namespace App3
 
         private async void SyncContacts()
         {
-            //var ck = listView.Items[3];
-            //listView.Items[3] = listView.Items[0];
-            //listView.Items[0] = ck;
-            //return;
             ContactList contactList;
 
             //CleanUp
@@ -181,17 +159,14 @@ namespace App3
 
                 annotation.SupportedOperations = ContactAnnotationOperations.Message;
 
-               
+
 
                 if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 5))
                 {
 
                     annotation.ProviderProperties.Add("ContactPanelAppID", appId);
-                    annotation.SupportedOperations = ContactAnnotationOperations.Message|ContactAnnotationOperations.ContactProfile;
-
-                    // Save annotation to contact annotation list
-                    // Windows.ApplicationModel.Contacts.ContactAnnotationList 
-                   // await annotationList.TrySaveAnnotationAsync(annotation);
+                    annotation.SupportedOperations = ContactAnnotationOperations.Message | ContactAnnotationOperations.ContactProfile;
+                   
                 }
                 await annotationList.TrySaveAnnotationAsync(annotation);
             }
