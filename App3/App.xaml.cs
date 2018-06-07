@@ -10,6 +10,7 @@ using Windows.UI.Xaml.Navigation;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Contacts;
+using App3.Data;
 using MetroLog;
 using MetroLog.Targets;
 

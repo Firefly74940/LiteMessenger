@@ -26,20 +26,7 @@ namespace App3
     /// <summary>
     /// Une page vide peut être utilisée seule ou constituer une page de destination au sein d'un frame.
     /// </summary>
-    public class ChatHeader
-    {
-        public string Name { get; set; }
-        public bool IsGroup { get; set; }
-        public string Href { get; set; }
-        public int UnreadCount { get; set; }
 
-        public override string ToString()
-        {
-            return Name;
-        }
-
-        public int Order = -1;
-    }
     public sealed partial class MainPage : Page
     {
         private bool _skipFrist;

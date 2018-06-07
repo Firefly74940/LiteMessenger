@@ -9,108 +9,28 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
 using Windows.Web.Http;
+using App3.Data;
 using HtmlAgilityPack;
 
 // Pour plus d'informations sur le modèle d'élément Page vierge, consultez la page https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace App3
 {
-    public enum MessageTypes
-    {
-        Text,
-        Info,
-        Img,
-        Link,
-    }
-    public enum MessageSources
-    {
-        Self,
-        Other,
-        None,
-    }
-    public class ChatMessage
-    {
-        public MessageTypes MessageType { get; set; }
-        public MessageSources MessageSource { get; set; }
-        public string DisplayName { get; set; }
-        public string UserID { get; set; }
-        public string Message { get; set; }
-        public string MessageData { get; set; }
-        public override string ToString()
-        {
-            if (MessageSource == MessageSources.None)
-                return Message;
-            return DisplayName + ": " + Message;
-        }
-    }
+    
 
-    public class ChatInfoMessage : ChatMessage
-    {
-
-    }
-    public class ChatImgOtherMessage : ChatMessage
-    {
-
-    }
-    public class ChatImgSelfMessage : ChatMessage
-    {
-
-    }
-    public class ChatTextSelfMessage : ChatMessage
-    {
-
-    }
-    public class ChatTextOtherMessage : ChatMessage
-    {
-
-    }
-    public class ChatLinkSelfMessage : ChatMessage
-    {
-
-    }
-    public class ChatLinkOtherMessage : ChatMessage
-    {
-
-    }
     public class MessageDataTemplateSelector : DataTemplateSelector
     {
 
-        public DataTemplate InfoMessage
-        {
-            get;
-            set;
-        }
-        public DataTemplate SelfMessage
-        {
-            get;
-            set;
-        }
+        public DataTemplate InfoMessage { get; set; }
+        public DataTemplate SelfMessage { get; set; }
 
-        public DataTemplate SelfLinkMessage
-        {
-            get;
-            set;
-        }
-        public DataTemplate SelfImgMessage
-        {
-            get;
-            set;
-        }
-        public DataTemplate OtherMessage
-        {
-            get;
-            set;
-        }
-        public DataTemplate OtherLinkMessage
-        {
-            get;
-            set;
-        }
-        public DataTemplate OtherImgMessage
-        {
-            get;
-            set;
-        }
+        public DataTemplate SelfLinkMessage { get; set; }
+        public DataTemplate SelfImgMessage { get; set; }
+        public DataTemplate OtherMessage { get; set; }
+        public DataTemplate OtherLinkMessage { get; set; }
+
+        public DataTemplate OtherImgMessage { get; set; }
+
         //public DataTemplate ReceivedTemplate
         //{
         //    get;
@@ -120,34 +40,25 @@ namespace App3
         {
             FrameworkElement elemnt = container as FrameworkElement;
 
-            if (item is ChatTextOtherMessage)
+            var message = item as ChatMessage;
+            if (message == null) return null;
+            bool fromSelf = message.MessageSource == MessageSources.Self;
+            switch (message.MessageType)
             {
-                return OtherMessage;
+                case MessageTypes.Text:
+                    return fromSelf ? SelfMessage : OtherMessage;
+
+                case MessageTypes.Info:
+                    return InfoMessage;
+
+                case MessageTypes.Img:
+                    return fromSelf ? SelfImgMessage : OtherImgMessage;
+
+                case MessageTypes.Link:
+                    return fromSelf ? SelfLinkMessage : OtherLinkMessage;
             }
-            else if (item is ChatTextSelfMessage)
-            {
-                return SelfMessage;
-            }
-            else if (item is ChatLinkOtherMessage)
-            {
-                return OtherLinkMessage;
-            }
-            else if (item is ChatLinkSelfMessage)
-            {
-                return SelfLinkMessage;
-            }
-            else if (item is ChatImgOtherMessage)
-            {
-                return OtherImgMessage;
-            }
-            else if (item is ChatImgSelfMessage)
-            {
-                return SelfImgMessage;
-            }
-            else
-            {
-                return InfoMessage;
-            }
+
+            return InfoMessage;
         }
     }
 
@@ -201,36 +112,12 @@ namespace App3
             if (htmlDoc == null)
                 htmlDoc = await MainPage.GetHtmlDoc(header.Href);
             listView.Items.Clear();
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            //listView.Items.Add("");
-            // if (header != null)
+           
             GetSubmitForm(htmlDoc);
             var messagePackNodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"messageGroup\"]/div[2]/div");
             if (messagePackNodes == null)
             {
-                var newMessage = new ChatInfoMessage()
+                var newMessage = new ChatMessage()
                 {
                     MessageSource = MessageSources.None,
                     MessageType = MessageTypes.Info,
@@ -312,7 +199,7 @@ namespace App3
                                 {
                                     if (string.Equals(MessageUsername, App.Username))
                                     {
-                                        listView.Items.Add(new ChatLinkSelfMessage()
+                                        listView.Items.Add(new ChatMessage()
                                         {
                                             MessageData = HtmlEntity.DeEntitize(textNode.GetAttributeValue("href", "")),
                                             Message = HtmlEntity.DeEntitize(textNode.InnerText),
@@ -324,7 +211,7 @@ namespace App3
                                     }
                                     else
                                     {
-                                        listView.Items.Add(new ChatLinkOtherMessage()
+                                        listView.Items.Add(new ChatMessage()
                                         {
                                             MessageData = HtmlEntity.DeEntitize(textNode.GetAttributeValue("href", "")),
                                             Message = HtmlEntity.DeEntitize(textNode.InnerText),
@@ -342,7 +229,7 @@ namespace App3
                                 ChatMessage newMessage = null;
                                 if (string.IsNullOrWhiteSpace(MessageUsername))
                                 {
-                                    newMessage = new ChatInfoMessage()
+                                    newMessage = new ChatMessage()
                                     {
                                         MessageSource = MessageSources.None,
                                         MessageType = MessageTypes.Info
@@ -350,7 +237,7 @@ namespace App3
                                 }
                                 else if (string.Equals(MessageUsername, App.Username))
                                 {
-                                    newMessage = new ChatTextSelfMessage()
+                                    newMessage = new ChatMessage()
                                     {
                                         MessageSource = MessageSources.Self,
                                         MessageType = MessageTypes.Text
@@ -358,7 +245,7 @@ namespace App3
                                 }
                                 else
                                 {
-                                    newMessage = new ChatTextOtherMessage()
+                                    newMessage = new ChatMessage()
                                     {
                                         MessageSource = MessageSources.Other,
                                         MessageType = MessageTypes.Text
@@ -385,7 +272,7 @@ namespace App3
 
                                     if (string.Equals(MessageUsername, App.Username))
                                     {
-                                        listView.Items.Add(new ChatLinkSelfMessage()
+                                        listView.Items.Add(new ChatMessage()
                                         {
                                             MessageData = HtmlEntity.DeEntitize(userImages[0].GetAttributeValue("href", "")),
                                             Message = HtmlEntity.DeEntitize(userImages[0].InnerText),
@@ -397,7 +284,7 @@ namespace App3
                                     }
                                     else
                                     {
-                                        listView.Items.Add(new ChatLinkOtherMessage()
+                                        listView.Items.Add(new ChatMessage()
                                         {
                                             MessageData = HtmlEntity.DeEntitize(userImages[0].GetAttributeValue("href", "")),
                                             Message = HtmlEntity.DeEntitize(userImages[0].InnerText),
@@ -422,7 +309,7 @@ namespace App3
 
                                         if (string.Equals(MessageUsername, App.Username))
                                         {
-                                            listView.Items.Add(new ChatImgSelfMessage()
+                                            listView.Items.Add(new ChatMessage()
                                             {
                                                 MessageData = imgSrc,
                                                 Message = HtmlEntity.DeEntitize(otherImage.GetAttributeValue("alt", "")),
@@ -434,7 +321,7 @@ namespace App3
                                         }
                                         else
                                         {
-                                            listView.Items.Add(new ChatImgOtherMessage()
+                                            listView.Items.Add(new ChatMessage()
                                             {
                                                 MessageData = imgSrc,
                                                 Message = HtmlEntity.DeEntitize(otherImage.GetAttributeValue("alt", "")),
@@ -454,7 +341,7 @@ namespace App3
                 }
                 else if (!string.IsNullOrEmpty(messagePackNode.InnerText))
                 {
-                    listView.Items.Add(new ChatInfoMessage() { Message = HtmlEntity.DeEntitize(messagePackNode.InnerText), MessageType = MessageTypes.Info });
+                    listView.Items.Add(new ChatMessage() { Message = HtmlEntity.DeEntitize(messagePackNode.InnerText), MessageSource = MessageSources.None, MessageType = MessageTypes.Info });
                 }
                 //   Names.Add(new ChatHeader() { Name = NameNode.InnerText, Href = NameNode.GetAttributeValue("href", "") });
             }
@@ -475,7 +362,7 @@ namespace App3
             //      Debug.WriteLine("Element is no longer visible");
 
             //  return;
-            listView.Items.Add(new ChatTextSelfMessage() { Message = NewMessageBox.Text, UserID = App.Username, DisplayName = App.Username });
+            listView.Items.Add(new ChatMessage() { Message = NewMessageBox.Text, UserID = App.Username, DisplayName = App.Username });
 
 
             Windows.Web.Http.HttpResponseMessage httpResponse = new Windows.Web.Http.HttpResponseMessage();

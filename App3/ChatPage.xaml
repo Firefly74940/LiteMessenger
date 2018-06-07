@@ -6,16 +6,17 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:app3="using:App3"
+    xmlns:data="using:App3.Data"
     mc:Ignorable="d">
     <Page.Resources>
 
-        <DataTemplate x:Key="OtherTextMessageDataTemplate" x:DataType="app3:ChatMessage">
+        <DataTemplate x:Key="OtherTextMessageDataTemplate" x:DataType="data:ChatMessage">
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="0,7,150,7"  HorizontalAlignment="Left" Padding="7">
                 <TextBlock Text="{Binding Message}" HorizontalAlignment="Right" TextAlignment="Left" TextWrapping="WrapWholeWords" />
             </StackPanel>
         </DataTemplate>
-        
-        <DataTemplate x:Key="OtherLinkMessageDataTemplate" x:DataType="app3:ChatMessage">
+
+        <DataTemplate x:Key="OtherLinkMessageDataTemplate" x:DataType="data:ChatMessage">
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="0,7,150,7"  HorizontalAlignment="Left" Padding="7">
                 <TextBlock HorizontalAlignment="Right" TextAlignment="Left" TextWrapping="WrapWholeWords"  >
                     <Hyperlink NavigateUri="{Binding MessageData}" >
@@ -27,7 +28,7 @@
             </StackPanel>
         </DataTemplate>
 
-        <DataTemplate x:Key="OtherImgMessageDataTemplate" x:DataType="app3:ChatMessage">
+        <DataTemplate x:Key="OtherImgMessageDataTemplate" x:DataType="data:ChatMessage">
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="0,7,150,7"  HorizontalAlignment="Left" Padding="7">
                 <Image  HorizontalAlignment="Right" Height="100" Width="100">
                     <ToolTipService.ToolTip>
@@ -39,17 +40,17 @@
                 </Image>
             </StackPanel>
         </DataTemplate>
-        
-        
-        
 
-        <DataTemplate x:Key="SelfTextMessageDataTemplate" x:DataType="local:ChatMessage">
+
+
+
+        <DataTemplate x:Key="SelfTextMessageDataTemplate" x:DataType="data:ChatMessage">
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="150,7,0,7"  HorizontalAlignment="Right" Padding="7">
                 <TextBlock Text="{Binding Message}" HorizontalAlignment="Right" TextAlignment="Right" TextWrapping="WrapWholeWords" />
             </StackPanel>
         </DataTemplate>
-        
-        <DataTemplate x:Key="SelfLinkMessageDataTemplate" x:DataType="local:ChatMessage">
+
+        <DataTemplate x:Key="SelfLinkMessageDataTemplate" x:DataType="data:ChatMessage">
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="150,7,0,7"  HorizontalAlignment="Right" Padding="7">
                 <TextBlock  HorizontalAlignment="Right" TextAlignment="Right" TextWrapping="WrapWholeWords" >
                 <Hyperlink NavigateUri="{Binding MessageData}" >
@@ -61,7 +62,7 @@
             </StackPanel>
         </DataTemplate>
 
-        <DataTemplate x:Key="SelfImgMessageDataTemplate" x:DataType="local:ChatMessage">
+        <DataTemplate x:Key="SelfImgMessageDataTemplate" x:DataType="data:ChatMessage">
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="150,7,0,7"  HorizontalAlignment="Right" Padding="7">
                 <Image  HorizontalAlignment="Right" Height="100" Width="100">
                     <ToolTipService.ToolTip>
@@ -76,7 +77,7 @@
         </DataTemplate>
 
 
-        <DataTemplate x:Key="InfoMessageDataTemplate" x:DataType="local:ChatMessage">
+        <DataTemplate x:Key="InfoMessageDataTemplate" x:DataType="data:ChatMessage">
             <StackPanel  UseLayoutRounding="True"  Margin="50,7,50,7"  HorizontalAlignment="Right" Padding="7">
                 <TextBlock Text="{Binding Message}" Foreground="#FF5F5F5F" HorizontalAlignment="Center" FocusVisualPrimaryBrush="#FF5F5F5F" TextAlignment="Center" TextWrapping="WrapWholeWords" />
             </StackPanel>
