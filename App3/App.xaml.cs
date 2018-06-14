@@ -205,7 +205,7 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
                     if (rootFrame.Content is ChatList)
                     {
                         var chat = rootFrame.Content as ChatList;
-                        chat.RefreshChatList();
+                       DataSource.RefreshChatList();
                     }
                     else
                     {
@@ -219,9 +219,6 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
                 // Vérifiez que la fenêtre actuelle est active
                 Window.Current.Activate();
             }
-
-
-
         }
 
         private Frame InitFrameLoginAndUserAgentAndBack(IActivatedEventArgs e)

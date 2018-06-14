@@ -38,8 +38,6 @@ namespace App3
         //}
         protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
         {
-            FrameworkElement elemnt = container as FrameworkElement;
-
             var message = item as ChatMessage;
             if (message == null) return null;
             bool fromSelf = message.MessageSource == MessageSources.Self;
@@ -70,50 +68,28 @@ namespace App3
         public ChatPage()
         {
             this.InitializeComponent();
-
-
         }
 
+        private ChatHeader _currentChatHeader;
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (e.Parameter is ChatHeader)
+            var header = e.Parameter as ChatHeader;
+            if (header != null)
             {
-                RefreshConversation(e.Parameter as ChatHeader);
-                ChatName.Text = (e.Parameter as ChatHeader).Name;
-            }
-
-        }
-
-        private string _action = "";
-        private string _formEncoded = "";
-        private void GetSubmitForm(HtmlDocument page)
-        {
-            var form = page.DocumentNode.SelectSingleNode("//*[@id=\"composer_form\"]");
-            var inputsPost = new List<Tuple<string, string>>();
-            _action = form.GetAttributeValue("action", "");
-            var inputs = form.Descendants("input");
-            _formEncoded = "";
-            foreach (var element in inputs)
-            {
-                string name = element.GetAttributeValue("name", "undefined");
-                string value = element.GetAttributeValue("value", "");
-                string type = element.GetAttributeValue("type", "");
-                if (!name.Equals("undefined") && (!type.Equals("submit") || name.Equals("send")))
-                {
-                    inputsPost.Add(new Tuple<string, string>(name, value));
-                    if (!string.IsNullOrEmpty(_formEncoded))
-                        _formEncoded += '&';
-                    _formEncoded += name + "=" + Uri.EscapeDataString(value);
-                }
+                _currentChatHeader = header;
+                RefreshConversation();
+                ChatName.Text = header.Name;
             }
         }
-        private async void RefreshConversation(ChatHeader header, HtmlDocument htmlDoc = null)
+
+
+        public async void RefreshConversation( HtmlDocument htmlDoc = null)
         {
             if (htmlDoc == null)
-                htmlDoc = await MainPage.GetHtmlDoc(header.Href);
+                htmlDoc = await MainPage.GetHtmlDoc(_currentChatHeader.Href);
             listView.Items.Clear();
            
-            GetSubmitForm(htmlDoc);
+            _currentChatHeader.GetSubmitForm(htmlDoc);
             var messagePackNodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"messageGroup\"]/div[2]/div");
             if (messagePackNodes == null)
             {
@@ -365,34 +341,12 @@ namespace App3
             listView.Items.Add(new ChatMessage() { Message = NewMessageBox.Text, UserID = App.Username, DisplayName = App.Username });
 
 
-            Windows.Web.Http.HttpResponseMessage httpResponse = new Windows.Web.Http.HttpResponseMessage();
-            string httpResponseBody = "";
-
-            Windows.Web.Http.HttpClient httpClient = new Windows.Web.Http.HttpClient();
-            HttpRequestMessage HttpRequestMessage =
-                new HttpRequestMessage(HttpMethod.Post,
-                    new Uri(App.requestUri, _action));
-            HttpRequestMessage.Content = new HttpStringContent(_formEncoded += "&body=" + Uri.EscapeDataString(NewMessageBox.Text), UnicodeEncoding.Utf8, "application/x-www-form-urlencoded");
-            HttpRequestMessage.Headers.Add("User-Agent", App.CustomUserAgent);
+           _currentChatHeader.SendMessage(NewMessageBox.Text,this);
 
             NewMessageBox.Text = "";
 
-            try
-            {
-                //Send the GET request
-                httpResponse = await httpClient.SendRequestAsync(HttpRequestMessage);
-                httpResponse.EnsureSuccessStatusCode();
-                httpResponseBody = await httpResponse.Content.ReadAsStringAsync();
-                var htmlDoc = new HtmlDocument();
-                htmlDoc.LoadHtml(httpResponseBody);
-                RefreshConversation(null, htmlDoc);
-            }
-            catch (Exception ex)
-            {
-                httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
-            }
+            
 
-            NewMessageBox.Text = "";
         }
 
         private void NewMessageBox_TextChanged(object sender, TextChangedEventArgs e)
