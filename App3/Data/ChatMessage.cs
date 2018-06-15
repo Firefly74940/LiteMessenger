@@ -13,12 +13,14 @@ namespace App3.Data
         Img,
         Link,
     }
+
     public enum MessageSources
     {
         Self,
         Other,
         None,
     }
+
     public class ChatMessage
     {
         public MessageTypes MessageType { get; set; }
