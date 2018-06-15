@@ -16,7 +16,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.Web.Http;
-
+using App3.Data;
 using HtmlAgilityPack;
 
 // Pour plus d'informations sur le modèle d'élément Page vierge, consultez la page https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -43,7 +43,7 @@ namespace App3
                 new Uri("https://mbasic.facebook.com/messages/"));
 
             _skipFrist = true;
-            HttpRequestMessage.Headers.Add("User-Agent", App.CustomUserAgent);
+            HttpRequestMessage.Headers.Add("User-Agent", DataSource.CustomUserAgent);
             LoginView.NavigateWithHttpRequestMessage(HttpRequestMessage);
         }
 
@@ -81,9 +81,9 @@ namespace App3
             Windows.Web.Http.HttpClient httpClient = new Windows.Web.Http.HttpClient();
             HttpRequestMessage HttpRequestMessage =
                 new HttpRequestMessage(HttpMethod.Get,
-                    new Uri(App.requestUri, relativeUri));
+                    new Uri(DataSource.requestUri, relativeUri));
 
-            HttpRequestMessage.Headers.Add("User-Agent", App.CustomUserAgent);
+            HttpRequestMessage.Headers.Add("User-Agent", DataSource.CustomUserAgent);
             try
             {
                 //Send the GET request
@@ -109,8 +109,8 @@ namespace App3
                 if (!_skipFrist)
                 {
                     args.Cancel = true;
-                    App._isLogedIn = true;
-                    App.localSettings.Values["isLogin"] = true;
+                    DataSource.IsLogedIn = true;
+
                     Frame.Navigate(typeof(ChatList), eventToForward);
 
                 }

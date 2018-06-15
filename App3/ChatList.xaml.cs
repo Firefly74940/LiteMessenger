@@ -21,7 +21,7 @@ namespace App3
         public ChatList()
         {
             this.InitializeComponent();
-            listView.ItemsSource = App.Names;
+            listView.ItemsSource = DataSource.Names;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

@@ -1,16 +1,67 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Contacts;
 using Windows.Foundation.Metadata;
+using Windows.Storage;
 using Windows.Web.Http;
 
 namespace App3.Data
 {
    static class DataSource
     {
+
+        public static ObservableCollection<ChatHeader> Names = new ObservableCollection<ChatHeader>();
+      
+        public static Uri requestUri = new Uri("https://mbasic.facebook.com");
+        public const string CustomUserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.2490.71 Safari/537.36";
+
+        private static bool _localSettingsInitialized = false;
+        private static bool _isLogedIn = false;
+        public static bool IsLogedIn
+        {
+            get
+            {
+                if (!_localSettingsInitialized)
+                {
+                    InitLocalSettings();
+                }
+                return _isLogedIn;
+
+            }
+            set
+            {
+                _isLogedIn = value;
+                localSettings.Values["isLogin"] = value;
+            }
+        }
+        private static string _username;
+        public static string Username
+        {
+            get
+            {
+                if (!_localSettingsInitialized)
+                {
+                    InitLocalSettings();
+                }
+
+                return _username;
+
+            }
+            set
+            {
+                _username = value;
+                localSettings.Values["username"] = value;
+            }
+        }
+
+
+
+        public static Windows.Storage.ApplicationDataContainer localSettings;
+
         public static async void RefreshChatList()
         {
 
@@ -22,10 +73,9 @@ namespace App3.Data
 
                 var namelink = profileNode.GetAttributeValue("href", "");
                 int end = namelink.IndexOf('?');
-                if (string.IsNullOrEmpty(App.Username))
+                if (string.IsNullOrEmpty(Username))
                 {
-                    App.Username = namelink.Substring(1, end - 1);
-                    App.localSettings.Values["username"] = App.Username;
+                    Username = namelink.Substring(1, end - 1);
                 }
             }
 
@@ -33,9 +83,9 @@ namespace App3.Data
 
 
             // tag all for potential deletion
-            for (var index = 0; index < App.Names.Count; index++)
+            for (var index = 0; index < Names.Count; index++)
             {
-                App.Names[index].Order = -1;
+                Names[index].Order = -1;
             }
 
             int order = 0;
@@ -58,22 +108,22 @@ namespace App3.Data
             }
 
             //RemoveOthers: 
-            for (var index = 0; index < App.Names.Count; index++)
+            for (var index = 0; index < Names.Count; index++)
             {
-                if (App.Names[index].Order == -1)
+                if (Names[index].Order == -1)
                 {
-                    App.Names.RemoveAt(index);
+                    Names.RemoveAt(index);
                     index--;
                 }
             }
 
-            App.Names.SortSlow((a, b) => { return a.Order.CompareTo(b.Order); });
+            Names.SortSlow((a, b) => { return a.Order.CompareTo(b.Order); });
         }
 
         private static ChatHeader FindOrCreateHeader(string href)
         {
 
-            foreach (var chatHeader in App.Names)
+            foreach (var chatHeader in Names)
             {
                 if (chatHeader.Href == href)
                 {
@@ -82,7 +132,7 @@ namespace App3.Data
             }
 
             var newHeader = new ChatHeader() { Href = href };
-            App.Names.Add(newHeader);
+            Names.Add(newHeader);
             return newHeader;
         }
 
@@ -103,12 +153,11 @@ namespace App3.Data
                 cookieManager.DeleteCookie(cookie);
             }
 
-            App._isLogedIn = false;
-            App.localSettings.Values["isLogin"] = false;
-
-            App.Username = string.Empty;
-            App.localSettings.Values["username"] = string.Empty;
-            App.Names.Clear();
+           IsLogedIn = false;
+ 
+            Username = string.Empty;
+          
+            Names.Clear();
         }
         public static async void SyncContacts()
         {
@@ -141,21 +190,23 @@ namespace App3.Data
 
 
             String appId = "4a6ce7f5-f418-4ba8-8836-c06d77ab735d_g91sr9nghxvmm!App";
-            foreach (var chatHeader in App.Names)
+            foreach (var chatHeader in Names)
             {
                 if (chatHeader.IsGroup)
                     continue;
-                Contact contact = new Contact();
-                contact.FirstName = chatHeader.Name;
-                contact.RemoteId = chatHeader.Href;
+                Contact contact = new Contact
+                {
+                    FirstName = chatHeader.Name,
+                    RemoteId = chatHeader.Href
+                };
                 await contactList.SaveContactAsync(contact);
 
-                ContactAnnotation annotation = new ContactAnnotation();
-                annotation.ContactId = contact.Id;
-                annotation.RemoteId = chatHeader.Href;
-
-                annotation.SupportedOperations = ContactAnnotationOperations.Message;
-
+                ContactAnnotation annotation = new ContactAnnotation
+                {
+                    ContactId = contact.Id,
+                    RemoteId = chatHeader.Href,
+                    SupportedOperations = ContactAnnotationOperations.Message
+                };
 
 
                 if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 5))
@@ -169,6 +220,18 @@ namespace App3.Data
             }
 
 
+        }
+
+        public static void InitLocalSettings()
+        {
+            if(_localSettingsInitialized)return;
+            _localSettingsInitialized = true;
+
+            localSettings = ApplicationData.Current.LocalSettings;
+            if (localSettings.Values.ContainsKey("isLogin"))
+                _isLogedIn = (bool)localSettings.Values["isLogin"];
+            if (localSettings.Values.ContainsKey("username"))
+                Username = (string)localSettings.Values["username"];
         }
     }
 }

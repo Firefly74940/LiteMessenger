@@ -22,13 +22,9 @@ namespace App3
     /// </summary>
     sealed partial class App : Application
     {
-        public static ObservableCollection<ChatHeader> Names = new ObservableCollection<ChatHeader>();
+        
         private ILogger log;
-        public static string Username;
-        public static Uri requestUri = new Uri("https://mbasic.facebook.com");
-        public const string CustomUserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.2490.71 Safari/537.36";
-        public static bool _isLogedIn = false;
-        public static Windows.Storage.ApplicationDataContainer localSettings;
+        
 
         /// <summary>
         /// Initialise l'objet d'application de singleton.  Il s'agit de la première ligne du code créé
@@ -87,7 +83,7 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
                 // Quand la pile de navigation n'est pas restaurée, accédez à la première page,
                 // puis configurez la nouvelle page en transmettant les informations requises en tant que
                 // paramètre
-                if (!_isLogedIn)
+                if (!DataSource.IsLogedIn)
                     rootFrame.Navigate(typeof(MainPage));
                 else
                 {
@@ -149,7 +145,7 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
                     rootFrame = InitFrameLoginAndUserAgentAndBack(e);
                 }
 
-                if (!_isLogedIn)
+                if (!DataSource.IsLogedIn)
                     rootFrame.Navigate(typeof(MainPage));
                 else
                 {
@@ -195,7 +191,7 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
                     // Quand la pile de navigation n'est pas restaurée, accédez à la première page,
                     // puis configurez la nouvelle page en transmettant les informations requises en tant que
                     // paramètre
-                    if (!_isLogedIn)
+                    if (!DataSource.IsLogedIn)
                         rootFrame.Navigate(typeof(MainPage), e.Arguments);
                     else
                         rootFrame.Navigate(typeof(ChatList), e.Arguments);
@@ -209,7 +205,7 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
                     }
                     else
                     {
-                        if (!_isLogedIn)
+                        if (!DataSource.IsLogedIn)
                             rootFrame.Navigate(typeof(MainPage), e.Arguments);
                         else
                             rootFrame.Navigate(typeof(ChatList), e.Arguments);
@@ -238,12 +234,8 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
             // Placez le frame dans la fenêtre active
             Window.Current.Content = rootFrame;
 
-            UserAgent.SetUserAgent(App.CustomUserAgent);
-            localSettings = ApplicationData.Current.LocalSettings;
-            if (localSettings.Values.ContainsKey("isLogin"))
-                App._isLogedIn = (bool)localSettings.Values["isLogin"];
-            if (localSettings.Values.ContainsKey("username"))
-                App.Username = (string)localSettings.Values["username"];
+            UserAgent.SetUserAgent(DataSource.CustomUserAgent);
+            DataSource.InitLocalSettings();
 
             SystemNavigationManager.GetForCurrentView().BackRequested +=
                 App_BackRequested;
