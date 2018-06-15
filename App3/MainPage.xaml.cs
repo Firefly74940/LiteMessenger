@@ -72,37 +72,7 @@ namespace App3
             }
         }
 
-        public static async Task<HtmlDocument> GetHtmlDoc(string relativeUri)
-        {
-            //Send the GET request asynchronously and retrieve the response as a string.
-            Windows.Web.Http.HttpResponseMessage httpResponse = new Windows.Web.Http.HttpResponseMessage();
-            string httpResponseBody = "";
-
-            Windows.Web.Http.HttpClient httpClient = new Windows.Web.Http.HttpClient();
-            HttpRequestMessage HttpRequestMessage =
-                new HttpRequestMessage(HttpMethod.Get,
-                    new Uri(DataSource.requestUri, relativeUri));
-
-            HttpRequestMessage.Headers.Add("User-Agent", DataSource.CustomUserAgent);
-            try
-            {
-                //Send the GET request
-                httpResponse = await httpClient.SendRequestAsync(HttpRequestMessage);
-                httpResponse.EnsureSuccessStatusCode();
-                httpResponseBody = await httpResponse.Content.ReadAsStringAsync();
-            }
-            catch (Exception ex)
-            {
-                httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
-            }
-            var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(httpResponseBody);
-            return htmlDoc;
-        }
-
-
-
-        private void LoginView_NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
+       private void LoginView_NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
         {
             if (args.Uri.ToString().StartsWith("https://mbasic.facebook.com/messages/"))
             {

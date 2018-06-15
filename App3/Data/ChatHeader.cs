@@ -83,7 +83,7 @@ namespace App3.Data
         public async void RefreshConversation(HtmlDocument htmlDoc = null)
         {
             if (htmlDoc == null)
-                htmlDoc = await MainPage.GetHtmlDoc(Href);
+                htmlDoc = await DataSource.GetHtmlDoc(Href);
             Messages.Clear();
 
             GetSubmitForm(htmlDoc);

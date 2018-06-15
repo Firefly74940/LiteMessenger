@@ -8,6 +8,7 @@ using Windows.ApplicationModel.Contacts;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
 using Windows.Web.Http;
+using HtmlAgilityPack;
 
 namespace App3.Data
 {
@@ -65,7 +66,7 @@ namespace App3.Data
         public static async void RefreshChatList()
         {
 
-            var htmlDoc = await MainPage.GetHtmlDoc("/messages/");
+            var htmlDoc = await GetHtmlDoc("/messages/");
 
             {
                 var profileNode = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"header\"]/div/a[2]");
@@ -232,6 +233,73 @@ namespace App3.Data
                 _isLogedIn = (bool)localSettings.Values["isLogin"];
             if (localSettings.Values.ContainsKey("username"))
                 Username = (string)localSettings.Values["username"];
+        }
+
+        public static async Task<HtmlDocument> GetHtmlDoc(string relativeUri)
+        {
+            //Send the GET request asynchronously and retrieve the response as a string.
+            Windows.Web.Http.HttpResponseMessage httpResponse = new Windows.Web.Http.HttpResponseMessage();
+            string httpResponseBody = "";
+
+            Windows.Web.Http.HttpClient httpClient = new Windows.Web.Http.HttpClient();
+            HttpRequestMessage HttpRequestMessage =
+                new HttpRequestMessage(HttpMethod.Get,
+                    new Uri(DataSource.requestUri, relativeUri));
+
+            HttpRequestMessage.Headers.Add("User-Agent", DataSource.CustomUserAgent);
+            try
+            {
+                //Send the GET request
+                httpResponse = await httpClient.SendRequestAsync(HttpRequestMessage);
+                httpResponse.EnsureSuccessStatusCode();
+                httpResponseBody = await httpResponse.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
+            }
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(httpResponseBody);
+            return htmlDoc;
+        }
+
+        public static async Task<string> GetNameFromRemotId(string remotID)
+        {
+            if (string.IsNullOrEmpty(remotID)) return "Unknown";
+            ContactList contactList;
+
+
+            {
+                ContactStore store = await ContactManager.RequestStoreAsync(ContactStoreAccessType.AppContactsReadWrite);
+                IReadOnlyList<ContactList> contactLists = await store.FindContactListsAsync();
+
+                if (contactLists.Count > 0)
+                    contactList = contactLists[0];
+                else return "Unknown";
+
+            }
+
+            Contact contact = await contactList.GetContactFromRemoteIdAsync(remotID);
+
+            if (contact != null)
+                return contact.Name;
+
+            return "Unknown";
+        }
+        public static async Task<string> GetRemoteIdForContactIdAsync(Contact contactId)
+        {
+            ContactStore store = await ContactManager.RequestStoreAsync(ContactStoreAccessType.AppContactsReadWrite);
+            var fullContact = await store.GetContactAsync(contactId.Id);
+            ContactAnnotationStore annotationStore = await ContactManager.RequestAnnotationStoreAsync(ContactAnnotationStoreAccessType.AppAnnotationsReadWrite);
+
+            var contactAnnotations = await annotationStore.FindAnnotationsForContactAsync(fullContact);
+
+            if (contactAnnotations.Count > 0)
+            {
+                return contactAnnotations[0].RemoteId;
+            }
+
+            return string.Empty;
         }
     }
 }

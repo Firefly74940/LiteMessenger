@@ -87,7 +87,7 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
                     rootFrame.Navigate(typeof(MainPage));
                 else
                 {
-                    var name = await GetNameFromRemotId(userID);
+                    var name = await DataSource.GetNameFromRemotId(userID);
                     var header = new ChatHeader()
                     {
                         Href = userID,
@@ -103,35 +103,12 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
             }
         }
 
-        async Task<string> GetNameFromRemotId(string remotID)
-        {
-            if (string.IsNullOrEmpty(remotID)) return "Unknown";
-            ContactList contactList;
-
-
-            {
-                ContactStore store = await ContactManager.RequestStoreAsync(ContactStoreAccessType.AppContactsReadWrite);
-                IReadOnlyList<ContactList> contactLists = await store.FindContactListsAsync();
-
-                if (contactLists.Count > 0)
-                    contactList = contactLists[0];
-                else return "Unknown";
-
-            }
-
-            Contact contact = await contactList.GetContactFromRemoteIdAsync(remotID);
-
-            if (contact != null)
-                return contact.Name;
-
-            return "Unknown";
-        }
-
+      
         async void ActivateForContactPanel(ContactPanelActivatedEventArgs e)
         {
 
 
-            string remoteId = await GetRemoteIdForContactIdAsync(e.Contact);
+            string remoteId = await DataSource.GetRemoteIdForContactIdAsync(e.Contact);
 
             if (string.IsNullOrEmpty(remoteId)) return;
             {
@@ -281,20 +258,6 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
             deferral.Complete();
         }
 
-        public async Task<string> GetRemoteIdForContactIdAsync(Contact contactId)
-        {
-            ContactStore store = await ContactManager.RequestStoreAsync(ContactStoreAccessType.AppContactsReadWrite);
-            var fullContact = await store.GetContactAsync(contactId.Id);
-            ContactAnnotationStore annotationStore = await ContactManager.RequestAnnotationStoreAsync(ContactAnnotationStoreAccessType.AppAnnotationsReadWrite);
-
-            var contactAnnotations = await annotationStore.FindAnnotationsForContactAsync(fullContact);
-
-            if (contactAnnotations.Count > 0)
-            {
-                return contactAnnotations[0].RemoteId;
-            }
-
-            return string.Empty;
-        }
+       
     }
 }
