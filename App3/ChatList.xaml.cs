@@ -64,7 +64,6 @@ namespace App3
 
         private void BarButtonSync_Click(object sender, RoutedEventArgs e)
         {
-           // DataSource.Names.Add(new ChatHeader(){ Order = 4,Name = "2222222"});
             DataSource.SyncContacts();
         }
     }
