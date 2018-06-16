@@ -14,9 +14,11 @@ namespace App3.ViewModels
 
         public int UnreadCount => This.UnreadCount;
 
+        public int Order => This.Order;
+
         public override string ToString() => This.ToString();
 
-        private ObservableCollection<ChatMessageViewModel> _messages;
+        private readonly ObservableCollection<ChatMessageViewModel> _messages;
 
         public ObservableCollection<ChatMessageViewModel> Messages => _messages;
 
@@ -28,6 +30,28 @@ namespace App3.ViewModels
 
         }
 
-       
+
+        public void SendMessage(string text)
+        {
+           This.SendMessage(text);
+        }
+
+        public void RefreshConversation()
+        {
+           This.RefreshConversation();
+          
+        }
+
+        public void AddMessage(ChatMessage chatMessage)
+        {
+           This.Messages.Add(chatMessage);
+        }
+        protected override void OnBasePropertyChanged(object item, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Order")
+            {
+                RaisePropertyChanged("Order");
+            }
+        }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Web.Http;
@@ -11,7 +13,7 @@ using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
 
 namespace App3.Data
 {
-    public class ChatHeader
+    public class ChatHeader : NotificationBase
     {
         public string Name { get; set; }
         public bool IsGroup { get; set; }
@@ -24,11 +26,11 @@ namespace App3.Data
         }
 
         public int Order = -1;
-
+        public int NewOrder = -1;
         private string _action = "";
         private string _formEncoded = "";
 
-        public ObservableCollection<ChatMessage> Messages=new ObservableCollection<ChatMessage>();
+        public readonly ObservableCollection<ChatMessage> Messages=new ObservableCollection<ChatMessage>();
 
         public void GetSubmitForm(HtmlDocument page)
         {
@@ -52,7 +54,7 @@ namespace App3.Data
             }
         }
 
-        public async void SendMessage(string message, ChatPage callback)
+        public async void SendMessage(string message)
         {
             Windows.Web.Http.HttpResponseMessage httpResponse = new Windows.Web.Http.HttpResponseMessage();
             string httpResponseBody = "";

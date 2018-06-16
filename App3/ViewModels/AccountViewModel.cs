@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using App3.Data;
+using Microsoft.Toolkit.Uwp.UI;
 
 namespace App3.ViewModels
 {
@@ -13,7 +14,7 @@ namespace App3.ViewModels
 
         private static AccountViewModel _instance;
 
-        private static AccountViewModel Instance
+        public static AccountViewModel Instance
         {
             get
             {
@@ -29,13 +30,22 @@ namespace App3.ViewModels
             Func<ChatHeader, ChatViewModel> viewModelCreator = model => new ChatViewModel(model);
 
             _chats = new ObservableViewModelCollection<ChatViewModel, ChatHeader>(DataSource.Names, viewModelCreator);
+            _chatsAcv = new AdvancedCollectionView(_chats,true);
+            _chatsAcv.SortDescriptions.Add(new SortDescription("Order", SortDirection.Ascending));
+            _chatsAcv.Filter = x => x is ChatViewModel;
         }
 
         
         private ObservableCollection<ChatViewModel> _chats;
+        private AdvancedCollectionView _chatsAcv;
 
-        public ObservableCollection<ChatViewModel> Chats => _chats;
+        public AdvancedCollectionView Chats => _chatsAcv;
 
-       
+
+        public  void RefreshChatList()
+        {
+            DataSource.RefreshChatList();
+            
+        }
     }
 }

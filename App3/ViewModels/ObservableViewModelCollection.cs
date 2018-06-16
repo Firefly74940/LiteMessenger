@@ -10,13 +10,13 @@ namespace App3.ViewModels
 {
     public class ObservableViewModelCollection<TViewModel, TModel> : ObservableCollection<TViewModel>
     {
-      
+
         private readonly ObservableCollection<TModel> _source;
         private readonly Func<TModel, TViewModel> _viewModelFactory;
 
-        public ObservableViewModelCollection( ObservableCollection<TModel> source,
+        public ObservableViewModelCollection(ObservableCollection<TModel> source,
             Func<TModel, TViewModel> viewModelFactory)
-            : base(source.Select(viewModelFactory))
+            : base(source.Select(viewModelFactory).ToList())
         {
             _source = source;
             _viewModelFactory = viewModelFactory;
@@ -30,63 +30,67 @@ namespace App3.ViewModels
 
         private void OnSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            using (BlockReentrancy())
+            switch (e.Action)
             {
-                switch (e.Action)
-                {
-                    case NotifyCollectionChangedAction.Add:
-                        for (var i = 0; i < e.NewItems.Count; i++)
+                case NotifyCollectionChangedAction.Add:
+                    for (var i = 0; i < e.NewItems.Count; i++)
+                    {
+                        Insert(e.NewStartingIndex + i, CreateViewModel((TModel)e.NewItems[i]));
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Move:
+                    {
+                        var oldIndex = e.OldStartingIndex;
+                        var newIndex = e.NewStartingIndex;
+                        if (e.OldItems.Count == 1)
                         {
-                            Insert(e.NewStartingIndex + i, CreateViewModel((TModel)e.NewItems[i]));
+                            Move(oldIndex, newIndex);
                         }
-                        break;
-                    case NotifyCollectionChangedAction.Move:
+                        else
                         {
-                            var oldIndex = e.OldStartingIndex;
-                            var newIndex = e.NewStartingIndex;
-                            if (e.OldItems.Count == 1)
-                            {
-                                Move(oldIndex, newIndex);
-                            }
-                            else
-                            {
-                                var items = this.Skip(oldIndex).Take(e.OldItems.Count).ToList();
-                                for (var i = 0; i < e.OldItems.Count; i++)
-                                {
-                                    RemoveAt(oldIndex);
-                                }
-                                if (newIndex > oldIndex)
-                                {
-                                    newIndex -= e.OldItems.Count;
-                                }
-                                for (var i = 0; i < items.Count; i++)
-                                {
-                                    Insert(newIndex + i, items[i]);
-                                }
-                            }
-                        }
-                        break;
-                    case NotifyCollectionChangedAction.Remove:
-                        {
+                            var items = this.Skip(oldIndex).Take(e.OldItems.Count).ToList();
                             for (var i = 0; i < e.OldItems.Count; i++)
                             {
-                                RemoveAt(e.OldStartingIndex);
+                                RemoveAt(oldIndex);
+                            }
+                            if (newIndex > oldIndex)
+                            {
+                                newIndex -= e.OldItems.Count;
+                            }
+                            for (var i = 0; i < items.Count; i++)
+                            {
+                                Insert(newIndex + i, items[i]);
                             }
                         }
-                        break;
-                    case NotifyCollectionChangedAction.Replace:
-                        // remove
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    {
                         for (var i = 0; i < e.OldItems.Count; i++)
+                        {
                             RemoveAt(e.OldStartingIndex);
-                        // add
-                        goto case NotifyCollectionChangedAction.Add;
-                    case NotifyCollectionChangedAction.Reset:
-                        Clear();
+                        }
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Replace:
+                    // remove
+                    for (var i = 0; i < e.OldItems.Count; i++)
+                        RemoveAt(e.OldStartingIndex);
+                    // add
+                    goto case NotifyCollectionChangedAction.Add;
+                case NotifyCollectionChangedAction.Reset:
+                    Clear();
+
+                    if (e.NewItems != null)
+                    {
                         foreach (var t in e.NewItems)
                             Add(CreateViewModel((TModel)t));
-                        break;
-                }
+
+                    }
+                    break;
             }
         }
+
+
     }
 }

@@ -104,17 +104,17 @@
     <Compile Include="Data\ChatHeader.cs" />
     <Compile Include="Data\ChatMessage.cs" />
     <Compile Include="Data\DataSource.cs" />
-    <Compile Include="Helpers.cs" />
+    <Compile Include="Helpers\Helpers.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="USerAgent.cs" />
+    <Compile Include="Helpers\UserAgent.cs" />
     <Compile Include="ViewModels\AccountViewModel.cs" />
     <Compile Include="ViewModels\ChatMessageViewModel.cs" />
     <Compile Include="ViewModels\ChatViewModel.cs" />
     <Compile Include="ViewModels\ObservableViewModelCollection.cs" />
-    <Compile Include="ViewModels\ViewModelHelper.cs" />
+    <Compile Include="Helpers\PropertyChangedHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -203,6 +203,12 @@
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.0.6</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.UI">
+      <Version>2.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Animations">
+      <Version>2.1.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

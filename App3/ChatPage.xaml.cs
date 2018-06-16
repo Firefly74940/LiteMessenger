@@ -10,6 +10,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
 using Windows.Web.Http;
 using App3.Data;
+using App3.ViewModels;
 using HtmlAgilityPack;
 
 // Pour plus d'informations sur le modèle d'élément Page vierge, consultez la page https://go.microsoft.com/fwlink/?LinkId=234238
@@ -38,7 +39,7 @@ namespace App3
         //}
         protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
         {
-            var message = item as ChatMessage;
+            var message = item as ChatMessageViewModel;
             if (message == null) return null;
             bool fromSelf = message.MessageSource == MessageSources.Self;
             switch (message.MessageType)
@@ -70,16 +71,18 @@ namespace App3
             this.InitializeComponent();
         }
 
-        private ChatHeader _currentChatHeader;
+        private ChatViewModel _currentChat;
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            var header = e.Parameter as ChatHeader;
-            if (header != null)
+            var chat = e.Parameter as ChatViewModel;
+            if (chat != null)
             {
-                _currentChatHeader = header;
-                _currentChatHeader.RefreshConversation();
-                ChatName.Text = header.Name;
-                listView.ItemsSource = header.Messages;
+                _currentChat = chat;
+                ChatName.Text = _currentChat.Name;
+                listView.ItemsSource = _currentChat.Messages;
+
+                _currentChat.RefreshConversation();
+              
             }
         }
 
@@ -98,10 +101,10 @@ namespace App3
             //      Debug.WriteLine("Element is no longer visible");
 
             //  return;
-            _currentChatHeader.Messages.Add(new ChatMessage() { Message = NewMessageBox.Text, UserID = DataSource.Username, DisplayName = DataSource.Username });
+            _currentChat.AddMessage(new ChatMessage() { Message = NewMessageBox.Text, UserID = DataSource.Username, DisplayName = DataSource.Username });
 
 
-           _currentChatHeader.SendMessage(NewMessageBox.Text,this);
+            _currentChat.SendMessage(NewMessageBox.Text);
 
             NewMessageBox.Text = "";
 

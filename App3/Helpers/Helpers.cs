@@ -22,5 +22,11 @@ namespace App3
         }
     }
 
+    struct SortingData
+    {
+        public int Index;
+        public int Order;
+        public int NewOrder;
+    }
 
 }

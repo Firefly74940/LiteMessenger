@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Contacts;
 using App3.Data;
+using App3.ViewModels;
 using MetroLog;
 using MetroLog.Targets;
 
@@ -95,7 +96,7 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
                         Name = name,
                         UnreadCount = 2
                     };
-                    rootFrame.Navigate(typeof(ChatPage), header);
+                    rootFrame.Navigate(typeof(ChatPage), new ChatViewModel(header));
                 }
 
                 // Vérifiez que la fenêtre actuelle est active
@@ -133,7 +134,7 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
                         Name = e.Contact.Name,
                         UnreadCount = 2
                     };
-                    rootFrame.Navigate(typeof(ChatPage), header);
+                    rootFrame.Navigate(typeof(ChatPage), new ChatViewModel(header));
 
                 }
 
@@ -178,7 +179,7 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
                     if (rootFrame.Content is ChatList)
                     {
                         var chat = rootFrame.Content as ChatList;
-                       DataSource.RefreshChatList();
+                       AccountViewModel.Instance.RefreshChatList();
                     }
                     else
                     {

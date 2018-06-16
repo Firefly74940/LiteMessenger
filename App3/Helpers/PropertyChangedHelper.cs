@@ -6,14 +6,14 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace App3.ViewModels
+namespace App3
 {
     public class NotificationBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
         // SetField (Name, value); // where there is a data member
-        protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] String property
+        public bool SetProperty<T>(ref T field, T value, [CallerMemberName] String property
             = null)
         {
             if (EqualityComparer<T>.Default.Equals(field, value)) return false;
@@ -51,6 +51,17 @@ namespace App3.ViewModels
         public NotificationBase(T thing = null)
         {
             This = (thing == null) ? new T() : thing;
+
+            if (This is INotifyPropertyChanged notif)
+            {
+                notif.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(this.OnBasePropertyChanged);
+            }
         }
+
+        protected virtual void OnBasePropertyChanged(object item, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+
+        }
+
     }
 }

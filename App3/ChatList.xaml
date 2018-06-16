@@ -5,12 +5,14 @@
     xmlns:local="using:App3"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
     mc:Ignorable="d">
-
+  
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <ListView x:Name="listView" Margin="10" ItemClick="listView_ItemClick" IsItemClickEnabled="True">
             <ListView.Resources>
                 <Style x:Key="ListViewStyle1" TargetType="ListView">
+                    
                     <Setter Property="IsTabStop" Value="False"/>
                     <Setter Property="TabNavigation" Value="Once"/>
                     <Setter Property="IsSwipeEnabled" Value="True"/>
@@ -24,7 +26,7 @@
                     <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False"/>
                     <Setter Property="ScrollViewer.BringIntoViewOnFocusChange" Value="True"/>
                     <Setter Property="UseSystemFocusVisuals" Value="True"/>
-           
+
                     <Setter Property="ItemsPanel">
                         <Setter.Value>
                             <ItemsPanelTemplate>
@@ -37,7 +39,9 @@
                             <ControlTemplate TargetType="ListView">
                                 <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
                                     <ScrollViewer x:Name="ScrollViewer" AutomationProperties.AccessibilityView="Raw" BringIntoViewOnFocusChange="{TemplateBinding ScrollViewer.BringIntoViewOnFocusChange}" HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}" IsHorizontalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsHorizontalScrollChainingEnabled}" IsVerticalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsVerticalScrollChainingEnabled}" IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}" IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}" TabNavigation="{TemplateBinding TabNavigation}" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}" ZoomMode="{TemplateBinding ScrollViewer.ZoomMode}">
-                                        <ItemsPresenter FooterTransitions="{TemplateBinding FooterTransitions}" FooterTemplate="{TemplateBinding FooterTemplate}" Footer="{TemplateBinding Footer}" HeaderTemplate="{TemplateBinding HeaderTemplate}" Header="{TemplateBinding Header}" HeaderTransitions="{TemplateBinding HeaderTransitions}" Padding="{TemplateBinding Padding}"/>
+                                        <ItemsPresenter Padding="{TemplateBinding Padding}">
+ 
+                                        </ItemsPresenter>
                                     </ScrollViewer>
                                 </Border>
                             </ControlTemplate>

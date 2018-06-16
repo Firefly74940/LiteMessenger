@@ -8,6 +8,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Windows.Web.Http;
 using App3.Data;
+using App3.ViewModels;
 
 // Pour plus d'informations sur le modèle d'élément Page vierge, consultez la page https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -21,7 +22,7 @@ namespace App3
         public ChatList()
         {
             this.InitializeComponent();
-            listView.ItemsSource = DataSource.Names;
+            listView.ItemsSource = AccountViewModel.Instance.Chats;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -30,14 +31,13 @@ namespace App3
 
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
                 AppViewBackButtonVisibility.Visible;
-            DataSource.RefreshChatList();
+            AccountViewModel.Instance.RefreshChatList();
 
         }
 
         private void listView_ItemClick(object sender, ItemClickEventArgs e)
         {
-            var chat = e.ClickedItem as ChatHeader;
-            if (chat != null)
+            if (e.ClickedItem is ChatViewModel chat)
             {
                 this.Frame.Navigate(typeof(ChatPage), chat);
             }
@@ -64,6 +64,7 @@ namespace App3
 
         private void BarButtonSync_Click(object sender, RoutedEventArgs e)
         {
+           // DataSource.Names.Add(new ChatHeader(){ Order = 4,Name = "2222222"});
             DataSource.SyncContacts();
         }
     }

@@ -12,11 +12,11 @@ using HtmlAgilityPack;
 
 namespace App3.Data
 {
-   static class DataSource
+    static class DataSource
     {
 
         public static ObservableCollection<ChatHeader> Names = new ObservableCollection<ChatHeader>();
-      
+
         public static Uri requestUri = new Uri("https://mbasic.facebook.com");
         public const string CustomUserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.2490.71 Safari/537.36";
 
@@ -86,7 +86,7 @@ namespace App3.Data
             // tag all for potential deletion
             for (var index = 0; index < Names.Count; index++)
             {
-                Names[index].Order = -1;
+                Names[index].NewOrder = -1;
             }
 
             int order = 0;
@@ -103,22 +103,26 @@ namespace App3.Data
                     var header = FindOrCreateHeader(href);
                     header.Name = name;
                     header.UnreadCount = badgeCount;
-                    header.Order = order;
+                    header.NewOrder = order;
                     order++;
                 }
             }
 
-            //RemoveOthers: 
+            //update
             for (var index = 0; index < Names.Count; index++)
             {
-                if (Names[index].Order == -1)
+                if (Names[index].NewOrder == -1)
                 {
                     Names.RemoveAt(index);
                     index--;
                 }
+                else
+                {
+                    Names[index].SetProperty<int>(ref Names[index].Order, Names[index].NewOrder, "Order");
+                }
             }
 
-            Names.SortSlow((a, b) => { return a.Order.CompareTo(b.Order); });
+            // Names.SortSlow((a, b) => { return a.Order.CompareTo(b.Order); });
         }
 
         private static ChatHeader FindOrCreateHeader(string href)
@@ -154,10 +158,10 @@ namespace App3.Data
                 cookieManager.DeleteCookie(cookie);
             }
 
-           IsLogedIn = false;
- 
+            IsLogedIn = false;
+
             Username = string.Empty;
-          
+
             Names.Clear();
         }
         public static async void SyncContacts()
@@ -225,7 +229,7 @@ namespace App3.Data
 
         public static void InitLocalSettings()
         {
-            if(_localSettingsInitialized)return;
+            if (_localSettingsInitialized) return;
             _localSettingsInitialized = true;
 
             localSettings = ApplicationData.Current.LocalSettings;
