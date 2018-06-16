@@ -44,7 +44,8 @@ namespace App3.ViewModels
 
         public  void RefreshChatList()
         {
-            DataSource.RefreshChatList();
+           
+                DataSource.RefreshChatList();
             
         }
     }

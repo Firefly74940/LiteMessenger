@@ -22,6 +22,8 @@ namespace App3.Data
 
         public override string ToString()
         {
+            if (UnreadCount > 0)
+                return $"{Name} ({UnreadCount})";
             return Name;
         }
 

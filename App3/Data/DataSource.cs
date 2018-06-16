@@ -108,21 +108,54 @@ namespace App3.Data
                 }
             }
 
-            //update
+
+            List<SortingData> sortingData = new List<SortingData>();
             for (var index = 0; index < Names.Count; index++)
             {
-                if (Names[index].NewOrder == -1)
+                sortingData.Add(new SortingData() { Order = Names[index].Order, Index = index, NewOrder = Names[index].NewOrder });
+            }
+            sortingData.Sort((p, q) => p.NewOrder.CompareTo(q.NewOrder));
+
+            for (int i = 0; i < sortingData.Count; i++)
+            {
+                var indexInName = sortingData[i].Index;
+                if (sortingData[i].NewOrder == -1)
                 {
-                    Names.RemoveAt(index);
-                    index--;
+                    Names.RemoveAt(indexInName);
+                    for (int j = 0; j < sortingData.Count; j++)
+                    {
+                        //if item was after removed item it's now suposed order is naturally lower 
+                        if (sortingData[i].Order < sortingData[j].Order)
+                        {
+                            sortingData[j].Order -= 1;
+                        }
+
+                        //if item was after removed item it's new index is naturally lower 
+                        if (indexInName < sortingData[j].Index)
+                        {
+                            sortingData[j].Index -= 1;
+                        }
+                    }
                 }
                 else
                 {
-                    Names[index].SetProperty<int>(ref Names[index].Order, Names[index].NewOrder, "Order");
+                    if (sortingData[i].NewOrder == sortingData[i].Order) // allredy at the right place
+                    {
+                        Names[indexInName].Order = sortingData[i].NewOrder;
+                    }
+                    else
+                    {
+                        Names[indexInName].SetProperty<int>(ref Names[indexInName].Order, Names[indexInName].NewOrder, "Order");
+
+                        for (int j = 0; j < sortingData.Count; j++)
+                        {
+                            //if item was before and is now after moved element it now supposed order is higher
+                            if ((sortingData[i].Order > sortingData[j].Order) && (sortingData[i].NewOrder <= sortingData[j].Order))
+                                sortingData[j].Order += 1;
+                        }
+                    }
                 }
             }
-
-            // Names.SortSlow((a, b) => { return a.Order.CompareTo(b.Order); });
         }
 
         private static ChatHeader FindOrCreateHeader(string href)

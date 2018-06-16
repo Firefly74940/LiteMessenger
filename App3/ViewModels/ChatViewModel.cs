@@ -14,6 +14,7 @@ namespace App3.ViewModels
 
         public int UnreadCount => This.UnreadCount;
 
+        public bool HasUnread => UnreadCount > 0;
         public int Order => This.Order;
 
         public override string ToString() => This.ToString();
