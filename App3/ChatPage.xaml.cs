@@ -26,14 +26,16 @@ namespace App3
     {
 
         public DataTemplate InfoMessage { get; set; }
-        public DataTemplate SelfMessage { get; set; }
 
+        public DataTemplate SelfMessage { get; set; }
         public DataTemplate SelfLinkMessage { get; set; }
         public DataTemplate SelfImgMessage { get; set; }
+        public DataTemplate SelfFileMessage { get; set; }
+
         public DataTemplate OtherMessage { get; set; }
         public DataTemplate OtherLinkMessage { get; set; }
-
         public DataTemplate OtherImgMessage { get; set; }
+        public DataTemplate OtherFileMessage { get; set; }
 
         //public DataTemplate ReceivedTemplate
         //{
@@ -42,8 +44,7 @@ namespace App3
         //}
         protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
         {
-            var message = item as ChatMessageViewModel;
-            if (message == null) return null;
+            if (!(item is ChatMessageViewModel message)) return null;
             bool fromSelf = message.MessageSource == MessageSources.Self;
             switch (message.MessageType)
             {
@@ -58,6 +59,8 @@ namespace App3
 
                 case MessageTypes.Link:
                     return fromSelf ? SelfLinkMessage : OtherLinkMessage;
+                case MessageTypes.File:
+                    return fromSelf ? SelfFileMessage : OtherFileMessage;
             }
 
             return InfoMessage;
@@ -73,12 +76,12 @@ namespace App3
         public ChatPage()
         {
             dispatcherTimer = new DispatcherTimer();
-            dispatcherTimer.Tick += dispatcherTimer_Tick;
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            dispatcherTimer.Tick += DispatcherTimer_Tick;
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
             this.InitializeComponent();
         }
 
-        private void dispatcherTimer_Tick(object sender, object e)
+        private void DispatcherTimer_Tick(object sender, object e)
         {
             if (ShouldRefreshOldMessages())
             {
@@ -93,8 +96,7 @@ namespace App3
         private ChatViewModel _currentChat;
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            var chat = e.Parameter as ChatViewModel;
-            if (chat != null)
+            if (e.Parameter is ChatViewModel chat)
             {
                 _currentChat = chat;
                 ChatName.Text = _currentChat.Name;

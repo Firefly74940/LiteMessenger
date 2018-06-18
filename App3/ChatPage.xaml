@@ -28,6 +28,19 @@
             </StackPanel>
         </DataTemplate>
 
+        <DataTemplate x:Key="OtherFileMessageDataTemplate" x:DataType="data:ChatMessage">
+            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="0,7,150,7"  HorizontalAlignment="Left" Padding="7">
+                <TextBlock HorizontalAlignment="Right" TextAlignment="Left" TextWrapping="WrapWholeWords"  >
+                    <Run Text="Download file : "/>
+                    <Hyperlink NavigateUri="{Binding MessageData}" >
+                        <Hyperlink.Inlines>
+                            <Run Text="{Binding Message}" Foreground=" Aqua"/>
+                        </Hyperlink.Inlines>
+                    </Hyperlink>
+                </TextBlock>
+            </StackPanel>
+        </DataTemplate>
+
         <DataTemplate x:Key="OtherImgMessageDataTemplate" x:DataType="data:ChatMessage">
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="0,7,150,7"  HorizontalAlignment="Left" Padding="7">
                 <Image  HorizontalAlignment="Right" Height="100" Width="100">
@@ -62,6 +75,19 @@
             </StackPanel>
         </DataTemplate>
 
+        <DataTemplate x:Key="SelfFileMessageDataTemplate" x:DataType="data:ChatMessage">
+            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="150,7,0,7"  HorizontalAlignment="Right" Padding="7">
+                <TextBlock  HorizontalAlignment="Right" TextAlignment="Right" TextWrapping="WrapWholeWords" >
+                    <Run Text="Download file : "/>
+                    <Hyperlink NavigateUri="{Binding MessageData}" >
+                        <Hyperlink.Inlines>
+                            <Run Text="{Binding Message}"  Foreground=" Aqua" />
+                        </Hyperlink.Inlines>
+                    </Hyperlink>
+                </TextBlock>
+            </StackPanel>
+        </DataTemplate>
+
         <DataTemplate x:Key="SelfImgMessageDataTemplate" x:DataType="data:ChatMessage">
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="150,7,0,7"  HorizontalAlignment="Right" Padding="7">
                 <Image  HorizontalAlignment="Right" Height="100" Width="100">
@@ -92,10 +118,13 @@
             OtherLinkMessage="{StaticResource OtherLinkMessageDataTemplate}"
             SelfLinkMessage="{StaticResource SelfLinkMessageDataTemplate}"   
                                            
+            OtherFileMessage="{StaticResource OtherFileMessageDataTemplate}"
+            SelfFileMessage="{StaticResource SelfFileMessageDataTemplate}"   
+                                           
             OtherImgMessage="{StaticResource OtherImgMessageDataTemplate}"
             SelfImgMessage="{StaticResource SelfImgMessageDataTemplate}"                                           
                                            />
-        
+
         <Style x:Key="ListViewItemStyle1" TargetType="ListViewItem">
             <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
             <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}"/>
@@ -128,17 +157,17 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <TextBlock x:Name="ChatName" TextWrapping="Wrap" Text="TextBox" FontSize="35" Margin="20" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-        
-            <ListView x:Name="listView" IsDoubleTapEnabled="False" IsRightTapEnabled="False" IsTapEnabled="False" ItemTemplateSelector="{StaticResource myMessageDataTemplateSelector}" Margin="0,66,0,62" ManipulationMode="None" ItemContainerStyle="{StaticResource ListViewItemStyle1}">
 
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <!-- Setting VerticalAlignment="Bottom" causes the contents to be bottom-aligned,
+        <ListView x:Name="listView" IsDoubleTapEnabled="False" IsRightTapEnabled="False" IsTapEnabled="False" ItemTemplateSelector="{StaticResource myMessageDataTemplateSelector}" Margin="0,66,0,62" ManipulationMode="None" ItemContainerStyle="{StaticResource ListViewItemStyle1}">
+
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <!-- Setting VerticalAlignment="Bottom" causes the contents to be bottom-aligned,
                          which is appropriate for a chat window but perhaps not for a logging window. -->
-                        <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView" VerticalAlignment="Bottom"/>
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <!--<ListView.ItemTemplate>
+                    <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView" VerticalAlignment="Bottom"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+            <!--<ListView.ItemTemplate>
                     
                     <DataTemplate x:Name="TableDataTemplate" x:DataType="app3:ChatTextSelfMessage">
 
@@ -147,14 +176,14 @@
                     </DataTemplate>
                     
                 </ListView.ItemTemplate>-->
-                <!--<StackPanel>
+            <!--<StackPanel>
                     <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}"  HorizontalAlignment="Right" Padding="7">
                         <TextBlock Text="AJDAJDPOAODJPPJDJPOAJOPD" HorizontalAlignment="Right" Margin="0,0,0,0" TextAlignment="Right" TextWrapping="WrapWholeWords" />
                     </StackPanel>
                 </StackPanel>
                 <ListViewItem Content="ListViewItem"/>-->
-            </ListView>
-        
+        </ListView>
+
         <TextBox x:Name="NewMessageBox" Margin="10,0,80,10" TextWrapping="Wrap"  Height="35" VerticalAlignment="Bottom" TextChanged="NewMessageBox_TextChanged" KeyUp="NewMessageBox_KeyUp"/>
         <Button Name="Send" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="35" HorizontalAlignment="Right" Background="{ThemeResource SystemAccentColorLight1}"  Width="65" Content="&gt;" Click="Send_Click" IsEnabled="False" BorderBrush="{ThemeResource SystemAccentColorDark1}" FocusVisualPrimaryBrush="{ThemeResource SystemAccentColorLight1}" FocusVisualSecondaryBrush="{ThemeResource AccentButtonBorderBrush}" />
 

@@ -18,6 +18,7 @@ namespace App3.Data
         public static ObservableCollection<ChatHeader> Names = new ObservableCollection<ChatHeader>();
 
         public static Uri requestUri = new Uri("https://mbasic.facebook.com");
+        public static string requestUriString ="https://mbasic.facebook.com";
         public const string CustomUserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.2490.71 Safari/537.36";
 
         private static bool _localSettingsInitialized = false;

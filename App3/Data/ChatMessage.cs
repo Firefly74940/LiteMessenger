@@ -12,6 +12,8 @@ namespace App3.Data
         Info,
         Img,
         Link,
+        File,
+        Sticker,
     }
 
     public enum MessageSources
@@ -39,12 +41,16 @@ namespace App3.Data
         public bool Equals(ChatMessage other)
         {
 
+            bool isDataTheSame = MessageData == other.MessageData;
+            if (MessageType == MessageTypes.Link)
+                isDataTheSame = MessageData.Substring(0, MessageData.IndexOf('&')) == 
+                                other.MessageData.Substring(0, other.MessageData.IndexOf('&'));
             if (MessageType == other.MessageType &&
                 MessageSource == other.MessageSource &&
                 DisplayName == other.DisplayName &&
                 UserID == other.UserID &&
                 Message == other.Message &&
-                MessageData == other.MessageData)
+                isDataTheSame)
                 return true;
 
 
