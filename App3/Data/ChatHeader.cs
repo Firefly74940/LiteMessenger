@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Web.Http;
 using HtmlAgilityPack;
@@ -15,6 +16,7 @@ namespace App3.Data
 {
     public class ChatHeader : NotificationBase
     {
+        private bool _refreshInProgress = false;
         public string Name { get; set; }
         public bool IsGroup { get; set; }
         public string Href { get; set; }
@@ -32,7 +34,18 @@ namespace App3.Data
         private string _action = "";
         private string _formEncoded = "";
 
-        public readonly ObservableCollection<ChatMessage> Messages=new ObservableCollection<ChatMessage>();
+
+        public enum RequestType
+        {
+            GetNewMessages,
+            GetOldMessages,
+        }
+
+        private int NewestMessagesIndex = 0;
+        private string NewestMessagesLink = "";
+        private string OlderMessagesLink = "";
+
+        public readonly ObservableCollection<ChatMessage> Messages = new ObservableCollection<ChatMessage>();
 
         public void GetSubmitForm(HtmlDocument page)
         {
@@ -76,7 +89,7 @@ namespace App3.Data
                 httpResponseBody = await httpResponse.Content.ReadAsStringAsync();
                 var htmlDoc = new HtmlDocument();
                 htmlDoc.LoadHtml(httpResponseBody);
-                RefreshConversation(htmlDoc);
+                //RefreshConversation(RequestType.GetNewMessages);
             }
             catch (Exception ex)
             {
@@ -84,13 +97,30 @@ namespace App3.Data
             }
         }
 
-        public async void RefreshConversation(HtmlDocument htmlDoc = null)
-        {
-            if (htmlDoc == null)
-                htmlDoc = await DataSource.GetHtmlDoc(Href);
-            Messages.Clear();
 
+
+        public async void RefreshConversation(RequestType requestType, HtmlDocument htmlDoc = null)
+        {
+            if(_refreshInProgress) return;
+            _refreshInProgress = true;
+            string hrefToLoad = Href;
+            if (requestType == RequestType.GetNewMessages && !string.IsNullOrEmpty(NewestMessagesLink))
+            {
+                hrefToLoad = NewestMessagesLink;
+            }
+            else if (requestType == RequestType.GetOldMessages)
+            {
+                hrefToLoad = OlderMessagesLink;
+            }
+            if (htmlDoc == null)
+                htmlDoc = await DataSource.GetHtmlDoc(hrefToLoad);
+            // Messages.Clear();
+            List<ChatMessage> newMessages = new List<ChatMessage>();
             GetSubmitForm(htmlDoc);
+
+
+
+
             var messagePackNodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"messageGroup\"]/div[2]/div");
             if (messagePackNodes == null)
             {
@@ -100,7 +130,7 @@ namespace App3.Data
                     MessageType = MessageTypes.Info,
                     Message = "Error parsing messages"
                 };
-                Messages.Add(newMessage);
+                newMessages.Add(newMessage);
                 return;
             }
             foreach (var messagePackNode in messagePackNodes)
@@ -176,7 +206,7 @@ namespace App3.Data
                                 {
                                     if (string.Equals(MessageUsername, DataSource.Username))
                                     {
-                                        Messages.Add(new ChatMessage()
+                                        newMessages.Add(new ChatMessage()
                                         {
                                             MessageData = HtmlEntity.DeEntitize(textNode.GetAttributeValue("href", "")),
                                             Message = HtmlEntity.DeEntitize(textNode.InnerText),
@@ -188,7 +218,7 @@ namespace App3.Data
                                     }
                                     else
                                     {
-                                        Messages.Add(new ChatMessage()
+                                        newMessages.Add(new ChatMessage()
                                         {
                                             MessageData = HtmlEntity.DeEntitize(textNode.GetAttributeValue("href", "")),
                                             Message = HtmlEntity.DeEntitize(textNode.InnerText),
@@ -231,7 +261,7 @@ namespace App3.Data
                                 newMessage.Message = HtmlEntity.DeEntitize(buildedMessage);
                                 newMessage.UserID = MessageUsername;
                                 newMessage.DisplayName = MessageDisplayUsername;
-                                Messages.Add(newMessage);
+                                newMessages.Add(newMessage);
 
                             }
                         }
@@ -249,7 +279,7 @@ namespace App3.Data
 
                                     if (string.Equals(MessageUsername, DataSource.Username))
                                     {
-                                        Messages.Add(new ChatMessage()
+                                        newMessages.Add(new ChatMessage()
                                         {
                                             MessageData = HtmlEntity.DeEntitize(userImages[0].GetAttributeValue("href", "")),
                                             Message = HtmlEntity.DeEntitize(userImages[0].InnerText),
@@ -261,7 +291,7 @@ namespace App3.Data
                                     }
                                     else
                                     {
-                                        Messages.Add(new ChatMessage()
+                                        newMessages.Add(new ChatMessage()
                                         {
                                             MessageData = HtmlEntity.DeEntitize(userImages[0].GetAttributeValue("href", "")),
                                             Message = HtmlEntity.DeEntitize(userImages[0].InnerText),
@@ -286,7 +316,7 @@ namespace App3.Data
 
                                         if (string.Equals(MessageUsername, DataSource.Username))
                                         {
-                                            Messages.Add(new ChatMessage()
+                                            newMessages.Add(new ChatMessage()
                                             {
                                                 MessageData = imgSrc,
                                                 Message = HtmlEntity.DeEntitize(otherImage.GetAttributeValue("alt", "")),
@@ -298,7 +328,7 @@ namespace App3.Data
                                         }
                                         else
                                         {
-                                            Messages.Add(new ChatMessage()
+                                            newMessages.Add(new ChatMessage()
                                             {
                                                 MessageData = imgSrc,
                                                 Message = HtmlEntity.DeEntitize(otherImage.GetAttributeValue("alt", "")),
@@ -318,12 +348,92 @@ namespace App3.Data
                 }
                 else if (!string.IsNullOrEmpty(messagePackNode.InnerText))
                 {
-                    Messages.Add(new ChatMessage() { Message = HtmlEntity.DeEntitize(messagePackNode.InnerText), MessageSource = MessageSources.None, MessageType = MessageTypes.Info });
+                    newMessages.Add(new ChatMessage() { Message = HtmlEntity.DeEntitize(messagePackNode.InnerText), MessageSource = MessageSources.None, MessageType = MessageTypes.Info });
                 }
                 //   Names.Add(new ChatHeader() { Name = NameNode.InnerText, Href = NameNode.GetAttributeValue("href", "") });
             }
             //this.Frame.Navigate(typeof(ChatList));
-           
+
+            AddMessages(newMessages, requestType);
+            //
+            // manage link to get new and old messages (at the end so NewestMessagesIndex is correct)
+            //
+            {
+                var linkToOlderMessages = HtmlEntity.DeEntitize(htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"see_older\"]/a").GetAttributeValue("href", ""));
+
+                if (string.IsNullOrEmpty(NewestMessagesLink))
+                {
+                    NewestMessagesLink = linkToOlderMessages.Replace("last_message_timestamp", "first_message_timestamp");
+                    OlderMessagesLink = linkToOlderMessages;
+                }
+
+                if (requestType == RequestType.GetNewMessages)
+                {
+                    string linkToNewerMessages = HtmlEntity.DeEntitize(htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"see_newer\"]/a")?.GetAttributeValue("href", ""));
+                    if (!string.IsNullOrEmpty(linkToNewerMessages))
+                    {
+                        NewestMessagesLink = AdjustTimestamp(linkToNewerMessages);
+                        NewestMessagesIndex = Messages.Count;
+                        //Request new refresh
+                    }
+                }
+
+                if (requestType == RequestType.GetOldMessages)
+                {
+                    OlderMessagesLink = linkToOlderMessages;
+                }
+            }
+
+            _refreshInProgress = false;
+        }
+
+        private string AdjustTimestamp(string linkToNewerMessages)
+        {
+            Match match = Regex.Match(linkToNewerMessages, @"first_message_timestamp=([0-9]+)&",
+                RegexOptions.IgnoreCase);
+
+            // Here we check the Match instance.
+            if (match.Success)
+            {
+                // Finally, we get the Group value and display it.
+                string key = match.Groups[1].Value;
+                long newTimeStamp = long.Parse(key) + 1L;
+
+                return linkToNewerMessages.Replace(key, newTimeStamp.ToString());
+            }
+            else
+            {
+                return linkToNewerMessages; // failed
+            }
+        }
+
+        private void AddMessages(List<ChatMessage> newMessages, RequestType requestType)
+        {
+            if (requestType == RequestType.GetOldMessages)
+            {
+                for (int i = newMessages.Count - 1; i >= 0; i--)
+                {
+                    Messages.Insert(0, newMessages[i]);
+                    NewestMessagesIndex++;
+                }
+            }
+            else if (requestType == RequestType.GetNewMessages)
+            {
+                while (Messages.Count > NewestMessagesIndex)
+                {
+                    Messages.RemoveAt(Messages.Count - 1);
+                }
+
+                for (int i = 0; i < newMessages.Count; i++)
+                {
+                    Messages.Add(newMessages[i]);
+                    //bool shouldAdd = false;
+                    //if (Messages.Count <= NewestMessagesIndex + i)
+                    //{
+
+                    //}
+                }
+            }
         }
     }
 }

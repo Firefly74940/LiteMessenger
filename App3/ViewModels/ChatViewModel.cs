@@ -39,8 +39,12 @@ namespace App3.ViewModels
 
         public void RefreshConversation()
         {
-           This.RefreshConversation();
-          
+           This.RefreshConversation(ChatHeader.RequestType.GetNewMessages);
+        }
+
+        public void RefreshOlderMessages()
+        {
+           This.RefreshConversation(ChatHeader.RequestType.GetOldMessages);
         }
 
         public void AddMessage(ChatMessage chatMessage)

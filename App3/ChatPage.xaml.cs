@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Windows.Foundation;
 using Windows.Storage.Streams;
 using Windows.System;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.Web.Http;
 using App3.Data;
@@ -17,7 +20,7 @@ using HtmlAgilityPack;
 
 namespace App3
 {
-    
+
 
     public class MessageDataTemplateSelector : DataTemplateSelector
     {
@@ -66,9 +69,25 @@ namespace App3
     /// </summary>
     public sealed partial class ChatPage : Page
     {
+        DispatcherTimer dispatcherTimer;
         public ChatPage()
         {
+            dispatcherTimer = new DispatcherTimer();
+            dispatcherTimer.Tick += dispatcherTimer_Tick;
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             this.InitializeComponent();
+        }
+
+        private void dispatcherTimer_Tick(object sender, object e)
+        {
+            if (ShouldRefreshOldMessages())
+            {
+                _currentChat.RefreshOlderMessages();
+            }
+            else
+            {
+                _currentChat.RefreshConversation();
+            }
         }
 
         private ChatViewModel _currentChat;
@@ -82,25 +101,40 @@ namespace App3
                 listView.ItemsSource = _currentChat.Messages;
 
                 _currentChat.RefreshConversation();
-              
+
             }
+            dispatcherTimer.Start();
         }
 
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+            dispatcherTimer.Stop();
+        }
 
-  
+        private int _refreshOldMessagesTwiceInARow = 2;
+        bool ShouldRefreshOldMessages()
+        {
+            var bounds = ApplicationView.GetForCurrentView().VisibleBounds;
+            var firstItem = listView.ContainerFromIndex(0) as ListViewItem;
+            Rect screenBounds = new Rect(0, 0, bounds.Width, bounds.Height);
 
+            var firstitemVisible = (VisualTreeHelper.FindElementsInHostCoordinates(screenBounds, listView).Contains(firstItem));
+            bool shouldRefresh = _refreshOldMessagesTwiceInARow > 0 || firstitemVisible;
+
+            if (firstitemVisible && _refreshOldMessagesTwiceInARow < 6)
+                _refreshOldMessagesTwiceInARow += 3;
+
+            if (_refreshOldMessagesTwiceInARow > 0)
+                _refreshOldMessagesTwiceInARow--;
+            return shouldRefresh;
+            //    Debug.WriteLine("Element is now visible");
+            //else
+            //    Debug.WriteLine("Element is no longer visible");
+        }
         private async void Send_Click(object sender, RoutedEventArgs e)
         {
-            //  var bounds = ApplicationView.GetForCurrentView().VisibleBounds;
-            //var a =  listView.ContainerFromIndex(0) as ListViewItem;
-            //  Rect screenBounds = new Rect(0, 0,bounds.Width, bounds.Height);
 
-            //  if (VisualTreeHelper.FindElementsInHostCoordinates(screenBounds, listView).Contains(a))
-            //      Debug.WriteLine("Element is now visible");
-            //  else
-            //      Debug.WriteLine("Element is no longer visible");
-
-            //  return;
             _currentChat.AddMessage(new ChatMessage() { Message = NewMessageBox.Text, UserID = DataSource.Username, DisplayName = DataSource.Username });
 
 
@@ -125,6 +159,16 @@ namespace App3
                 }
             }
 
+        }
+
+        private void BarButtonRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            _currentChat.RefreshConversation();
+        }
+
+        private void BarButtonGetOlder_Click(object sender, RoutedEventArgs e)
+        {
+            _currentChat.RefreshOlderMessages();
         }
     }
 

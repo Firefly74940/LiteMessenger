@@ -157,5 +157,13 @@
         
         <TextBox x:Name="NewMessageBox" Margin="10,0,80,10" TextWrapping="Wrap"  Height="35" VerticalAlignment="Bottom" TextChanged="NewMessageBox_TextChanged" KeyUp="NewMessageBox_KeyUp"/>
         <Button Name="Send" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="35" HorizontalAlignment="Right" Background="{ThemeResource SystemAccentColorLight1}"  Width="65" Content="&gt;" Click="Send_Click" IsEnabled="False" BorderBrush="{ThemeResource SystemAccentColorDark1}" FocusVisualPrimaryBrush="{ThemeResource SystemAccentColorLight1}" FocusVisualSecondaryBrush="{ThemeResource AccentButtonBorderBrush}" />
+
+        <!--<CommandBar VerticalAlignment="Bottom" RequestedTheme="Dark">
+            <CommandBar.Content>
+                <Grid/>
+            </CommandBar.Content>
+            <AppBarButton x:Name="BarButtonDisconect" Icon="Sync" Label="Disconect"  RequestedTheme="Dark" Click="BarButtonRefresh_Click"/>
+            <AppBarButton x:Name="BarButtonSync" Icon="Clock" Label="SyncContacts" RequestedTheme="Dark" Click="BarButtonGetOlder_Click" />
+        </CommandBar>-->
     </Grid>
 </Page>
