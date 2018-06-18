@@ -50,6 +50,8 @@ namespace App3.Data
         public void GetSubmitForm(HtmlDocument page)
         {
             var form = page.DocumentNode.SelectSingleNode("//*[@id=\"composer_form\"]");
+            if(form == null)
+                return;
             var inputsPost = new List<Tuple<string, string>>();
             _action = form.GetAttributeValue("action", "");
             var inputs = form.Descendants("input");
@@ -104,6 +106,7 @@ namespace App3.Data
             if(_refreshInProgress) return;
             _refreshInProgress = true;
             string hrefToLoad = Href;
+
             if (requestType == RequestType.GetNewMessages && !string.IsNullOrEmpty(NewestMessagesLink))
             {
                 hrefToLoad = NewestMessagesLink;
@@ -419,19 +422,45 @@ namespace App3.Data
             }
             else if (requestType == RequestType.GetNewMessages)
             {
-                while (Messages.Count > NewestMessagesIndex)
-                {
-                    Messages.RemoveAt(Messages.Count - 1);
-                }
+                //while (Messages.Count > NewestMessagesIndex)
+                //{
+                //    Messages.RemoveAt(Messages.Count - 1);
+                //}
+
+                //for (int i = 0; i < newMessages.Count; i++)
+                //{
+                //    Messages.Add(newMessages[i]);
+                //    //bool shouldAdd = false;
+                //    //if (Messages.Count <= NewestMessagesIndex + i)
+                //    //{
+
+                //    //}
+                //}
+
+              
 
                 for (int i = 0; i < newMessages.Count; i++)
                 {
-                    Messages.Add(newMessages[i]);
-                    //bool shouldAdd = false;
-                    //if (Messages.Count <= NewestMessagesIndex + i)
-                    //{
+                   
+                    bool shouldAdd = false;
+                    if (Messages.Count <= NewestMessagesIndex + i)
+                    {
+                        Messages.Add(newMessages[i]);
+                    }
+                    else
+                    {
+                        if (Messages[NewestMessagesIndex + i].Equals(newMessages[i]))continue;
 
-                    //}
+                      
+                        //clear lastest Messages
+                        
+
+                        while (Messages.Count > NewestMessagesIndex + i)
+                        {
+                            Messages.RemoveAt(Messages.Count - 1);
+                        }
+                        Messages.Add(newMessages[i]);
+                    }
                 }
             }
         }

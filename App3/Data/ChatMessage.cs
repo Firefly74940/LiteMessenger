@@ -35,5 +35,20 @@ namespace App3.Data
                 return Message;
             return DisplayName + ": " + Message;
         }
+
+        public bool Equals(ChatMessage other)
+        {
+
+            if (MessageType == other.MessageType &&
+                MessageSource == other.MessageSource &&
+                DisplayName == other.DisplayName &&
+                UserID == other.UserID &&
+                Message == other.Message &&
+                MessageData == other.MessageData)
+                return true;
+
+
+            return false;
+        }
     }
 }
