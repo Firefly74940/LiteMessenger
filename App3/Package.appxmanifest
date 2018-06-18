@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap4="http://schemas.microsoft.com/appx/manifest/uap/windows10/4" xmlns:desktop4="http://schemas.microsoft.com/appx/manifest/desktop/windows10/4" IgnorableNamespaces="uap mp desktop4">
-  <Identity Name="4a6ce7f5-f418-4ba8-8836-c06d77ab735d" Publisher="CN=swat7" Version="1.0.0.0" />
+  <Identity Name="4a6ce7f5-f418-4ba8-8836-c06d77ab735d" Publisher="CN=swat7" Version="0.5.1.0" />
   <mp:PhoneIdentity PhoneProductId="4a6ce7f5-f418-4ba8-8836-c06d77ab735d" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>App3</DisplayName>
+    <DisplayName>MessengerLite</DisplayName>
     <PublisherDisplayName>swat7</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -15,13 +15,15 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="App3.App" desktop4:SupportsMultipleInstances="true">
-      <uap:VisualElements DisplayName="App3" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="App3" BackgroundColor="transparent">
+      <uap:VisualElements DisplayName="Messenger Lite" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="Parser for mbasic facebook" BackgroundColor="transparent">
         <uap:LockScreen Notification="badge" BadgeLogo="Assets\BadgeLogo.png" />
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square310x310Logo="Assets\LargeTile.png" Square71x71Logo="Assets\SmallTile.png">
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
+        <uap4:Extension Category="windows.contactPanel">
+        </uap4:Extension>
         <uap:Extension Category="windows.protocol">
           <uap:Protocol Name="ms-ipmessaging">
             <uap:DisplayName>TestMsgApp</uap:DisplayName>
@@ -44,8 +46,6 @@
             <uap:DataFormat>URI</uap:DataFormat>
           </uap:ShareTarget>
         </uap:Extension>
-        <uap4:Extension Category="windows.contactPanel">
-        </uap4:Extension>
       </Extensions>
     </Application>
   </Applications>
