@@ -70,7 +70,7 @@ namespace App3
     /// <summary>
     /// Une page vide peut être utilisée seule ou constituer une page de destination au sein d'un frame.
     /// </summary>
-    public sealed partial class ChatPage : Page
+    public sealed partial class ChatPage : MessengerLightPage
     {
         DispatcherTimer dispatcherTimer;
         public ChatPage()
@@ -79,6 +79,7 @@ namespace App3
             dispatcherTimer.Tick += DispatcherTimer_Tick;
             dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
             this.InitializeComponent();
+            NoInternetRibon.Visibility = ShouldShowInternetConectivityRibon;
         }
 
         private void DispatcherTimer_Tick(object sender, object e)
@@ -96,6 +97,7 @@ namespace App3
         private ChatViewModel _currentChat;
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            base.OnNavigatedTo(e);
             if (e.Parameter is ChatViewModel chat)
             {
                 _currentChat = chat;
@@ -171,6 +173,12 @@ namespace App3
         private void BarButtonGetOlder_Click(object sender, RoutedEventArgs e)
         {
             _currentChat.RefreshOlderMessages();
+        }
+
+        protected override void OnInternetConnectivityChanged(bool newHasInternet)
+        {
+            base.OnInternetConnectivityChanged(newHasInternet);
+            NoInternetRibon.Visibility = ShouldShowInternetConectivityRibon;
         }
     }
 

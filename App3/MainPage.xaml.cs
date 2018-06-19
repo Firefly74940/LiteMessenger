@@ -27,7 +27,7 @@ namespace App3
     /// Une page vide peut être utilisée seule ou constituer une page de destination au sein d'un frame.
     /// </summary>
 
-    public sealed partial class MainPage : Page
+    public sealed partial class MainPage : MessengerLightPage
     {
         private bool _skipFrist;
         private NavigationEventArgs eventToForward;
@@ -38,19 +38,35 @@ namespace App3
             ShowStatusBar();
 
 
+            LoadPage();
+            NoInternetRibon.Visibility = ShouldShowInternetConectivityRibon;
+        }
+
+        private void LoadPage()
+        {
             HttpRequestMessage HttpRequestMessage =
-            new HttpRequestMessage(HttpMethod.Get,
-                new Uri("https://mbasic.facebook.com/messages/"));
+                new HttpRequestMessage(HttpMethod.Get,
+                    new Uri("https://mbasic.facebook.com/messages/"));
 
             _skipFrist = true;
             HttpRequestMessage.Headers.Add("User-Agent", DataSource.CustomUserAgent);
             LoginView.NavigateWithHttpRequestMessage(HttpRequestMessage);
         }
 
-
+        protected override void OnInternetConnectivityChanged(bool newHasInternet)
+        {
+            base.OnInternetConnectivityChanged(newHasInternet);
+            NoInternetRibon.Visibility = ShouldShowInternetConectivityRibon;
+            if (newHasInternet)
+            {
+                LoadPage();
+            }
+        }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+
+            base.OnNavigatedTo(e);
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
                 AppViewBackButtonVisibility.Visible;
             eventToForward = e;

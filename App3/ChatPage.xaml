@@ -1,4 +1,4 @@
-﻿<Page
+﻿<app3:MessengerLightPage
     x:Class="App3.ChatPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -156,7 +156,8 @@
 
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock x:Name="ChatName" TextWrapping="Wrap" Text="TextBox" FontSize="35" Margin="20" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+
+        <TextBlock x:Name="ChatName" TextWrapping="Wrap" Text="TextBox" FontSize="25" Margin="20" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{ThemeResource SystemControlForegroundAccentBrush}"/>
 
         <ListView x:Name="listView" IsDoubleTapEnabled="False" IsRightTapEnabled="False" IsTapEnabled="False" ItemTemplateSelector="{StaticResource myMessageDataTemplateSelector}" Margin="0,66,0,62" ManipulationMode="None" ItemContainerStyle="{StaticResource ListViewItemStyle1}">
 
@@ -194,5 +195,10 @@
             <AppBarButton x:Name="BarButtonDisconect" Icon="Sync" Label="Disconect"  RequestedTheme="Dark" Click="BarButtonRefresh_Click"/>
             <AppBarButton x:Name="BarButtonSync" Icon="Clock" Label="SyncContacts" RequestedTheme="Dark" Click="BarButtonGetOlder_Click" />
         </CommandBar>-->
+        <local:NoInternetRibon x:Name="NoInternetRibon" Height="27" VerticalAlignment="Top" >
+            <app3:NoInternetRibon.DataContext>
+                <app3:MessengerLightPage/>
+            </app3:NoInternetRibon.DataContext>
+        </local:NoInternetRibon>
     </Grid>
-</Page>
+</app3:MessengerLightPage>

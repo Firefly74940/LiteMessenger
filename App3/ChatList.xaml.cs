@@ -17,16 +17,28 @@ namespace App3
     /// <summary>
     /// Une page vide peut être utilisée seule ou constituer une page de destination au sein d'un frame.
     /// </summary>
-    public sealed partial class ChatList : Page
+    public sealed partial class ChatList : MessengerLightPage
     {
         public ChatList()
         {
             this.InitializeComponent();
             listView.ItemsSource = AccountViewModel.Instance.Chats;
+            NoInternetRibon.Visibility = ShouldShowInternetConectivityRibon;
+        }
+
+        protected override void OnInternetConnectivityChanged(bool newHasInternet)
+        {
+            base.OnInternetConnectivityChanged(newHasInternet);
+            NoInternetRibon.Visibility = ShouldShowInternetConectivityRibon;
+            if (newHasInternet)
+            {
+                AccountViewModel.Instance.RefreshChatList();
+            }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            base.OnNavigatedTo(e);
             Frame.BackStack.Clear();
 
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =

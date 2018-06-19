@@ -1,4 +1,4 @@
-﻿<Page
+﻿<local:MessengerLightPage
     x:Class="App3.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -9,5 +9,10 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <WebView x:Name="LoginView" Margin="10,10,0,0" NavigationStarting="LoginView_NavigationStarting"/>
+        <local:NoInternetRibon x:Name="NoInternetRibon" Height="27" VerticalAlignment="Top" >
+            <local:NoInternetRibon.DataContext>
+                <local:MessengerLightPage/>
+            </local:NoInternetRibon.DataContext>
+        </local:NoInternetRibon>
     </Grid>
-</Page>
+</local:MessengerLightPage>

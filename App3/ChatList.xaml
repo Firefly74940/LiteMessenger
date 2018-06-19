@@ -1,4 +1,4 @@
-﻿<Page
+﻿<local:MessengerLightPage
     x:Class="App3.ChatList"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -61,5 +61,11 @@
             <AppBarButton x:Name="BarButtonSync" Icon="Sync" Label="SyncContacts" RequestedTheme="Dark" Visibility="Collapsed" Click="BarButtonSync_Click" />
 
         </CommandBar>
+        <local:NoInternetRibon x:Name="NoInternetRibon" Height="27" VerticalAlignment="Top" >
+            <local:NoInternetRibon.DataContext>
+                <local:MessengerLightPage/>
+            </local:NoInternetRibon.DataContext>
+        </local:NoInternetRibon>
     </Grid>
-</Page>
+</local:MessengerLightPage>
+

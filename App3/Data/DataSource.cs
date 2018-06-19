@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Contacts;
 using Windows.Foundation.Metadata;
+using Windows.Networking.Connectivity;
 using Windows.Storage;
 using Windows.Web.Http;
 using HtmlAgilityPack;
@@ -18,7 +19,7 @@ namespace App3.Data
         public static ObservableCollection<ChatHeader> Names = new ObservableCollection<ChatHeader>();
 
         public static Uri requestUri = new Uri("https://mbasic.facebook.com");
-        public static string requestUriString ="https://mbasic.facebook.com";
+        public static string requestUriString = "https://mbasic.facebook.com";
         public const string CustomUserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.2490.71 Safari/537.36";
 
         private static bool _localSettingsInitialized = false;
@@ -60,9 +61,9 @@ namespace App3.Data
             }
         }
 
-
-
         public static Windows.Storage.ApplicationDataContainer localSettings;
+
+
 
         public static async void RefreshChatList()
         {
@@ -339,5 +340,33 @@ namespace App3.Data
 
             return string.Empty;
         }
+
+
+
+
+
+        public static void InitSystemHooks()
+        {
+            NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
+            _hasInternet = NetworkInformation.GetInternetConnectionProfile()?.GetNetworkConnectivityLevel() == NetworkConnectivityLevel.InternetAccess;
+        }
+
+        private static void NetworkInformation_NetworkStatusChanged(object sender)
+        {
+            bool newValue = false;
+            newValue = NetworkInformation.GetInternetConnectionProfile()?.GetNetworkConnectivityLevel() == NetworkConnectivityLevel.InternetAccess;
+
+            if (newValue == _hasInternet) return;
+            _hasInternet = newValue;
+            NetworkStatusChanged?.Invoke(newValue);
+        }
+
+        private static bool _hasInternet;
+        public static bool HasInternet
+        {
+            get { return _hasInternet; }
+        }
+        public delegate void NetworkStatusChangedEventHandler(bool newHasInternet);
+        public static event NetworkStatusChangedEventHandler NetworkStatusChanged;
     }
 }

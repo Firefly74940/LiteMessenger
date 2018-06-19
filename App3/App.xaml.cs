@@ -214,7 +214,7 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
 
             UserAgent.SetUserAgent(DataSource.CustomUserAgent);
             DataSource.InitLocalSettings();
-
+            DataSource.InitSystemHooks();
             SystemNavigationManager.GetForCurrentView().BackRequested +=
                 App_BackRequested;
             return rootFrame;
