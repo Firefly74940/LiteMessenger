@@ -80,6 +80,7 @@ namespace App3
             dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
             this.InitializeComponent();
             NoInternetRibon.Visibility = ShouldShowInternetConectivityRibon;
+
         }
 
         private void DispatcherTimer_Tick(object sender, object e)
@@ -105,7 +106,7 @@ namespace App3
                 listView.ItemsSource = _currentChat.Messages;
 
                 _currentChat.RefreshConversation();
-
+                this.Resources["CurrentChat.IsGroup"] = _currentChat.IsGroup ? Visibility.Visible : Visibility.Collapsed;
             }
             dispatcherTimer.Start();
         }

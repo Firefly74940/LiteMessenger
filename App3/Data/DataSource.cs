@@ -232,8 +232,8 @@ namespace App3.Data
             String appId = "4a6ce7f5-f418-4ba8-8836-c06d77ab735d_g91sr9nghxvmm!App";
             foreach (var chatHeader in Names)
             {
-                if (chatHeader.IsGroup)
-                    continue;
+                //if (chatHeader.IsGroup)
+                //    continue;
                 Contact contact = new Contact
                 {
                     FirstName = chatHeader.Name,

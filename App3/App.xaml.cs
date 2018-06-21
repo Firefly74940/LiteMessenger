@@ -92,7 +92,6 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
                     var header = new ChatHeader()
                     {
                         Href = userID,
-                        IsGroup = false,
                         Name = name,
                         UnreadCount = 2
                     };
@@ -130,7 +129,6 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
                     var header = new ChatHeader()
                     {
                         Href = remoteId,
-                        IsGroup = false,
                         Name = e.Contact.Name,
                         UnreadCount = 2
                     };

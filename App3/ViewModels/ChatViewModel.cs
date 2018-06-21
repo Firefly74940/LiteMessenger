@@ -16,6 +16,7 @@ namespace App3.ViewModels
 
         public bool HasUnread => UnreadCount > 0;
         public int Order => This.Order;
+        public bool IsGroup => This.IsGroup;
 
         public override string ToString() => This.ToString();
 

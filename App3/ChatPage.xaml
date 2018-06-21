@@ -1,5 +1,4 @@
 ﻿<app3:MessengerLightPage
-    x:Class="App3.ChatPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:App3"
@@ -7,22 +6,30 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:app3="using:App3"
     xmlns:data="using:App3.Data"
+    xmlns:Converters="using:Microsoft.Toolkit.Uwp.UI.Converters"
+    xmlns:viewModels="using:App3.ViewModels"
+    x:Name="messengerLightPage"
+    x:Class="App3.ChatPage"
     mc:Ignorable="d">
-    <Page.Resources>
+    <app3:MessengerLightPage.Resources>
 
+      
+        <Visibility x:Key="CurrentChat.IsGroup">Collapsed</Visibility>
         <DataTemplate x:Key="OtherTextMessageDataTemplate" x:DataType="data:ChatMessage">
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="0,7,150,7"  HorizontalAlignment="Left" Padding="7">
+                <TextBlock Text="{Binding DisplayName}" HorizontalAlignment="Left" FontSize="10" Foreground="LightGray" TextAlignment="Right" TextWrapping="WrapWholeWords" Visibility="{ThemeResource  CurrentChat.IsGroup}" />
+
                 <TextBlock Text="{Binding Message}" HorizontalAlignment="Right" TextAlignment="Left" TextWrapping="WrapWholeWords" />
             </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="OtherLinkMessageDataTemplate" x:DataType="data:ChatMessage">
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="0,7,150,7"  HorizontalAlignment="Left" Padding="7">
+                <TextBlock Text="{Binding DisplayName}" HorizontalAlignment="Left" FontSize="10" Foreground="LightGray" TextAlignment="Right" TextWrapping="WrapWholeWords" Visibility="{ThemeResource  CurrentChat.IsGroup}" />
+
                 <TextBlock HorizontalAlignment="Right" TextAlignment="Left" TextWrapping="WrapWholeWords"  >
                     <Hyperlink NavigateUri="{Binding MessageData}" >
-                        <Hyperlink.Inlines>
                             <Run Text="{Binding Message}" />
-                        </Hyperlink.Inlines>
                     </Hyperlink>
                 </TextBlock>
             </StackPanel>
@@ -30,12 +37,12 @@
 
         <DataTemplate x:Key="OtherFileMessageDataTemplate" x:DataType="data:ChatMessage">
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="0,7,150,7"  HorizontalAlignment="Left" Padding="7">
+                <TextBlock Text="{Binding DisplayName}" HorizontalAlignment="Left" FontSize="10" Foreground="LightGray" TextAlignment="Right" TextWrapping="WrapWholeWords" Visibility="{ThemeResource  CurrentChat.IsGroup}" />
+
                 <TextBlock HorizontalAlignment="Right" TextAlignment="Left" TextWrapping="WrapWholeWords"  >
                     <Run Text="Download file : "/>
                     <Hyperlink NavigateUri="{Binding MessageData}" >
-                        <Hyperlink.Inlines>
                             <Run Text="{Binding Message}" Foreground=" Aqua"/>
-                        </Hyperlink.Inlines>
                     </Hyperlink>
                 </TextBlock>
             </StackPanel>
@@ -43,6 +50,8 @@
 
         <DataTemplate x:Key="OtherImgMessageDataTemplate" x:DataType="data:ChatMessage">
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="0,7,150,7"  HorizontalAlignment="Left" Padding="7">
+                <TextBlock Text="{Binding DisplayName}" HorizontalAlignment="Left" FontSize="10" Foreground="LightGray" TextAlignment="Right" TextWrapping="WrapWholeWords" Visibility="{ThemeResource  CurrentChat.IsGroup}" />
+
                 <Image  HorizontalAlignment="Right" Height="100" Width="100">
                     <ToolTipService.ToolTip>
                         <TextBlock Text="{Binding Message}"/>
@@ -67,9 +76,7 @@
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="150,7,0,7"  HorizontalAlignment="Right" Padding="7">
                 <TextBlock  HorizontalAlignment="Right" TextAlignment="Right" TextWrapping="WrapWholeWords" >
                 <Hyperlink NavigateUri="{Binding MessageData}" >
-                    <Hyperlink.Inlines>
                         <Run Text="{Binding Message}" />
-                    </Hyperlink.Inlines>
                 </Hyperlink>
                 </TextBlock>
             </StackPanel>
@@ -80,9 +87,7 @@
                 <TextBlock  HorizontalAlignment="Right" TextAlignment="Right" TextWrapping="WrapWholeWords" >
                     <Run Text="Download file : "/>
                     <Hyperlink NavigateUri="{Binding MessageData}" >
-                        <Hyperlink.Inlines>
                             <Run Text="{Binding Message}"  Foreground=" Aqua" />
-                        </Hyperlink.Inlines>
                     </Hyperlink>
                 </TextBlock>
             </StackPanel>
@@ -109,8 +114,8 @@
             </StackPanel>
         </DataTemplate>
 
-        <local:MessageDataTemplateSelector x:Key="myMessageDataTemplateSelector" 
-            InfoMessage="{StaticResource InfoMessageDataTemplate}" 
+        <app3:MessageDataTemplateSelector x:Key="myMessageDataTemplateSelector" 
+            InfoMessage="{StaticResource InfoMessageDataTemplate}"
                                            
             OtherMessage="{StaticResource OtherTextMessageDataTemplate}" 
             SelfMessage="{StaticResource SelfTextMessageDataTemplate}" 
@@ -152,7 +157,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-    </Page.Resources>
+    </app3:MessengerLightPage.Resources>
 
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -186,7 +191,7 @@
         </ListView>
 
         <TextBox x:Name="NewMessageBox" Margin="10,0,80,10" TextWrapping="Wrap"  Height="35" VerticalAlignment="Bottom" TextChanged="NewMessageBox_TextChanged" KeyUp="NewMessageBox_KeyUp"/>
-        <Button Name="Send" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="35" HorizontalAlignment="Right" Background="{ThemeResource SystemAccentColorLight1}"  Width="65" Content="&gt;" Click="Send_Click" IsEnabled="False" BorderBrush="{ThemeResource SystemAccentColorDark1}" FocusVisualPrimaryBrush="{ThemeResource SystemAccentColorLight1}" FocusVisualSecondaryBrush="{ThemeResource AccentButtonBorderBrush}" />
+        <Button x:Name="Send" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="35" HorizontalAlignment="Right" Background="{ThemeResource SystemAccentColorLight1}"  Width="65" Content="&gt;" Click="Send_Click" IsEnabled="False" BorderBrush="{ThemeResource SystemAccentColorDark1}" FocusVisualPrimaryBrush="{ThemeResource SystemAccentColorLight1}" FocusVisualSecondaryBrush="{ThemeResource AccentButtonBorderBrush}" />
 
         <!--<CommandBar VerticalAlignment="Bottom" RequestedTheme="Dark">
             <CommandBar.Content>
@@ -195,10 +200,10 @@
             <AppBarButton x:Name="BarButtonDisconect" Icon="Sync" Label="Disconect"  RequestedTheme="Dark" Click="BarButtonRefresh_Click"/>
             <AppBarButton x:Name="BarButtonSync" Icon="Clock" Label="SyncContacts" RequestedTheme="Dark" Click="BarButtonGetOlder_Click" />
         </CommandBar>-->
-        <local:NoInternetRibon x:Name="NoInternetRibon" Height="27" VerticalAlignment="Top" >
+        <app3:NoInternetRibon x:Name="NoInternetRibon" Height="27" VerticalAlignment="Top" >
             <app3:NoInternetRibon.DataContext>
                 <app3:MessengerLightPage/>
             </app3:NoInternetRibon.DataContext>
-        </local:NoInternetRibon>
+        </app3:NoInternetRibon>
     </Grid>
 </app3:MessengerLightPage>

@@ -19,7 +19,19 @@ namespace App3.Data
         private bool _refreshInProgress = false;
         public string Name { get; set; }
         public bool IsGroup { get; set; }
-        public string Href { get; set; }
+
+        public string Href
+        {
+            get => _href;
+            set
+            {
+                _href = value;
+                IsGroup = _href.Contains("cid.g.");
+            }
+
+
+        }
+
         public int UnreadCount { get; set; }
 
         public override string ToString()
@@ -46,6 +58,7 @@ namespace App3.Data
         private string OlderMessagesLink = "";
 
         public readonly ObservableCollection<ChatMessage> Messages = new ObservableCollection<ChatMessage>();
+        private string _href;
 
         public void GetSubmitForm(HtmlDocument page)
         {
