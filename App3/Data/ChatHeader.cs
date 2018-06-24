@@ -18,8 +18,10 @@ namespace App3.Data
     {
         private bool _refreshInProgress = false;
         public string Name { get; set; }
+        public string MessagePreview { get; set; }
         public bool IsGroup { get; set; }
 
+        private string _href;
         public string Href
         {
             get => _href;
@@ -32,7 +34,12 @@ namespace App3.Data
 
         }
 
-        public int UnreadCount { get; set; }
+        private int _unreadCount;
+        public int UnreadCount
+        {
+            get => _unreadCount;
+            set => SetProperty(ref _unreadCount, value);
+        }
 
         public override string ToString()
         {
@@ -53,12 +60,13 @@ namespace App3.Data
             GetOldMessages,
         }
 
-        private int NewestMessagesIndex = 0;
+        public int NewestMessagesIndex = 0;
         private string NewestMessagesLink = "";
         private string OlderMessagesLink = "";
 
         public readonly ObservableCollection<ChatMessage> Messages = new ObservableCollection<ChatMessage>();
-        private string _href;
+       
+        
 
         public void GetSubmitForm(HtmlDocument page)
         {
@@ -131,6 +139,8 @@ namespace App3.Data
             {
                 hrefToLoad = OlderMessagesLink;
             }
+
+            if(string.IsNullOrEmpty(hrefToLoad)) return; // probably allready have all the new messages 
             if (htmlDoc == null)
                 htmlDoc = await DataSource.GetHtmlDoc(hrefToLoad);
             // Messages.Clear();
@@ -141,15 +151,14 @@ namespace App3.Data
 
 
             var messagePackNodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"messageGroup\"]/div[2]/div");
+
+           
+            // in case of no 'see previous messages'
+            if (messagePackNodes == null)
+                messagePackNodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"messageGroup\"]/div[1]/div");
             if (messagePackNodes == null)
             {
-                var newMessage = new ChatMessage()
-                {
-                    MessageSource = MessageSources.None,
-                    MessageType = MessageTypes.Info,
-                    Message = "Error parsing messages"
-                };
-                newMessages.Add(newMessage);
+                LogErrorParsing();
                 return;
             }
             foreach (var messagePackNode in messagePackNodes)
@@ -356,9 +365,9 @@ namespace App3.Data
             // manage link to get new and old messages (at the end so NewestMessagesIndex is correct)
             //
             {
-                var linkToOlderMessages = HtmlEntity.DeEntitize(htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"see_older\"]/a").GetAttributeValue("href", ""));
+                var linkToOlderMessages = HtmlEntity.DeEntitize(htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"see_older\"]/a")?.GetAttributeValue("href", ""));
 
-                if (string.IsNullOrEmpty(NewestMessagesLink))
+                if (string.IsNullOrEmpty(NewestMessagesLink) && !string.IsNullOrEmpty(linkToOlderMessages))
                 {
                     NewestMessagesLink = linkToOlderMessages.Replace("last_message_timestamp", "first_message_timestamp");
                     OlderMessagesLink = linkToOlderMessages;
@@ -382,6 +391,17 @@ namespace App3.Data
             }
 
             _refreshInProgress = false;
+        }
+
+        private void LogErrorParsing()
+        {
+            var newMessage = new ChatMessage()
+            {
+                MessageSource = MessageSources.None,
+                MessageType = MessageTypes.Info,
+                Message = "Error parsing messages"
+            };
+            Messages.Add(newMessage);
         }
 
         private string AdjustTimestamp(string linkToNewerMessages)
@@ -436,7 +456,7 @@ namespace App3.Data
                 for (int i = 0; i < newMessages.Count; i++)
                 {
 
-                    if (Messages.Count <= NewestMessagesIndex + i)
+                    if ( Messages.Count <= NewestMessagesIndex + i)
                     {
                         Messages.Add(newMessages[i]);
                     }

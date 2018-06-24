@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Contacts;
 using Windows.Foundation.Metadata;
+using Windows.Media.Audio;
 using Windows.Networking.Connectivity;
 using Windows.Storage;
 using Windows.Web.Http;
@@ -101,11 +102,22 @@ namespace App3.Data
                     var split = NameNode.InnerText.Split(new[] { '(', ')' });
                     var name = split[0];
                     int badgeCount = split.Length > 1 ? int.Parse(split[1]) : 0;
+
+                    if (badgeCount == 0)
+                    {
+                        badgeCount = node.GetClasses().Count()>8 ? -1 : 0;// was "cp" now "cc" maybe class count is more concistent ? 
+                    }
+
+
                     var href = NameNode.GetAttributeValue("href", "");
+
+                    var messagePreviewNode = node.SelectSingleNode("tr/td/div/h3[2]");
+
                     var header = FindOrCreateHeader(href);
                     header.Name = name;
                     header.UnreadCount = badgeCount;
                     header.NewOrder = order;
+                    header.MessagePreview = messagePreviewNode.InnerText;
                     order++;
                 }
             }
