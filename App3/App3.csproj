@@ -112,6 +112,7 @@
     <Compile Include="Data\ChatMessage.cs" />
     <Compile Include="Data\DataSource.cs" />
     <Compile Include="Helpers\Helpers.cs" />
+    <Compile Include="Helpers\MultiLinesTextBox.cs" />
     <Compile Include="MessengerLightPage.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>

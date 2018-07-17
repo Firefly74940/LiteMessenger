@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -105,7 +106,7 @@ namespace App3.Data
 
                     if (badgeCount == 0)
                     {
-                        badgeCount = node.GetClasses().Count()>8 ? -1 : 0;// was "cp" now "cc" maybe class count is more concistent ? 
+                        badgeCount = node.GetClasses().Count() > 8 ? -1 : 0;// was "cp" now "cc" maybe class count is more concistent ? 
                     }
 
 
@@ -117,7 +118,7 @@ namespace App3.Data
                     header.Name = name;
                     header.UnreadCount = badgeCount;
                     header.NewOrder = order;
-                    header.MessagePreview = messagePreviewNode.InnerText;
+                    header.MessagePreview = HtmlEntity.DeEntitize(GetTextmessageFromNode(messagePreviewNode.FirstChild));
                     order++;
                 }
             }
@@ -312,6 +313,72 @@ namespace App3.Data
             var htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(httpResponseBody);
             return htmlDoc;
+        }
+
+        public static string GetTextmessageFromNode(HtmlNode node)
+        {
+            string buildedMessage = "";
+
+            foreach (var textNode in node.ChildNodes)
+            {
+                if (textNode.Name == "#text")
+                {
+                    buildedMessage += textNode.InnerText;
+                }
+                else if (textNode.Name == "i")
+                {
+                    var isrc = textNode.GetAttributeValue("style", "");
+                    if (!string.IsNullOrEmpty(isrc))
+                    {
+                        var nameStart = isrc.LastIndexOf('/');
+                        var nameEnd = isrc.LastIndexOf('.');
+
+                        if (nameStart != -1 && nameEnd != -1)
+                        {
+                            var name = isrc.Substring(nameStart + 1, nameEnd - nameStart - 1);
+
+                            var codes = name.Split('_');
+                            foreach (var code in codes)
+                            {
+                                var x = char.ConvertFromUtf32(int.Parse(code, NumberStyles.HexNumber));
+                                buildedMessage += x;
+                            }
+
+                        }
+
+                    }
+                }
+                else if (textNode.Name == "img")
+                {
+                    var isrc = textNode.GetAttributeValue("src", "");
+                    if (!string.IsNullOrEmpty(isrc))
+                    {
+                        var nameStart = isrc.LastIndexOf('/');
+                        var nameEnd = isrc.LastIndexOf('.');
+
+
+                        if (nameStart != -1 && nameEnd != -1)
+                        {
+                            var name = isrc.Substring(nameStart + 1, nameEnd - nameStart - 1);
+
+                            var codes = name.Split('_');
+                            foreach (var code in codes)
+                            {
+                                var x = char.ConvertFromUtf32(int.Parse(code, NumberStyles.HexNumber));
+                                buildedMessage += x;
+                            }
+
+                        }
+                        else
+                        {
+                            //full image ? 
+                        }
+
+                    }
+                }
+            }
+
+            return buildedMessage;
         }
 
         public static async Task<string> GetNameFromRemotId(string remotID)

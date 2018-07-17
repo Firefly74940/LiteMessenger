@@ -216,8 +216,14 @@ namespace App3.Data
                                         if (nameStart != -1 && nameEnd != -1)
                                         {
                                             var name = isrc.Substring(nameStart + 1, nameEnd - nameStart - 1);
-                                            var x = char.ConvertFromUtf32(int.Parse(name, NumberStyles.HexNumber));
-                                            buildedMessage += x;
+
+                                            var codes = name.Split('_');
+                                            foreach (var code in codes)
+                                            {
+                                                var x = char.ConvertFromUtf32(int.Parse(code, NumberStyles.HexNumber));
+                                                buildedMessage += x;
+                                            }
+
                                         }
 
                                     }

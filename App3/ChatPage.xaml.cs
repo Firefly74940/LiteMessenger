@@ -5,6 +5,8 @@ using System.Linq;
 using Windows.Foundation;
 using Windows.Storage.Streams;
 using Windows.System;
+using Windows.System.Profile;
+using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -152,13 +154,18 @@ namespace App3
         private void NewMessageBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             Send.IsEnabled = !string.IsNullOrEmpty(NewMessageBox.Text);
+            NewMessageBox.Height = NewMessageBox.LineCount()>1 ? 60:35 ;
+
         }
 
         private void NewMessageBox_KeyUp(object sender, KeyRoutedEventArgs e)
         {
+            
             if (e.Key == VirtualKey.Enter)
             {
-                if (!string.IsNullOrEmpty(NewMessageBox.Text))
+                bool ctrldown = Window.Current.CoreWindow.GetKeyState(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down) || AnalyticsInfo.VersionInfo.DeviceFamily== "Windows.Mobile";
+
+                if (!string.IsNullOrEmpty(NewMessageBox.Text) && !ctrldown)
                 {
                     Send_Click(null, null);
                 }

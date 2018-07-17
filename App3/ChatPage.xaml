@@ -8,6 +8,7 @@
     xmlns:data="using:App3.Data"
     xmlns:Converters="using:Microsoft.Toolkit.Uwp.UI.Converters"
     xmlns:viewModels="using:App3.ViewModels"
+    xmlns:helpers="using:App3.Helpers"
     x:Name="messengerLightPage"
     x:Class="App3.ChatPage"
     mc:Ignorable="d">
@@ -190,7 +191,7 @@
                 <ListViewItem Content="ListViewItem"/>-->
         </ListView>
 
-        <TextBox x:Name="NewMessageBox" Margin="10,0,80,10" TextWrapping="Wrap"  Height="35" VerticalAlignment="Bottom" TextChanged="NewMessageBox_TextChanged" KeyUp="NewMessageBox_KeyUp"/>
+        <helpers:MultiLinesTextBox x:Name="NewMessageBox" Margin="10,0,80,10" TextWrapping="Wrap"  Height="35" VerticalAlignment="Bottom" TextChanged="NewMessageBox_TextChanged" KeyUp="NewMessageBox_KeyUp" AcceptsReturn="True"/>
         <Button x:Name="Send" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="35" HorizontalAlignment="Right" Background="{ThemeResource SystemAccentColorLight1}"  Width="65" Content="&gt;" Click="Send_Click" IsEnabled="False" BorderBrush="{ThemeResource SystemAccentColorDark1}" FocusVisualPrimaryBrush="{ThemeResource SystemAccentColorLight1}" FocusVisualSecondaryBrush="{ThemeResource AccentButtonBorderBrush}" />
 
         <!--<CommandBar VerticalAlignment="Bottom" RequestedTheme="Dark">
