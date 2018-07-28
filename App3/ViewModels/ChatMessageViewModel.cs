@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using App3.Data;
+﻿using App3.Data;
 
 namespace App3.ViewModels
 {

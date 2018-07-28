@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Contacts;
 using App3.Data;
 using App3.ViewModels;
 using MetroLog;

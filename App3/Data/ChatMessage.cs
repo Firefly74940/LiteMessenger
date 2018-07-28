@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace App3.Data
 {
     public enum MessageTypes
@@ -43,8 +38,22 @@ namespace App3.Data
 
             bool isDataTheSame = MessageData == other.MessageData;
             if (MessageType == MessageTypes.Link)
-                isDataTheSame = MessageData.Substring(0, MessageData.IndexOf('&')) == 
-                                other.MessageData.Substring(0, other.MessageData.IndexOf('&'));
+            {
+                var indexOf1 = MessageData.IndexOf('&');
+                var indexOf2 = other.MessageData.IndexOf('&');
+                if (indexOf1 >= 0 && indexOf2 >= 0)
+                {
+                    if (indexOf1 == indexOf2)
+                    {
+                        isDataTheSame = MessageData.Substring(0, indexOf1) ==
+                                        other.MessageData.Substring(0, indexOf2);
+                    }
+                    else
+                    {
+                        isDataTheSame = false;
+                    }
+                }
+            }
             if (MessageType == other.MessageType &&
                 MessageSource == other.MessageSource &&
                 DisplayName == other.DisplayName &&

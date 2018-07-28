@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Windows.ApplicationModel.Contacts;
-using Windows.Foundation.Metadata;
-using Windows.UI.Core;
+﻿using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Windows.Web.Http;
 using App3.Data;
 using App3.ViewModels;
 
