@@ -13,7 +13,14 @@ namespace App3.Data
     {
         private bool _refreshInProgress = false;
         public string Name { get; set; }
-        public string MessagePreview { get; set; }
+
+        private string _messagePreview;
+        public string MessagePreview
+        {
+            get => _messagePreview;
+            set => SetProperty(ref _messagePreview , value);
+        }
+
         public bool IsGroup { get; set; }
 
         private string _href;
@@ -60,7 +67,6 @@ namespace App3.Data
         private string OlderMessagesLink = "";
 
         public readonly ObservableCollection<ChatMessage> Messages = new ObservableCollection<ChatMessage>();
-
 
 
         public void GetSubmitForm(HtmlDocument page)

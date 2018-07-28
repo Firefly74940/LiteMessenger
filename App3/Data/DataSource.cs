@@ -362,8 +362,17 @@ namespace App3.Data
                             var codes = name.Split('_');
                             foreach (var code in codes)
                             {
-                                var x = char.ConvertFromUtf32(int.Parse(code, NumberStyles.HexNumber));
-                                buildedMessage += x;
+                                try
+                                {
+                                    var utf32 = int.Parse(code, NumberStyles.HexNumber);
+                                    var x = char.ConvertFromUtf32(utf32);
+                                    buildedMessage += x;
+                                }
+                                catch (Exception e)
+                                {
+                                    
+                                }
+                               
                             }
 
                         }

@@ -80,6 +80,10 @@ namespace App3.ViewModels
             {
                 RaisePropertyChanged("Order");
             }
+            if (e.PropertyName == "MessagePreview")
+            {
+                RaisePropertyChanged("MessagePreview");
+            }
             if (e.PropertyName == "UnreadCount")
             {
                 RaisePropertyChanged("HasUnread");
