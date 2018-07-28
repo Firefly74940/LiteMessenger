@@ -60,8 +60,8 @@ namespace App3.Data
         private string OlderMessagesLink = "";
 
         public readonly ObservableCollection<ChatMessage> Messages = new ObservableCollection<ChatMessage>();
-       
-        
+
+
 
         public void GetSubmitForm(HtmlDocument page)
         {
@@ -135,7 +135,11 @@ namespace App3.Data
                 hrefToLoad = OlderMessagesLink;
             }
 
-            if(string.IsNullOrEmpty(hrefToLoad)) return; // probably allready have all the new messages 
+            if (string.IsNullOrEmpty(hrefToLoad))
+            {
+                _refreshInProgress = false;
+                return; // probably allready have all the new messages 
+            }
             if (htmlDoc == null)
                 htmlDoc = await DataSource.GetHtmlDoc(hrefToLoad);
             // Messages.Clear();
@@ -147,13 +151,14 @@ namespace App3.Data
 
             var messagePackNodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"messageGroup\"]/div[2]/div");
 
-           
+
             // in case of no 'see previous messages'
             if (messagePackNodes == null)
                 messagePackNodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"messageGroup\"]/div[1]/div");
             if (messagePackNodes == null)
             {
                 LogErrorParsing();
+                _refreshInProgress = false;
                 return;
             }
             foreach (var messagePackNode in messagePackNodes)
@@ -457,7 +462,7 @@ namespace App3.Data
                 for (int i = 0; i < newMessages.Count; i++)
                 {
 
-                    if ( Messages.Count <= NewestMessagesIndex + i)
+                    if (Messages.Count <= NewestMessagesIndex + i)
                     {
                         Messages.Add(newMessages[i]);
                     }
