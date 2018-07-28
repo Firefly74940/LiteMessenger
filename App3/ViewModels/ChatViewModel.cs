@@ -22,14 +22,27 @@ namespace App3.ViewModels
                 return Name;
             }
         }
+
         public string MessagePreview
         {
             get
             {
                 int max = 65;
-                return This.MessagePreview.Length > max ? (This.MessagePreview.Substring(0,max-3)+"...") : This.MessagePreview;
+                return This.MessagePreview.Length > max
+                    ? (This.MessagePreview.Substring(0, max - 3) + "...")
+                    : This.MessagePreview;
             }
         }
+
+        public int RefreshInterval => This.RefreshInterval;
+
+        public int NextRefreshInXMs
+        {
+            get => This.NextRefreshInXMs;
+            set => This.NextRefreshInXMs = value;
+        }
+
+        public bool RefreshInProgress => This.RefreshInProgress;
 
         public int UnreadCount => This.UnreadCount;
 
@@ -38,7 +51,7 @@ namespace App3.ViewModels
         public bool IsGroup => This.IsGroup;
 
         public FontWeight TitleFontWeightsForView => HasUnread ? FontWeights.Bold : FontWeights.Normal;
-        public SolidColorBrush MessagepreviewColorForView => HasUnread ? new SolidColorBrush(new UISettings().GetColorValue( UIColorType.Accent)) : Application.Current.Resources["SystemControlPageTextBaseMediumBrush"] as SolidColorBrush; 
+        public SolidColorBrush MessagepreviewColorForView => HasUnread ? new SolidColorBrush(new UISettings().GetColorValue(UIColorType.Accent)) : Application.Current.Resources["SystemControlPageTextBaseMediumBrush"] as SolidColorBrush;
 
         public override string ToString() => This.ToString();
 
@@ -51,7 +64,7 @@ namespace App3.ViewModels
             Func<ChatMessage, ChatMessageViewModel> viewModelCreator = model => new ChatMessageViewModel(model);
 
             _messages = new ObservableViewModelCollection<ChatMessageViewModel, ChatMessage>(chat.Messages, viewModelCreator);
-           
+
         }
 
 

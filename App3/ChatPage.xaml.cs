@@ -70,11 +70,12 @@ namespace App3
     public sealed partial class ChatPage : MessengerLightPage
     {
         DispatcherTimer dispatcherTimer;
+
         public ChatPage()
         {
             dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += DispatcherTimer_Tick;
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, Consts.DispatchTimerInterval);
             this.InitializeComponent();
             NoInternetRibon.Visibility = ShouldShowInternetConectivityRibon;
 
@@ -88,7 +89,15 @@ namespace App3
             }
             else
             {
-                _currentChat.RefreshConversation();
+                if (!_currentChat.RefreshInProgress)
+                {
+                    _currentChat.NextRefreshInXMs -= Consts.DispatchTimerInterval;
+                    if (_currentChat.NextRefreshInXMs <= 0)
+                    {
+                        _currentChat.NextRefreshInXMs = _currentChat.RefreshInterval;
+                        _currentChat.RefreshConversation();
+                    }
+                }
             }
         }
 

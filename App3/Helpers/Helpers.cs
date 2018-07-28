@@ -5,7 +5,10 @@ using Windows.UI.Xaml.Controls;
 
 namespace App3
 {
-
+    static class Consts
+    {
+        public const int DispatchTimerInterval = 500;
+    }
     static class Exts
     {
         public static void SortSlow<T>(this ObservableCollection<T> collection, Comparison<T> comparison)

@@ -12,7 +12,12 @@ namespace App3.Data
     public class ChatHeader : NotificationBase
     {
         private bool _refreshInProgress = false;
+        public bool RefreshInProgress => _refreshInProgress;
+        public int RefreshInterval = 500;
+        public int NextRefreshInXMs = 0;
+
         public string Name { get; set; }
+
 
         private string _messagePreview;
         public string MessagePreview
@@ -130,6 +135,7 @@ namespace App3.Data
         {
             if (_refreshInProgress) return;
             _refreshInProgress = true;
+            RefreshInterval = Math.Min(RefreshInterval + 150, 5000);
             string hrefToLoad = Href;
 
             if (requestType == RequestType.GetNewMessages && !string.IsNullOrEmpty(NewestMessagesLink))
@@ -451,10 +457,12 @@ namespace App3.Data
         }
         private void AddMessages(List<ChatMessage> newMessages, RequestType requestType)
         {
+            bool didSomething = false;
             if (requestType == RequestType.GetOldMessages)
             {
-                for (int i = newMessages.Count - 1; i >= 0; i--)
-                {
+               for (int i = newMessages.Count - 1; i >= 0; i--)
+               {
+                   didSomething = true;
                     CheckPreviousMessageOwner(0, newMessages[i]);
                     Messages.Insert(0, newMessages[i]);
                     NewestMessagesIndex++;
@@ -486,6 +494,7 @@ namespace App3.Data
                     {
                         CheckPreviousMessageOwner(Messages.Count, newMessages[i]);
                         Messages.Add(newMessages[i]);
+                        didSomething = true;
                     }
                     else
                     {
@@ -501,9 +510,13 @@ namespace App3.Data
                         }
                         CheckPreviousMessageOwner(Messages.Count, newMessages[i]);
                         Messages.Add(newMessages[i]);
+                        didSomething = true;
                     }
                 }
             }
+
+            if (didSomething)
+                RefreshInterval = 500;
         }
     }
 }
