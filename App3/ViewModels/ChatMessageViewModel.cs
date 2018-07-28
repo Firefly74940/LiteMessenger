@@ -1,4 +1,6 @@
-﻿using App3.Data;
+﻿using System.ComponentModel;
+using Windows.UI.Xaml;
+using App3.Data;
 
 namespace App3.ViewModels
 {
@@ -21,5 +23,29 @@ namespace App3.ViewModels
         public string MessageData => This.MessageData;
 
         public override string ToString() => This.ToString();
+
+        public bool PreviousMessageHasSameSender=> This.PreviousMessageHasSameSender;
+
+        public Thickness Margins
+        {
+            get
+            {
+                int margintop = PreviousMessageHasSameSender ? 0 : 9;
+                int left = MessageSource == MessageSources.Self ? 150 : 0;
+                int right = MessageSource == MessageSources.Self ? 0 : 150;
+
+                return new Thickness(left,margintop,right,3);
+            }
+        }
+
+        protected override void OnBasePropertyChanged(object item, PropertyChangedEventArgs e)
+        {
+            base.OnBasePropertyChanged(item, e);
+            if (e.PropertyName == "PreviousMessageHasSameSender")
+            {
+                RaisePropertyChanged("Margins");
+            }
+            
+        }
     }
 }

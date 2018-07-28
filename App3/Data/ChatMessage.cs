@@ -18,14 +18,23 @@ namespace App3.Data
         None,
     }
 
-    public class ChatMessage
+    public class ChatMessage : NotificationBase
     {
+
         public MessageTypes MessageType { get; set; }
         public MessageSources MessageSource { get; set; }
         public string DisplayName { get; set; }
         public string UserID { get; set; }
         public string Message { get; set; }
         public string MessageData { get; set; }
+
+        private bool _previousMessageHasSameSender;
+        public bool PreviousMessageHasSameSender
+        {
+            get => _previousMessageHasSameSender;
+            set => SetProperty(ref _previousMessageHasSameSender, value);
+        }
+
         public override string ToString()
         {
             if (MessageSource == MessageSources.None)

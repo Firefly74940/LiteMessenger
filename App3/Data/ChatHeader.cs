@@ -436,12 +436,26 @@ namespace App3.Data
             }
         }
 
+        private void CheckPreviousMessageOwner(int selfIndex, ChatMessage message)
+        {
+            if (selfIndex == 0 && Messages.Count>0)
+            {
+                Messages[0].PreviousMessageHasSameSender = Messages[0].UserID == message.UserID;
+            }
+
+            if (selfIndex > 0)
+            {
+                int otherIndex = selfIndex - 1;
+                message.PreviousMessageHasSameSender = Messages[otherIndex].UserID == message.UserID;
+            }
+        }
         private void AddMessages(List<ChatMessage> newMessages, RequestType requestType)
         {
             if (requestType == RequestType.GetOldMessages)
             {
                 for (int i = newMessages.Count - 1; i >= 0; i--)
                 {
+                    CheckPreviousMessageOwner(0, newMessages[i]);
                     Messages.Insert(0, newMessages[i]);
                     NewestMessagesIndex++;
                 }
@@ -470,6 +484,7 @@ namespace App3.Data
 
                     if (Messages.Count <= NewestMessagesIndex + i)
                     {
+                        CheckPreviousMessageOwner(Messages.Count, newMessages[i]);
                         Messages.Add(newMessages[i]);
                     }
                     else
@@ -484,6 +499,7 @@ namespace App3.Data
                         {
                             Messages.RemoveAt(Messages.Count - 1);
                         }
+                        CheckPreviousMessageOwner(Messages.Count, newMessages[i]);
                         Messages.Add(newMessages[i]);
                     }
                 }

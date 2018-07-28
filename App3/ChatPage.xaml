@@ -16,16 +16,16 @@
 
       
         <Visibility x:Key="CurrentChat.IsGroup">Collapsed</Visibility>
-        <DataTemplate x:Key="OtherTextMessageDataTemplate" x:DataType="data:ChatMessage">
-            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="0,7,150,7"  HorizontalAlignment="Left" Padding="7">
+        <DataTemplate x:Key="OtherTextMessageDataTemplate" x:DataType="viewModels:ChatMessageViewModel">
+            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="{Binding Margins}"  HorizontalAlignment="Left" Padding="7">
                 <TextBlock Text="{Binding DisplayName}" HorizontalAlignment="Left" FontSize="10" Foreground="LightGray" TextAlignment="Right" TextWrapping="WrapWholeWords" Visibility="{ThemeResource  CurrentChat.IsGroup}" />
 
                 <TextBlock Text="{Binding Message}" HorizontalAlignment="Right" TextAlignment="Left" TextWrapping="WrapWholeWords" />
             </StackPanel>
         </DataTemplate>
 
-        <DataTemplate x:Key="OtherLinkMessageDataTemplate" x:DataType="data:ChatMessage">
-            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="0,7,150,7"  HorizontalAlignment="Left" Padding="7">
+        <DataTemplate x:Key="OtherLinkMessageDataTemplate" x:DataType="viewModels:ChatMessageViewModel">
+            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="{Binding Margins}"  HorizontalAlignment="Left" Padding="7">
                 <TextBlock Text="{Binding DisplayName}" HorizontalAlignment="Left" FontSize="10" Foreground="LightGray" TextAlignment="Right" TextWrapping="WrapWholeWords" Visibility="{ThemeResource  CurrentChat.IsGroup}" />
 
                 <TextBlock HorizontalAlignment="Right" TextAlignment="Left" TextWrapping="WrapWholeWords"  >
@@ -36,8 +36,8 @@
             </StackPanel>
         </DataTemplate>
 
-        <DataTemplate x:Key="OtherFileMessageDataTemplate" x:DataType="data:ChatMessage">
-            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="0,7,150,7"  HorizontalAlignment="Left" Padding="7">
+        <DataTemplate x:Key="OtherFileMessageDataTemplate" x:DataType="viewModels:ChatMessageViewModel">
+            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="{Binding Margins}"  HorizontalAlignment="Left" Padding="7">
                 <TextBlock Text="{Binding DisplayName}" HorizontalAlignment="Left" FontSize="10" Foreground="LightGray" TextAlignment="Right" TextWrapping="WrapWholeWords" Visibility="{ThemeResource  CurrentChat.IsGroup}" />
 
                 <TextBlock HorizontalAlignment="Right" TextAlignment="Left" TextWrapping="WrapWholeWords"  >
@@ -49,8 +49,8 @@
             </StackPanel>
         </DataTemplate>
 
-        <DataTemplate x:Key="OtherImgMessageDataTemplate" x:DataType="data:ChatMessage">
-            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="0,7,150,7"  HorizontalAlignment="Left" Padding="7">
+        <DataTemplate x:Key="OtherImgMessageDataTemplate" x:DataType="viewModels:ChatMessageViewModel">
+            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="{Binding Margins}"  HorizontalAlignment="Left" Padding="7">
                 <TextBlock Text="{Binding DisplayName}" HorizontalAlignment="Left" FontSize="10" Foreground="LightGray" TextAlignment="Right" TextWrapping="WrapWholeWords" Visibility="{ThemeResource  CurrentChat.IsGroup}" />
 
                 <Image  HorizontalAlignment="Right" Height="100" Width="100">
@@ -67,14 +67,14 @@
 
 
 
-        <DataTemplate x:Key="SelfTextMessageDataTemplate" x:DataType="data:ChatMessage">
-            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="150,7,0,7"  HorizontalAlignment="Right" Padding="7">
+        <DataTemplate x:Key="SelfTextMessageDataTemplate" x:DataType="viewModels:ChatMessageViewModel">
+            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="{Binding Margins}"  HorizontalAlignment="Right" Padding="7">
                 <TextBlock Text="{Binding Message}" HorizontalAlignment="Right" TextAlignment="Right" TextWrapping="WrapWholeWords" />
             </StackPanel>
         </DataTemplate>
 
-        <DataTemplate x:Key="SelfLinkMessageDataTemplate" x:DataType="data:ChatMessage">
-            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="150,7,0,7"  HorizontalAlignment="Right" Padding="7">
+        <DataTemplate x:Key="SelfLinkMessageDataTemplate" x:DataType="viewModels:ChatMessageViewModel">
+            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="{Binding Margins}"  HorizontalAlignment="Right" Padding="7">
                 <TextBlock  HorizontalAlignment="Right" TextAlignment="Right" TextWrapping="WrapWholeWords" >
                 <Hyperlink NavigateUri="{Binding MessageData}" >
                         <Run Text="{Binding Message}" />
@@ -83,8 +83,8 @@
             </StackPanel>
         </DataTemplate>
 
-        <DataTemplate x:Key="SelfFileMessageDataTemplate" x:DataType="data:ChatMessage">
-            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="150,7,0,7"  HorizontalAlignment="Right" Padding="7">
+        <DataTemplate x:Key="SelfFileMessageDataTemplate" x:DataType="viewModels:ChatMessageViewModel">
+            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="{Binding Margins}"  HorizontalAlignment="Right" Padding="7">
                 <TextBlock  HorizontalAlignment="Right" TextAlignment="Right" TextWrapping="WrapWholeWords" >
                     <Run Text="Download file : "/>
                     <Hyperlink NavigateUri="{Binding MessageData}" >
@@ -94,8 +94,8 @@
             </StackPanel>
         </DataTemplate>
 
-        <DataTemplate x:Key="SelfImgMessageDataTemplate" x:DataType="data:ChatMessage">
-            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="150,7,0,7"  HorizontalAlignment="Right" Padding="7">
+        <DataTemplate x:Key="SelfImgMessageDataTemplate" x:DataType="viewModels:ChatMessageViewModel">
+            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}" Margin="{Binding Margins}"  HorizontalAlignment="Right" Padding="7">
                 <Image  HorizontalAlignment="Right" Height="100" Width="100">
                     <ToolTipService.ToolTip>
                         <TextBlock Text="{Binding Message}"/>
@@ -109,7 +109,7 @@
         </DataTemplate>
 
 
-        <DataTemplate x:Key="InfoMessageDataTemplate" x:DataType="data:ChatMessage">
+        <DataTemplate x:Key="InfoMessageDataTemplate" x:DataType="viewModels:ChatMessageViewModel">
             <StackPanel  UseLayoutRounding="True"  Margin="50,7,50,7"  HorizontalAlignment="Right" Padding="7">
                 <TextBlock Text="{Binding Message}" Foreground="#FF5F5F5F" HorizontalAlignment="Center" FocusVisualPrimaryBrush="#FF5F5F5F" TextAlignment="Center" TextWrapping="WrapWholeWords" />
             </StackPanel>
