@@ -87,6 +87,7 @@ namespace App3.ViewModels
                 RaisePropertyChanged("TitleFontWeightsForView");
                 RaisePropertyChanged("MessagepreviewColorForView");
                 RaisePropertyChanged("NameForView");
+                RaisePropertyChanged("MessagePreview");
             }
         }
     }
