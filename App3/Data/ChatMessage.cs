@@ -9,6 +9,7 @@ namespace App3.Data
         Link,
         File,
         Sticker,
+        Photo,
     }
 
     public enum MessageSources
@@ -27,6 +28,7 @@ namespace App3.Data
         public string UserID { get; set; }
         public string Message { get; set; }
         public string MessageData { get; set; }
+        public string MessageAditionalData { get; set; }
 
         private bool _previousMessageHasSameSender;
         public bool PreviousMessageHasSameSender

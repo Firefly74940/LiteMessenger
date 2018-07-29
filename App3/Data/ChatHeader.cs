@@ -303,6 +303,7 @@ namespace App3.Data
                         if (messageNode.LastChild.Name == "div")
                         {
                             var userImages = messageNode.LastChild.SelectNodes("a");
+                            var userManyImages = messageNode.LastChild?.LastChild?.SelectNodes("a");
                             var otherImages = messageNode.LastChild.SelectNodes("img");
                             var files = messageNode.LastChild.SelectNodes("div/div[1]/span/a");
                             if (userImages != null && userImages.Count > 0)
@@ -329,6 +330,43 @@ namespace App3.Data
 
 
                                     #endregion
+                                }
+                                else if (userImages[0].FirstChild.Name == "img")
+                                {
+                                    var imgSrc = HtmlEntity.DeEntitize(userImages[0].FirstChild.GetAttributeValue("src", ""));
+
+                                    newMessages.Add(new ChatMessage()
+                                    {
+                                        MessageAditionalData = HtmlEntity.DeEntitize(userImages[0].GetAttributeValue("href", "")),
+                                        MessageData = imgSrc,
+                                        Message = HtmlEntity.DeEntitize(userImages[0].FirstChild.GetAttributeValue("alt", "")),
+                                        MessageType = MessageTypes.Photo,
+                                        MessageSource = messageSource,
+                                        UserID = messageUsername,
+                                        DisplayName = messageDisplayUsername,
+                                    });
+                                }
+                                
+                            }
+                            else if (userManyImages != null && userManyImages.Count > 0)
+                            {
+                                foreach (var image in userManyImages)
+                                {
+                                    if (image.FirstChild.Name == "img")
+                                    {
+                                        var imgSrc = HtmlEntity.DeEntitize(image.FirstChild.GetAttributeValue("src", ""));
+
+                                        newMessages.Add(new ChatMessage()
+                                        {
+                                            MessageAditionalData = HtmlEntity.DeEntitize(image.GetAttributeValue("href", "")),
+                                            MessageData = imgSrc,
+                                            Message = HtmlEntity.DeEntitize(image.FirstChild.GetAttributeValue("alt", "")),
+                                            MessageType = MessageTypes.Photo,
+                                            MessageSource = messageSource,
+                                            UserID = messageUsername,
+                                            DisplayName = messageDisplayUsername,
+                                        });
+                                    }
                                 }
                             }
                             else if (otherImages != null)
