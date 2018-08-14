@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.System;
 using Windows.System.Profile;
@@ -75,6 +76,8 @@ namespace App3
     {
         DispatcherTimer dispatcherTimer;
 
+        private ChatMessageViewModel _currentFlyoutContext;
+
         public ChatPage()
         {
             dispatcherTimer = new DispatcherTimer();
@@ -113,7 +116,7 @@ namespace App3
             {
                 _currentChat = chat;
                 ChatName.Text = _currentChat.Name;
-                listView.ItemsSource = _currentChat.Messages;
+                ListView.ItemsSource = _currentChat.Messages;
 
                 _currentChat.RefreshConversation();
                 this.Resources["CurrentChat.IsGroup"] = _currentChat.IsGroup ? Visibility.Visible : Visibility.Collapsed;
@@ -131,10 +134,10 @@ namespace App3
         bool ShouldRefreshOldMessages()
         {
             var bounds = ApplicationView.GetForCurrentView().VisibleBounds;
-            var firstItem = listView.ContainerFromIndex(0) as ListViewItem;
+            var firstItem = ListView.ContainerFromIndex(0) as ListViewItem;
             Rect screenBounds = new Rect(0, 0, bounds.Width, bounds.Height);
 
-            var firstitemVisible = (VisualTreeHelper.FindElementsInHostCoordinates(screenBounds, listView).Contains(firstItem));
+            var firstitemVisible = (VisualTreeHelper.FindElementsInHostCoordinates(screenBounds, ListView).Contains(firstItem));
             bool shouldRefresh = _refreshOldMessagesTwiceInARow > 0 || firstitemVisible;
 
             if (firstitemVisible && _refreshOldMessagesTwiceInARow < 6)
@@ -195,6 +198,26 @@ namespace App3
         {
             base.OnInternetConnectivityChanged(newHasInternet);
             NoInternetRibon.Visibility = ShouldShowInternetConectivityRibon;
+        }
+
+      
+
+        private void ListView_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            ListView senderListView = (ListView)sender;
+            listviewMenuFlyout.ShowAt(senderListView, e.GetPosition(senderListView));
+
+            if (e.OriginalSource is FrameworkElement data)
+            {
+                _currentFlyoutContext = data.DataContext as ChatMessageViewModel;
+            }
+        }
+
+        private void Copy_Click(object sender, RoutedEventArgs e)
+        {
+            var dataPackage = new DataPackage();
+            dataPackage.SetText(_currentFlyoutContext.Message);
+            Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
         }
     }
 

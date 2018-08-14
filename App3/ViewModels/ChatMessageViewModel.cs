@@ -30,11 +30,11 @@ namespace App3.ViewModels
         {
             get
             {
-                int margintop = PreviousMessageHasSameSender ? 0 : 9;
+                int margintop = PreviousMessageHasSameSender ? 2 : 6;
                 int left = MessageSource == MessageSources.Self ? 150 : 0;
                 int right = MessageSource == MessageSources.Self ? 0 : 150;
 
-                return new Thickness(left,margintop,right,3);
+                return new Thickness(left,margintop,right, margintop);
             }
         }
 

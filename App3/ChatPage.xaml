@@ -14,10 +14,14 @@
     mc:Ignorable="d">
     <app3:MessengerLightPage.Resources>
 
-
+        <MenuFlyout x:Name="listviewMenuFlyout">
+            <MenuFlyout.Items>
+                <MenuFlyoutItem x:Name="Copy"  Text="Copy" Click="Copy_Click"/>
+            </MenuFlyout.Items>
+        </MenuFlyout>
         <Visibility x:Key="CurrentChat.IsGroup">Collapsed</Visibility>
         <DataTemplate x:Key="OtherTextMessageDataTemplate" x:DataType="viewModels:ChatMessageViewModel">
-            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="{Binding Margins}"  HorizontalAlignment="Left" Padding="7">
+            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="{Binding Margins}"  HorizontalAlignment="Left" Padding="7" >
                 <TextBlock Text="{Binding DisplayName}" HorizontalAlignment="Left" FontSize="10" Foreground="LightGray" TextAlignment="Right" TextWrapping="WrapWholeWords" Visibility="{ThemeResource  CurrentChat.IsGroup}" />
 
                 <TextBlock Text="{Binding Message}" HorizontalAlignment="Right" TextAlignment="Left" TextWrapping="WrapWholeWords" />
@@ -197,7 +201,7 @@
 
         <TextBlock x:Name="ChatName" TextWrapping="Wrap" Text="TextBox" FontSize="25" Margin="20" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{ThemeResource SystemControlForegroundAccentBrush}"/>
 
-        <ListView x:Name="listView" IsDoubleTapEnabled="False" IsRightTapEnabled="False" IsTapEnabled="False" ItemTemplateSelector="{StaticResource myMessageDataTemplateSelector}" Margin="0,66,0,62" ManipulationMode="None" ItemContainerStyle="{StaticResource ListViewItemStyle1}">
+        <ListView x:Name="ListView" IsDoubleTapEnabled="False" IsRightTapEnabled="False" IsTapEnabled="False" ItemTemplateSelector="{StaticResource myMessageDataTemplateSelector}" Margin="0,66,0,62" ManipulationMode="None" ItemContainerStyle="{StaticResource ListViewItemStyle1}" RightTapped="ListView_RightTapped">
 
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
