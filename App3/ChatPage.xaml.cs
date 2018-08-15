@@ -85,7 +85,6 @@ namespace App3
             dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, Consts.DispatchTimerInterval);
             this.InitializeComponent();
             NoInternetRibon.Visibility = ShouldShowInternetConectivityRibon;
-
         }
 
         private void DispatcherTimer_Tick(object sender, object e)
@@ -101,8 +100,15 @@ namespace App3
                     _currentChat.NextRefreshInXMs -= Consts.DispatchTimerInterval;
                     if (_currentChat.NextRefreshInXMs <= 0)
                     {
-                        _currentChat.NextRefreshInXMs = _currentChat.RefreshInterval;
-                        _currentChat.RefreshConversation();
+                       
+                        if (_currentChat.RefreshConversation())
+                        {
+                            _currentChat.NextRefreshInXMs = _currentChat.RefreshInterval;
+                        }
+                        else
+                        {
+                            _currentChat.NextRefreshInXMs = 0;
+                        }
                     }
                 }
             }
@@ -119,6 +125,7 @@ namespace App3
                 ListView.ItemsSource = _currentChat.Messages;
 
                 _currentChat.RefreshConversation();
+                _currentChat.CheckSendingMessages();
                 this.Resources["CurrentChat.IsGroup"] = _currentChat.IsGroup ? Visibility.Visible : Visibility.Collapsed;
             }
             dispatcherTimer.Start();
@@ -152,11 +159,7 @@ namespace App3
         }
         private async void Send_Click(object sender, RoutedEventArgs e)
         {
-
-            _currentChat.AddMessage(new ChatMessage() { Message = NewMessageBox.Text, UserID = DataSource.Username, DisplayName = DataSource.Username });
-
-
-            _currentChat.SendMessage(NewMessageBox.Text);
+            _currentChat.SendMessage(new ChatMessage() { Message = NewMessageBox.Text, UserID = DataSource.Username, DisplayName = DataSource.Username, SendingInProgress = true });
 
             NewMessageBox.Text = "";
 

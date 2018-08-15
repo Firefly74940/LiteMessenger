@@ -12,6 +12,8 @@ namespace App3.Data
     public class ChatHeader : NotificationBase
     {
         private bool _refreshInProgress = false;
+        private bool _sendInProgress = false;
+        private int _sendingMessagesToRemove = 0;
         public bool RefreshInProgress => _refreshInProgress;
         public int RefreshInterval = 500;
         public int NextRefreshInXMs = 0;
@@ -73,6 +75,7 @@ namespace App3.Data
 
         public readonly ObservableCollection<ChatMessage> Messages = new ObservableCollection<ChatMessage>();
 
+        public List<ChatMessage> SendingMessages = new List<ChatMessage>();
 
         public void GetSubmitForm(HtmlDocument page)
         {
@@ -97,9 +100,15 @@ namespace App3.Data
                 }
             }
         }
-
-        public async void SendMessage(string message)
+        public void CheckSendingMessages()
         {
+            if (_sendInProgress || SendingMessages.Count==0) return;
+
+            SendMessage(SendingMessages[0]);
+        }
+        public async void SendMessage(ChatMessage message)
+        {
+            _sendInProgress = true;
             Windows.Web.Http.HttpResponseMessage httpResponse = new Windows.Web.Http.HttpResponseMessage();
             string httpResponseBody = "";
 
@@ -108,25 +117,37 @@ namespace App3.Data
                 new HttpRequestMessage(HttpMethod.Post,
                     new Uri(DataSource.requestUri, _action))
                 {
-                    Content = new HttpStringContent(_formEncoded += "&body=" + Uri.EscapeDataString(message),
+                    Content = new HttpStringContent(_formEncoded += "&body=" + Uri.EscapeDataString(message.Message),
                         UnicodeEncoding.Utf8, "application/x-www-form-urlencoded")
                 };
             httpRequestMessage.Headers.Add("User-Agent", DataSource.CustomUserAgent);
 
+            bool success = false;
             try
             {
                 //Send the GET request
                 httpResponse = await httpClient.SendRequestAsync(httpRequestMessage);
                 httpResponse.EnsureSuccessStatusCode();
-                httpResponseBody = await httpResponse.Content.ReadAsStringAsync();
-                var htmlDoc = new HtmlDocument();
-                htmlDoc.LoadHtml(httpResponseBody);
+                success = true;
+                //httpResponseBody = await httpResponse.Content.ReadAsStringAsync();
+                //var htmlDoc = new HtmlDocument();
+                //htmlDoc.LoadHtml(httpResponseBody);
                 //RefreshConversation(RequestType.GetNewMessages);
             }
             catch (Exception ex)
             {
                 httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
             }
+
+            if (success)
+            {
+                _sendingMessagesToRemove++;
+                SendingMessages.RemoveAt(0);
+            }
+
+            _sendInProgress = false;
+            NextRefreshInXMs = 0;
+            CheckSendingMessages();
         }
 
 
@@ -435,7 +456,7 @@ namespace App3.Data
                     if (!string.IsNullOrEmpty(linkToNewerMessages))
                     {
                         NewestMessagesLink = AdjustTimestamp(linkToNewerMessages);
-                        NewestMessagesIndex = Messages.Count;
+                        NewestMessagesIndex = Messages.Count-SendingMessages.Count-_sendingMessagesToRemove;
                         //Request new refresh
                     }
                 }
@@ -527,11 +548,11 @@ namespace App3.Data
 
                 for (int i = 0; i < newMessages.Count; i++)
                 {
-
-                    if (Messages.Count <= NewestMessagesIndex + i)
+                    var sendingMessagesCount = SendingMessages.Count + _sendingMessagesToRemove;
+                    if ((Messages.Count - sendingMessagesCount) <= NewestMessagesIndex + i)
                     {
-                        CheckPreviousMessageOwner(Messages.Count, newMessages[i]);
-                        Messages.Add(newMessages[i]);
+                        CheckPreviousMessageOwner((Messages.Count - sendingMessagesCount), newMessages[i]);
+                        Messages.Insert((Messages.Count - sendingMessagesCount),newMessages[i]);
                         didSomething = true;
                     }
                     else
@@ -542,19 +563,27 @@ namespace App3.Data
                         //clear lastest Messages
 
 
-                        while (Messages.Count > NewestMessagesIndex + i)
+                        while ((Messages.Count - sendingMessagesCount) > NewestMessagesIndex + i)
                         {
-                            Messages.RemoveAt(Messages.Count - 1);
+                            Messages.RemoveAt((Messages.Count - sendingMessagesCount) - 1);
                         }
-                        CheckPreviousMessageOwner(Messages.Count, newMessages[i]);
-                        Messages.Add(newMessages[i]);
+                        CheckPreviousMessageOwner((Messages.Count - sendingMessagesCount), newMessages[i]);
+                        Messages.Insert((Messages.Count - sendingMessagesCount),newMessages[i]);
                         didSomething = true;
                     }
                 }
             }
 
             if (didSomething)
+            {
                 RefreshInterval = 500;
+                while (_sendingMessagesToRemove>0)
+                {
+                    Messages.RemoveAt(Messages.Count - (SendingMessages.Count+_sendingMessagesToRemove));
+                    _sendingMessagesToRemove--;
+                }
+                
+            }
         }
     }
 }

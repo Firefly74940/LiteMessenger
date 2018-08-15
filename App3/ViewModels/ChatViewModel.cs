@@ -68,14 +68,17 @@ namespace App3.ViewModels
         }
 
 
-        public void SendMessage(string text)
+        public void SendMessage(ChatMessage text)
         {
-            This.SendMessage(text);
+            AddMessageToSend(text);
         }
 
-        public void RefreshConversation()
+        public bool RefreshConversation()
         {
+            if (This.RefreshInProgress) return false;
+
             This.RefreshConversation(ChatHeader.RequestType.GetNewMessages);
+            return true;
         }
 
         public void RefreshOlderMessages()
@@ -83,9 +86,16 @@ namespace App3.ViewModels
             This.RefreshConversation(ChatHeader.RequestType.GetOldMessages);
         }
 
-        public void AddMessage(ChatMessage chatMessage)
+        public void AddMessageToSend(ChatMessage chatMessage)
         {
-            //This.Messages.Add(chatMessage);
+            This.Messages.Add(chatMessage);
+            This.SendingMessages.Add(chatMessage);
+            CheckSendingMessages();
+        }
+
+        public void CheckSendingMessages()
+        {
+            This.CheckSendingMessages();
         }
         protected override void OnBasePropertyChanged(object item, System.ComponentModel.PropertyChangedEventArgs e)
         {
