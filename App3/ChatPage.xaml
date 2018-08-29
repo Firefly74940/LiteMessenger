@@ -11,7 +11,7 @@
     xmlns:helpers="using:App3.Helpers"
     x:Name="messengerLightPage"
     x:Class="App3.ChatPage"
-    mc:Ignorable="d">
+    mc:Ignorable="d" >
     <app3:MessengerLightPage.Resources>
 
         <MenuFlyout x:Name="listviewMenuFlyout">
@@ -34,7 +34,7 @@
 
                 <TextBlock HorizontalAlignment="Right" TextAlignment="Left" TextWrapping="WrapWholeWords"  >
                     <Hyperlink NavigateUri="{Binding MessageData}" >
-                            <Run Text="{Binding Message}" />
+                            <Run Text="{Binding Message}" Foreground="{ThemeResource AccentButtonForeground}" />
                     </Hyperlink>
                 </TextBlock>
             </StackPanel>
@@ -47,7 +47,7 @@
                 <TextBlock HorizontalAlignment="Right" TextAlignment="Left" TextWrapping="WrapWholeWords"  >
                     <Run Text="Download file : "/>
                     <Hyperlink NavigateUri="{Binding MessageData}" >
-                            <Run Text="{Binding Message}" Foreground=" Aqua"/>
+                            <Run Text="{Binding Message}" Foreground="{ThemeResource AccentButtonForeground}"/>
                     </Hyperlink>
                 </TextBlock>
             </StackPanel>
@@ -96,7 +96,7 @@
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="{Binding Margins}"  HorizontalAlignment="Right" Padding="7">
                 <TextBlock  HorizontalAlignment="Right" TextAlignment="Right" TextWrapping="WrapWholeWords" >
                 <Hyperlink NavigateUri="{Binding MessageData}" >
-                        <Run Text="{Binding Message}" />
+                        <Run Text="{Binding Message}" Foreground="{ThemeResource AccentButtonForeground}" />
                 </Hyperlink>
                 </TextBlock>
             </StackPanel>
@@ -107,7 +107,7 @@
                 <TextBlock  HorizontalAlignment="Right" TextAlignment="Right" TextWrapping="WrapWholeWords" >
                     <Run Text="Download file : "/>
                     <Hyperlink NavigateUri="{Binding MessageData}" >
-                            <Run Text="{Binding Message}"  Foreground=" Aqua" />
+                            <Run Text="{Binding Message}"  Foreground="{ThemeResource AccentButtonForeground}" />
                     </Hyperlink>
                 </TextBlock>
             </StackPanel>
@@ -199,7 +199,7 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-        <TextBlock x:Name="ChatName" TextWrapping="Wrap" Text="TextBox" FontSize="25" Margin="20" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{ThemeResource SystemControlForegroundAccentBrush}"/>
+        <TextBlock x:Name="ChatName" TextWrapping="Wrap" Text="TextBox" FontSize="18" Margin="20" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{ThemeResource SystemControlForegroundAccentBrush}"/>
 
         <ListView x:Name="ListView" IsDoubleTapEnabled="False" IsRightTapEnabled="False" IsTapEnabled="False" ItemTemplateSelector="{StaticResource myMessageDataTemplateSelector}" Margin="0,66,0,62" ManipulationMode="None" ItemContainerStyle="{StaticResource ListViewItemStyle1}" RightTapped="ListView_RightTapped">
 
@@ -237,10 +237,14 @@
             <AppBarButton x:Name="BarButtonDisconect" Icon="Sync" Label="Disconect"  RequestedTheme="Dark" Click="BarButtonRefresh_Click"/>
             <AppBarButton x:Name="BarButtonSync" Icon="Clock" Label="SyncContacts" RequestedTheme="Dark" Click="BarButtonGetOlder_Click" />
         </CommandBar>-->
+        <app3:WebPopUp x:Name="WebPopUp" Visibility="Collapsed">
+
+        </app3:WebPopUp>
         <app3:NoInternetRibon x:Name="NoInternetRibon" Height="27" VerticalAlignment="Top" >
             <app3:NoInternetRibon.DataContext>
                 <app3:MessengerLightPage/>
             </app3:NoInternetRibon.DataContext>
         </app3:NoInternetRibon>
+
     </Grid>
 </app3:MessengerLightPage>

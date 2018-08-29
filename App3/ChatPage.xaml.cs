@@ -129,6 +129,8 @@ namespace App3
                 this.Resources["CurrentChat.IsGroup"] = _currentChat.IsGroup ? Visibility.Visible : Visibility.Collapsed;
             }
             dispatcherTimer.Start();
+
+            WebPopUp.RequestPage("http://www.google.fr");
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
