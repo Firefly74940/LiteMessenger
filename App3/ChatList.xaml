@@ -72,10 +72,13 @@
         </ListView>
         <CommandBar VerticalAlignment="Bottom" RequestedTheme="Dark" Opening="CommandBar_Opening" Closing="CommandBar_Closing" ClosedDisplayMode="Minimal" >
             <CommandBar.Content>
-                <Grid/>
+                <Grid>
+                    <AppBarButton x:Name="BarButtonAddConv" Icon="Add" Label="New Conv" RequestedTheme="Dark" Visibility="Visible" Click="BarButtonSync_Click" />
+                </Grid>
             </CommandBar.Content>
             <AppBarButton x:Name="BarButtonDisconect" Icon="Cancel" Label="Disconect"  RequestedTheme="Dark" Visibility="Collapsed" Click="BarButtonDisconect_Click"/>
             <AppBarButton x:Name="BarButtonSync" Icon="Sync" Label="SyncContacts" RequestedTheme="Dark" Visibility="Collapsed" Click="BarButtonSync_Click" />
+            
 
         </CommandBar>
         <local:NoInternetRibon x:Name="NoInternetRibon" Height="27" VerticalAlignment="Top" >
