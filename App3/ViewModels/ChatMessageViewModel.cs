@@ -21,6 +21,7 @@ namespace App3.ViewModels
         public string Message => This.Message;
 
         public string MessageData => This.MessageData;
+        public string MessageAditionalData => This.MessageAditionalData;
 
         public override string ToString() => This.ToString();
 

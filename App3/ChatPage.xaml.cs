@@ -130,7 +130,7 @@ namespace App3
             }
             dispatcherTimer.Start();
 
-            WebPopUp.RequestPage("http://www.google.fr");
+            //WebPopUp.RequestPage("http://www.google.fr");
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -223,6 +223,18 @@ namespace App3
             var dataPackage = new DataPackage();
             dataPackage.SetText(_currentFlyoutContext.Message);
             Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
+        }
+
+        private void Image_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (sender is FrameworkElement fElem)
+            {
+                if (fElem.DataContext is ChatMessageViewModel message)
+                {
+                    if(message.MessageType==MessageTypes.Photo && !string.IsNullOrEmpty(message.MessageAditionalData))
+                        WebPopUp.RequestPage(DataSource.requestUriString+message.MessageAditionalData);
+                }
+            }
         }
     }
 

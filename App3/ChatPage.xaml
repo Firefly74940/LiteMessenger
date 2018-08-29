@@ -72,7 +72,7 @@
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="{Binding Margins}"  HorizontalAlignment="Left" Padding="7">
                 <TextBlock Text="{Binding DisplayName}" HorizontalAlignment="Left" FontSize="10" Foreground="LightGray" TextAlignment="Right" TextWrapping="WrapWholeWords" Visibility="{ThemeResource  CurrentChat.IsGroup}" />
 
-                <Image  HorizontalAlignment="Right" MaxHeight="250" MaxWidth="250">
+                <Image  HorizontalAlignment="Right" MaxHeight="250" MaxWidth="250" Tapped="Image_Tapped">
                     <ToolTipService.ToolTip>
                         <TextBlock Text="{Binding Message}"/>
                     </ToolTipService.ToolTip>
@@ -129,7 +129,7 @@
 
         <DataTemplate x:Key="SelfPhotoMessageDataTemplate" x:DataType="viewModels:ChatMessageViewModel">
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}" Margin="{Binding Margins}"  HorizontalAlignment="Right" Padding="7">
-                <Image  HorizontalAlignment="Right" MaxHeight="250" MaxWidth="250">
+                <Image  HorizontalAlignment="Right" MaxHeight="250" MaxWidth="250" Tapped="Image_Tapped" >
                     <ToolTipService.ToolTip>
                         <TextBlock Text="{Binding Message}"/>
                     </ToolTipService.ToolTip>

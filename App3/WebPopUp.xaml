@@ -6,10 +6,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-
+   
     <Grid Background="#7F000000">
-        <WebView x:Name="WebView" Margin="20"/>
-        <Button x:Name="Close" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Background="#7F000000" Click="Close_Click">
+        <WebView x:Name="WebView" Margin="20" DOMContentLoaded="WebView_DOMContentLoaded"/>
+        <Button x:Name="Close" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top"  Background="#7F000000" Click="Close_Click">
             <StackPanel>
                 <SymbolIcon Symbol="Cancel" />
             </StackPanel>
@@ -19,8 +19,18 @@
                 <SymbolIcon Symbol="Refresh" />
             </StackPanel>
         </Button>
-       
-        
-        
+        <Button x:Name="Save" HorizontalAlignment="Right" Margin="0,10,110,0" VerticalAlignment="Top" Background="#7F000000" Visibility="Collapsed" Click="Save_Click">
+            <StackPanel>
+                <SymbolIcon Symbol="Save" />
+            </StackPanel>
+        </Button>
+
+            <StackPanel x:Name="Saved" VerticalAlignment="Top" Background="#7F000000"  HorizontalAlignment="Right" Margin="0,10,110,0" Visibility="Collapsed">
+                <SymbolIcon Symbol="Accept" Height="32" Width="40" />
+            </StackPanel>
+
+
+
+
     </Grid>
 </UserControl>
