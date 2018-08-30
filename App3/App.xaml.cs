@@ -221,11 +221,22 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
 
             // Navigate back if possible, and if the event has not 
             // already been handled .
-            if (rootFrame.CanGoBack && e.Handled == false)
+            if (!e.Handled)
+            {
+                if (rootFrame.Content is MessengerLightPage page)
+                {
+                    if (page.OnBackPressed()) // if page has self back button handled
+                    {
+                        e.Handled = true;
+                    }
+                }
+            }
+            if (rootFrame.CanGoBack && !e.Handled)
             {
                 e.Handled = true;
                 rootFrame.GoBack();
             }
+
         }
 
         /// <summary>

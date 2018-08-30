@@ -30,7 +30,16 @@ namespace App3
                 AccountViewModel.Instance.RefreshChatList();
             }
         }
+        public override bool OnBackPressed()
+        {
+            if (WebPopUp.Visibility == Visibility.Visible)
+            {
+                WebPopUp.HidePopUp();
+                return true;
+            }
 
+            return false;
+        }
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);

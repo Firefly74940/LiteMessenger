@@ -31,6 +31,11 @@ namespace App3
 
         private void Close_Click(object sender, RoutedEventArgs e)
         {
+            HidePopUp();
+        }
+
+        public void HidePopUp()
+        {
             this.Visibility = Visibility.Collapsed;
             WebView.Navigate(new Uri("about:blank"));
         }

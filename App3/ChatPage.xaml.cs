@@ -143,6 +143,21 @@ namespace App3
             dispatcherTimer.Stop();
         }
 
+        public override bool OnBackPressed()
+        {
+            if (WebPopUp.Visibility == Visibility.Visible)
+            {
+                WebPopUp.HidePopUp();
+                return true;
+            }
+            else if (PlayerPopUp.Visibility == Visibility.Visible)
+            {
+                PlayerPopUp.HidePopUp();
+                return true;
+            }
+
+            return false;
+        }
         private int _refreshOldMessagesTwiceInARow = 2;
         bool ShouldRefreshOldMessages()
         {

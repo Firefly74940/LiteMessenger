@@ -11,6 +11,10 @@ namespace App3
         {
 
         }
+        public virtual bool OnBackPressed()
+        {
+            return false;
+        }
         private void OnInternetConnectivityChangedCaller(bool newHasInternet)
         {
             Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => {
