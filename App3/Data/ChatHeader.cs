@@ -324,6 +324,9 @@ namespace App3.Data
                         if (messageNode.LastChild.Name == "div")
                         {
                             var userImages = messageNode.LastChild.SelectNodes("a");
+                            var userVideo = messageNode.LastChild.FirstChild?.SelectNodes("a");
+                            bool isTrueVideoNode = userVideo!=null && userVideo.Count > 0 && userVideo[0].FirstChild != null &&
+                                                   userVideo[0].FirstChild.Name == "div";
                             var userManyImages = messageNode.LastChild?.LastChild?.SelectNodes("a");
                             var otherImages = messageNode.LastChild.SelectNodes("img");
                             var files = messageNode.LastChild.SelectNodes("div/div[1]/span/a");
@@ -367,7 +370,26 @@ namespace App3.Data
                                         DisplayName = messageDisplayUsername,
                                     });
                                 }
-                                
+
+                            }
+                            else if (userVideo != null && userVideo.Count > 0 && isTrueVideoNode)
+                            {
+                                var videoLink = HtmlEntity.DeEntitize(userVideo[0].GetAttributeValue("href", ""));
+                                videoLink = videoLink.Remove(0, videoLink.IndexOf('=') + 1);
+                                videoLink = Uri.UnescapeDataString(videoLink);
+
+                                var previewSrc = userVideo[0].LastChild?.FirstChild?.GetAttributeValue("src", "");
+
+                                newMessages.Add(new ChatMessage()
+                                {
+                                    MessageAditionalData = videoLink,
+                                    MessageData = HtmlEntity.DeEntitize(previewSrc),
+                                    Message = HtmlEntity.DeEntitize(userVideo[0].FirstChild.GetAttributeValue("alt", "")),
+                                    MessageType = MessageTypes.Video,
+                                    MessageSource = messageSource,
+                                    UserID = messageUsername,
+                                    DisplayName = messageDisplayUsername,
+                                });
                             }
                             else if (userManyImages != null && userManyImages.Count > 0)
                             {
@@ -425,6 +447,7 @@ namespace App3.Data
                                     });
                                 }
                             }
+
                         }
                         #endregion
                     }

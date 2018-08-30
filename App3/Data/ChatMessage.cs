@@ -10,6 +10,7 @@ namespace App3.Data
         File,
         Sticker,
         Photo,
+        Video,
     }
 
     public enum MessageSources
@@ -65,6 +66,9 @@ namespace App3.Data
                         isDataTheSame = false;
                     }
                 }
+            }else if (MessageType == MessageTypes.Video || MessageType==MessageTypes.Photo)
+            {
+                isDataTheSame = MessageAditionalData == other.MessageAditionalData;
             }
             if (MessageType == other.MessageType &&
                 MessageSource == other.MessageSource &&

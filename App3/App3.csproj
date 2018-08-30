@@ -127,6 +127,9 @@
     <Compile Include="ViewModels\ChatViewModel.cs" />
     <Compile Include="ViewModels\ObservableViewModelCollection.cs" />
     <Compile Include="Helpers\PropertyChangedHelper.cs" />
+    <Compile Include="PlayerPopUp.xaml.cs">
+      <DependentUpon>PlayerPopUp.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WebPopUp.xaml.cs">
       <DependentUpon>WebPopUp.xaml</DependentUpon>
     </Compile>
@@ -211,6 +214,10 @@
     <Page Include="NoInternetRibon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PlayerPopUp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="WebPopUp.xaml">
       <SubType>Designer</SubType>

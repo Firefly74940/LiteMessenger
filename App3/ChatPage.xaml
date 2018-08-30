@@ -82,7 +82,24 @@
                 </Image>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate x:Key="OtherVideoMessageDataTemplate" x:DataType="viewModels:ChatMessageViewModel">
+            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="{Binding Margins}"  HorizontalAlignment="Left" Padding="7"  >
+                <Grid MaxHeight="250" MaxWidth="250">
+                    <Image HorizontalAlignment="Center" VerticalAlignment="Center" MaxHeight="130" MaxWidth="250" Tapped="Image_Tapped" >
+                        <ToolTipService.ToolTip>
+                            <TextBlock Text="{Binding Message}"/>
+                        </ToolTipService.ToolTip>
+                        <Image.Source>
+                            <BitmapImage UriSource="{Binding MessageData}"/>
+                        </Image.Source>
 
+                    </Image>
+                    <Border Height="30" Width="30" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#7F000000" >
+                        <SymbolIcon Symbol="Play"/>
+                    </Border>
+                </Grid>
+            </StackPanel>
+        </DataTemplate>
 
 
 
@@ -141,6 +158,24 @@
             </StackPanel>
         </DataTemplate>
 
+        <DataTemplate x:Key="SelfVideoMessageDataTemplate" x:DataType="viewModels:ChatMessageViewModel">
+            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}" Margin="{Binding Margins}"  HorizontalAlignment="Right" Padding="7"  >
+                <Grid MaxHeight="250" MaxWidth="250">
+                    <Image HorizontalAlignment="Center" VerticalAlignment="Center" MaxHeight="130" MaxWidth="250" Tapped="Image_Tapped" >
+                        <ToolTipService.ToolTip>
+                            <TextBlock Text="{Binding Message}"/>
+                        </ToolTipService.ToolTip>
+                        <Image.Source>
+                            <BitmapImage UriSource="{Binding MessageData}"/>
+                        </Image.Source>
+
+                    </Image>
+                    <Border Height="30" Width="30" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#7F000000" >
+                        <SymbolIcon Symbol="Play"/>
+                    </Border>
+                </Grid>
+            </StackPanel>
+        </DataTemplate>
 
         <DataTemplate x:Key="InfoMessageDataTemplate" x:DataType="viewModels:ChatMessageViewModel">
             <StackPanel  UseLayoutRounding="True"  Margin="50,7,50,7"  HorizontalAlignment="Right" Padding="7">
@@ -164,8 +199,11 @@
             SelfImgMessage="{StaticResource SelfImgMessageDataTemplate}"       
                                           
             OtherPhotoMessage="{StaticResource OtherPhotoMessageDataTemplate}"
-            SelfPhotoMessage="{StaticResource SelfPhotoMessageDataTemplate}"                                           
-                                           />
+            SelfPhotoMessage="{StaticResource SelfPhotoMessageDataTemplate}"                                          
+                                          
+            OtherVideoMessage="{StaticResource OtherVideoMessageDataTemplate}"
+            SelfVideoMessage="{StaticResource SelfVideoMessageDataTemplate}"   
+            />
 
         <Style x:Key="ListViewItemStyle1" TargetType="ListViewItem">
             <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
@@ -199,6 +237,7 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+
         <TextBlock x:Name="ChatName" TextWrapping="Wrap" Text="TextBox" FontSize="18" Margin="20" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{ThemeResource SystemControlForegroundAccentBrush}"/>
 
         <ListView x:Name="ListView" IsDoubleTapEnabled="False" IsRightTapEnabled="False" IsTapEnabled="False" ItemTemplateSelector="{StaticResource myMessageDataTemplateSelector}" Margin="0,66,0,62" ManipulationMode="None" ItemContainerStyle="{StaticResource ListViewItemStyle1}" RightTapped="ListView_RightTapped">
@@ -225,6 +264,7 @@
                     </StackPanel>
                 </StackPanel>
                 <ListViewItem Content="ListViewItem"/>-->
+
         </ListView>
 
         <helpers:MultiLinesTextBox x:Name="NewMessageBox" Margin="10,0,80,10" TextWrapping="Wrap"  Height="35" VerticalAlignment="Bottom" TextChanged="NewMessageBox_TextChanged" KeyUp="NewMessageBox_KeyUp" AcceptsReturn="True"/>
@@ -240,6 +280,9 @@
         <app3:WebPopUp x:Name="WebPopUp" Visibility="Collapsed">
 
         </app3:WebPopUp>
+        <app3:PlayerPopUp x:Name="PlayerPopUp" Visibility="Collapsed">
+
+        </app3:PlayerPopUp>
         <app3:NoInternetRibon x:Name="NoInternetRibon" Height="27" VerticalAlignment="Top" >
             <app3:NoInternetRibon.DataContext>
                 <app3:MessengerLightPage/>

@@ -30,12 +30,14 @@ namespace App3
         public DataTemplate SelfImgMessage { get; set; }
         public DataTemplate SelfFileMessage { get; set; }
         public DataTemplate SelfPhotoMessage { get; set; }
+        public DataTemplate SelfVideoMessage { get; set; }
 
         public DataTemplate OtherMessage { get; set; }
         public DataTemplate OtherLinkMessage { get; set; }
         public DataTemplate OtherImgMessage { get; set; }
         public DataTemplate OtherFileMessage { get; set; }
         public DataTemplate OtherPhotoMessage { get; set; }
+        public DataTemplate OtherVideoMessage { get; set; }
 
         //public DataTemplate ReceivedTemplate
         //{
@@ -63,6 +65,8 @@ namespace App3
                     return fromSelf ? SelfFileMessage : OtherFileMessage;
                 case MessageTypes.Photo:
                     return fromSelf ? SelfPhotoMessage : OtherPhotoMessage;
+                case MessageTypes.Video:
+                    return fromSelf ? SelfVideoMessage : OtherVideoMessage;
             }
 
             return InfoMessage;
@@ -233,6 +237,12 @@ namespace App3
                 {
                     if(message.MessageType==MessageTypes.Photo && !string.IsNullOrEmpty(message.MessageAditionalData))
                         WebPopUp.RequestPage(DataSource.requestUriString+message.MessageAditionalData);
+                    else if (message.MessageType == MessageTypes.Video &&
+                             !string.IsNullOrEmpty(message.MessageAditionalData))
+                    {
+                        PlayerPopUp.RequestVideo(message.MessageAditionalData);
+                    }
+
                 }
             }
         }
