@@ -17,7 +17,7 @@ namespace App3.Data
     {
 
         public static ObservableCollection<ChatHeader> Names = new ObservableCollection<ChatHeader>();
-
+        public static string NewMessageLink="";
         public static Uri requestUri = new Uri("https://mbasic.facebook.com");
         public static string requestUriString = "https://mbasic.facebook.com";
         public const string CustomUserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.2490.71 Safari/537.36";
@@ -81,7 +81,14 @@ namespace App3.Data
                     Username = namelink.Substring(1, end - 1);
                 }
             }
-
+            if(string.IsNullOrEmpty(NewMessageLink))
+            {
+                var newMessageNode = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"root\"]/div[1]/div[1]/table/tbody/tr/td[1]/a");
+                if (newMessageNode != null)
+                {
+                    NewMessageLink = HtmlEntity.DeEntitize(newMessageNode.GetAttributeValue("href", ""));
+                }
+            }
             var nodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"root\"]/div[1]/div[2]/div[1]/table");
 
 
@@ -113,7 +120,7 @@ namespace App3.Data
                     var messagePreviewNode = node.SelectSingleNode("tr/td/div/h3[2]");
 
                     var header = FindOrCreateHeader(href);
-                    header.Name = name;
+                    header.Name = HtmlEntity.DeEntitize(name);
                     header.UnreadCount = badgeCount;
                     header.NewOrder = order;
                     header.MessagePreview = HtmlEntity.DeEntitize(GetTextmessageFromNode(messagePreviewNode.FirstChild));

@@ -73,5 +73,10 @@ namespace App3
         {
             DataSource.SyncContacts();
         }
+
+        private void BarButtonAddConv_Click(object sender, RoutedEventArgs e)
+        {
+            WebPopUp.RequestPage(DataSource.requestUriString + DataSource.NewMessageLink);
+        }
     }
 }
