@@ -261,6 +261,23 @@ namespace App3
                 }
             }
         }
+
+        private void BarButtonLike_Click(object sender, RoutedEventArgs e)
+        {
+            _currentChat.SendLike();
+        }
+
+        private void BarButtonStickers_Click(object sender, RoutedEventArgs e)
+        {
+            WebPopUp.RequestPage(DataSource.requestUriString+_currentChat.SendStickerLink);
+        }
+
+        private async void BarButtonJoinPhoto_Click(object sender, RoutedEventArgs e)
+        {
+            string link = await _currentChat.SendPhoto();
+            if(!string.IsNullOrEmpty(link))
+                WebPopUp.RequestPage(link);
+        }
     }
 
 

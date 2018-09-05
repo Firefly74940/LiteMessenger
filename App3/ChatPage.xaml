@@ -240,7 +240,8 @@
 
         <TextBlock x:Name="ChatName" TextWrapping="Wrap" Text="TextBox" FontSize="18" Margin="20" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{ThemeResource SystemControlForegroundAccentBrush}"/>
 
-        <ListView x:Name="ListView" IsDoubleTapEnabled="False" IsRightTapEnabled="False" IsTapEnabled="False" ItemTemplateSelector="{StaticResource myMessageDataTemplateSelector}" Margin="0,66,0,62" ManipulationMode="None" ItemContainerStyle="{StaticResource ListViewItemStyle1}" RightTapped="ListView_RightTapped">
+        <ListView x:Name="ListView" IsDoubleTapEnabled="False" IsRightTapEnabled="False" IsTapEnabled="False" ItemTemplateSelector="{StaticResource myMessageDataTemplateSelector}" Margin="0,66,0,73
+                  " ManipulationMode="None" ItemContainerStyle="{StaticResource ListViewItemStyle1}" RightTapped="ListView_RightTapped">
 
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -267,8 +268,8 @@
 
         </ListView>
 
-        <helpers:MultiLinesTextBox x:Name="NewMessageBox" Margin="10,0,80,10" TextWrapping="Wrap"  Height="35" VerticalAlignment="Bottom" TextChanged="NewMessageBox_TextChanged" KeyUp="NewMessageBox_KeyUp" AcceptsReturn="True"/>
-        <Button x:Name="Send" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="35" HorizontalAlignment="Right" Background="{ThemeResource SystemAccentColorLight1}"  Width="65" Content="&gt;" Click="Send_Click" IsEnabled="False" BorderBrush="{ThemeResource SystemAccentColorDark1}" FocusVisualPrimaryBrush="{ThemeResource SystemAccentColorLight1}" FocusVisualSecondaryBrush="{ThemeResource AccentButtonBorderBrush}" />
+        <helpers:MultiLinesTextBox x:Name="NewMessageBox" Margin="10,0,80,31" TextWrapping="Wrap"  Height="35" VerticalAlignment="Bottom" TextChanged="NewMessageBox_TextChanged" KeyUp="NewMessageBox_KeyUp" AcceptsReturn="True"/>
+        <Button x:Name="Send" Margin="0,0,10,31" VerticalAlignment="Bottom" Height="35" HorizontalAlignment="Right" Background="{ThemeResource SystemAccentColorLight1}"  Width="65" Content="&gt;" Click="Send_Click" IsEnabled="False" BorderBrush="{ThemeResource SystemAccentColorDark1}" FocusVisualPrimaryBrush="{ThemeResource SystemAccentColorLight1}" FocusVisualSecondaryBrush="{ThemeResource AccentButtonBorderBrush}" />
 
         <!--<CommandBar VerticalAlignment="Bottom" RequestedTheme="Dark">
             <CommandBar.Content>
@@ -277,6 +278,17 @@
             <AppBarButton x:Name="BarButtonDisconect" Icon="Sync" Label="Disconect"  RequestedTheme="Dark" Click="BarButtonRefresh_Click"/>
             <AppBarButton x:Name="BarButtonSync" Icon="Clock" Label="SyncContacts" RequestedTheme="Dark" Click="BarButtonGetOlder_Click" />
         </CommandBar>-->
+        <CommandBar VerticalAlignment="Bottom" RequestedTheme="Dark"  ClosedDisplayMode="Minimal" >
+            <CommandBar.Content>
+                <Grid>
+                    <AppBarButton x:Name="BarButtonJoinPhoto" Icon="AttachCamera" Label="Add Img" RequestedTheme="Dark" Click="BarButtonJoinPhoto_Click" />
+                </Grid>
+            </CommandBar.Content>
+            <AppBarButton x:Name="BarButtonStickers" Icon="Emoji"  Label="Stickers"  RequestedTheme="Dark" Click="BarButtonStickers_Click" />
+            <AppBarButton x:Name="BarButtonLike" Icon="Like" Label="Like" RequestedTheme="Dark" Click="BarButtonLike_Click" />
+
+
+        </CommandBar>
         <app3:WebPopUp x:Name="WebPopUp" Visibility="Collapsed">
 
         </app3:WebPopUp>

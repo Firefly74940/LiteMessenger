@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Windows.Web.Http;
 using HtmlAgilityPack;
 using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
@@ -13,10 +14,15 @@ namespace App3.Data
     {
         private bool _refreshInProgress = false;
         private bool _sendInProgress = false;
+        private bool _sendLikeInProgress = false;
+        private bool _sendPhotoInProgress = false;
         private int _sendingMessagesToRemove = 0;
         public bool RefreshInProgress => _refreshInProgress;
         public int RefreshInterval = 500;
         public int NextRefreshInXMs = 0;
+
+        private string _sendStickerLink = "";
+        public string SendStickerLink => _sendStickerLink;
 
         public string Name { get; set; }
 
@@ -25,7 +31,7 @@ namespace App3.Data
         public string MessagePreview
         {
             get => _messagePreview;
-            set => SetProperty(ref _messagePreview , value);
+            set => SetProperty(ref _messagePreview, value);
         }
 
         public bool IsGroup { get; set; }
@@ -59,8 +65,10 @@ namespace App3.Data
 
         public int Order = -1;
         public int NewOrder = -1;
-        private string _action = "";
-        private string _formEncoded = "";
+        private string _formAction = "";
+        private string _formEncodedSendPhoto = "";
+        private string _formEncodedSendLike = "";
+        private string _formEncodedSendMessage = "";
 
 
         public enum RequestType
@@ -83,26 +91,46 @@ namespace App3.Data
             if (form == null)
                 return;
             var inputsPost = new List<Tuple<string, string>>();
-            _action = form.GetAttributeValue("action", "");
+            _formAction = form.GetAttributeValue("action", "");
             var inputs = form.Descendants("input");
-            _formEncoded = "";
+            _formEncodedSendMessage = "";
+            _formEncodedSendLike = "";
+            _formEncodedSendPhoto = "";
             foreach (var element in inputs)
             {
                 string name = element.GetAttributeValue("name", "undefined");
                 string value = element.GetAttributeValue("value", "");
                 string type = element.GetAttributeValue("type", "");
-                if (!name.Equals("undefined") && (!type.Equals("submit") || name.Equals("send")))
+                var isSubmitInput = type.Equals("submit");
+                var isSendInput = name.Equals("send");
+                var isSendPhotoInput = name.Equals("send_photo");
+                var isLikeInput = name.Equals("like");
+                if (!name.Equals("undefined") && (!isSubmitInput || isSendInput || isSendPhotoInput || isLikeInput))
                 {
                     inputsPost.Add(new Tuple<string, string>(name, value));
-                    if (!string.IsNullOrEmpty(_formEncoded))
-                        _formEncoded += '&';
-                    _formEncoded += name + "=" + Uri.EscapeDataString(value);
+                    if (!string.IsNullOrEmpty(_formEncodedSendMessage))
+                    {
+                        _formEncodedSendMessage += '&';
+                        _formEncodedSendLike += '&';
+                        _formEncodedSendPhoto += '&';
+
+                    }
+
+                    var inputFormated = name + "=" + Uri.EscapeDataString(value);
+                    if (!isSubmitInput || isSendInput)
+                        _formEncodedSendMessage += inputFormated;
+
+                    if (!isSubmitInput || isSendPhotoInput)
+                        _formEncodedSendPhoto += inputFormated;
+
+                    if (!isSubmitInput || isLikeInput)
+                        _formEncodedSendLike += inputFormated;
                 }
             }
         }
         public void CheckSendingMessages()
         {
-            if (_sendInProgress || SendingMessages.Count==0) return;
+            if (_sendInProgress || SendingMessages.Count == 0) return;
 
             SendMessage(SendingMessages[0]);
         }
@@ -115,9 +143,9 @@ namespace App3.Data
             Windows.Web.Http.HttpClient httpClient = new Windows.Web.Http.HttpClient();
             HttpRequestMessage httpRequestMessage =
                 new HttpRequestMessage(HttpMethod.Post,
-                    new Uri(DataSource.requestUri, _action))
+                    new Uri(DataSource.requestUri, _formAction))
                 {
-                    Content = new HttpStringContent(_formEncoded += "&body=" + Uri.EscapeDataString(message.Message),
+                    Content = new HttpStringContent(_formEncodedSendMessage += "&body=" + Uri.EscapeDataString(message.Message),
                         UnicodeEncoding.Utf8, "application/x-www-form-urlencoded")
                 };
             httpRequestMessage.Headers.Add("User-Agent", DataSource.CustomUserAgent);
@@ -150,8 +178,73 @@ namespace App3.Data
             CheckSendingMessages();
         }
 
+        public async void SendLike()
+        {
+            if (_sendLikeInProgress) return;
+            _sendLikeInProgress = true;
+            Windows.Web.Http.HttpResponseMessage httpResponse = new Windows.Web.Http.HttpResponseMessage();
+            string httpResponseBody = "";
+
+            Windows.Web.Http.HttpClient httpClient = new Windows.Web.Http.HttpClient();
+            HttpRequestMessage httpRequestMessage =
+                new HttpRequestMessage(HttpMethod.Post,
+                    new Uri(DataSource.requestUri, _formAction))
+                {
+                    Content = new HttpStringContent(_formEncodedSendLike,
+                        UnicodeEncoding.Utf8, "application/x-www-form-urlencoded")
+                };
+            httpRequestMessage.Headers.Add("User-Agent", DataSource.CustomUserAgent);
+
+            bool success = false;
+            try
+            {
+                //Send the GET request
+                httpResponse = await httpClient.SendRequestAsync(httpRequestMessage);
+                httpResponse.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
+            }
 
 
+            _sendLikeInProgress = false;
+        }
+        public async Task<string> GetSendPhotoLink()
+        {
+            string httpResponseBody = "";
+            if (_sendPhotoInProgress) return httpResponseBody;
+            _sendPhotoInProgress = true;
+            Windows.Web.Http.HttpResponseMessage httpResponse = new Windows.Web.Http.HttpResponseMessage();
+            
+
+            Windows.Web.Http.HttpClient httpClient = new Windows.Web.Http.HttpClient();
+            HttpRequestMessage httpRequestMessage =
+                new HttpRequestMessage(HttpMethod.Post,
+                    new Uri(DataSource.requestUri, _formAction))
+                {
+                    Content = new HttpStringContent(_formEncodedSendPhoto,
+                        UnicodeEncoding.Utf8, "application/x-www-form-urlencoded")
+                };
+            httpRequestMessage.Headers.Add("User-Agent", DataSource.CustomUserAgent);
+
+            bool success = false;
+            try
+            {
+                //Send the GET request
+                httpResponse = await httpClient.SendRequestAsync(httpRequestMessage);
+                httpResponse.EnsureSuccessStatusCode();
+                httpResponseBody = httpResponse.RequestMessage.RequestUri.ToString();
+            }
+            catch (Exception ex)
+            {
+                //httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
+            }
+
+
+            _sendPhotoInProgress = false;
+            return httpResponseBody;
+        }
         public async void RefreshConversation(RequestType requestType, HtmlDocument htmlDoc = null)
         {
             if (_refreshInProgress) return;
@@ -180,7 +273,11 @@ namespace App3.Data
             GetSubmitForm(htmlDoc);
 
 
-
+            var sendStickerNode = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"composer_form\"]/span/a[1]");
+            if (sendStickerNode != null)
+            {
+                _sendStickerLink = HtmlEntity.DeEntitize(sendStickerNode.GetAttributeValue("href", ""));
+            }
 
             var messagePackNodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"messageGroup\"]/div[2]/div");
 
@@ -325,7 +422,7 @@ namespace App3.Data
                         {
                             var userImages = messageNode.LastChild.SelectNodes("a");
                             var userVideo = messageNode.LastChild.FirstChild?.SelectNodes("a");
-                            bool isTrueVideoNode = userVideo!=null && userVideo.Count > 0 && userVideo[0].FirstChild != null &&
+                            bool isTrueVideoNode = userVideo != null && userVideo.Count > 0 && userVideo[0].FirstChild != null &&
                                                    userVideo[0].FirstChild.Name == "div";
                             var userManyImages = messageNode.LastChild?.LastChild?.SelectNodes("a");
                             var otherImages = messageNode.LastChild.SelectNodes("img");
@@ -479,7 +576,7 @@ namespace App3.Data
                     if (!string.IsNullOrEmpty(linkToNewerMessages))
                     {
                         NewestMessagesLink = AdjustTimestamp(linkToNewerMessages);
-                        NewestMessagesIndex = Messages.Count-SendingMessages.Count-_sendingMessagesToRemove;
+                        NewestMessagesIndex = Messages.Count - SendingMessages.Count - _sendingMessagesToRemove;
                         //Request new refresh
                     }
                 }
@@ -526,7 +623,7 @@ namespace App3.Data
 
         private void CheckPreviousMessageOwner(int selfIndex, ChatMessage message)
         {
-            if (selfIndex == 0 && Messages.Count>0)
+            if (selfIndex == 0 && Messages.Count > 0)
             {
                 Messages[0].PreviousMessageHasSameSender = Messages[0].UserID == message.UserID;
             }
@@ -542,9 +639,9 @@ namespace App3.Data
             bool didSomething = false;
             if (requestType == RequestType.GetOldMessages)
             {
-               for (int i = newMessages.Count - 1; i >= 0; i--)
-               {
-                   didSomething = true;
+                for (int i = newMessages.Count - 1; i >= 0; i--)
+                {
+                    didSomething = true;
                     CheckPreviousMessageOwner(0, newMessages[i]);
                     Messages.Insert(0, newMessages[i]);
                     NewestMessagesIndex++;
@@ -575,7 +672,7 @@ namespace App3.Data
                     if ((Messages.Count - sendingMessagesCount) <= NewestMessagesIndex + i)
                     {
                         CheckPreviousMessageOwner((Messages.Count - sendingMessagesCount), newMessages[i]);
-                        Messages.Insert((Messages.Count - sendingMessagesCount),newMessages[i]);
+                        Messages.Insert((Messages.Count - sendingMessagesCount), newMessages[i]);
                         didSomething = true;
                     }
                     else
@@ -591,7 +688,7 @@ namespace App3.Data
                             Messages.RemoveAt((Messages.Count - sendingMessagesCount) - 1);
                         }
                         CheckPreviousMessageOwner((Messages.Count - sendingMessagesCount), newMessages[i]);
-                        Messages.Insert((Messages.Count - sendingMessagesCount),newMessages[i]);
+                        Messages.Insert((Messages.Count - sendingMessagesCount), newMessages[i]);
                         didSomething = true;
                     }
                 }
@@ -600,12 +697,12 @@ namespace App3.Data
             if (didSomething)
             {
                 RefreshInterval = 500;
-                while (_sendingMessagesToRemove>0)
+                while (_sendingMessagesToRemove > 0)
                 {
-                    Messages.RemoveAt(Messages.Count - (SendingMessages.Count+_sendingMessagesToRemove));
+                    Messages.RemoveAt(Messages.Count - (SendingMessages.Count + _sendingMessagesToRemove));
                     _sendingMessagesToRemove--;
                 }
-                
+
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Windows.UI.Text;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -11,6 +12,7 @@ namespace App3.ViewModels
     class ChatViewModel : NotificationBase<ChatHeader>
     {
         public string Name => This.Name;
+        public string SendStickerLink => This.SendStickerLink;
 
 
         public string NameForView
@@ -67,6 +69,14 @@ namespace App3.ViewModels
 
         }
 
+        public void SendLike()
+        {
+            This.SendLike();
+        }
+        public async Task<string> SendPhoto()
+        {
+            return await This.GetSendPhotoLink();
+        }
 
         public void SendMessage(ChatMessage text)
         {
