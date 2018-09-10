@@ -53,32 +53,72 @@ namespace App3
 
         private async void WebView_DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
         {
-            if (args.Uri.AbsolutePath.EndsWith(".jpg"))
+            //dark theme
+            if (Application.Current.RequestedTheme == ApplicationTheme.Dark)
             {
-                // string html = await WebView.InvokeScriptAsync("eval", new [] { @"document.body.setAttribute(""style"",""margin: 0px; background: #0e0e0e);" });
-                string html = await WebView.InvokeScriptAsync("eval",
-                    new[] {@"document.body.setAttribute(""style"",""margin: 0px; background: #0e0e0e;"");"});
-                var text = html;
-                //WebView.InvokeScriptAsync("eval", new string[] { "document.body.zoom = (window.innerWidth * 100 / document.body.clientWidth) + '%'" });
-                WebView.InvokeScriptAsync("eval", new[]
                 {
-                    @"
+                    string htmlcss = await WebView.InvokeScriptAsync("eval",
+                        new[]
+                        {
+                            @"
+                              var cols =     document.getElementsByClassName('f');
+                              for(i=0; i<cols.length; i++) {
+                                cols[i].style.backgroundColor =    '#444';
+                              }
+"
+                        });
+                    htmlcss = await WebView.InvokeScriptAsync("eval",
+                        new[]
+                        {
+                            @"
+                              var cols =     document.getElementsByClassName('x');
+                              for(i=0; i<cols.length; i++) {
+                                cols[i].style.backgroundColor =    '#444';
+                              }
+"
+                        });
+                    htmlcss = await WebView.InvokeScriptAsync("eval",
+                        new[]
+                        {
+                            @"
+                              var cols = document.getElementsByTagName('TEXTAREA');
+                              for(i=0; i<cols.length; i++) {
+                                cols[i].style.backgroundColor =    '#4444';
+                              }
+                            "
+                        });
+                }
+            }
+
+            //jpg custom
+            {
+                if (args.Uri.AbsolutePath.EndsWith(".jpg"))
+                {
+                    // string html = await WebView.InvokeScriptAsync("eval", new [] { @"document.body.setAttribute(""style"",""margin: 0px; background: #0e0e0e);" });
+                    string html = await WebView.InvokeScriptAsync("eval",
+                        new[] { @"document.body.setAttribute(""style"",""margin: 0px; background: #0e0e0e;"");" });
+                    var text = html;
+                    //WebView.InvokeScriptAsync("eval", new string[] { "document.body.zoom = (window.innerWidth * 100 / document.body.clientWidth) + '%'" });
+                    WebView.InvokeScriptAsync("eval", new[]
+                    {
+                        @"
              var images = document.getElementsByTagName('img'); 
              for (var i=0;i<images.length;i++) 
              { 
                  images[i].setAttribute(""style"",""width:""+window.innerWidth+""px""); 
              }    
 "
-                });
+                    });
 
-                Save.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                Save.Visibility = Visibility.Collapsed;
-            }
+                    Save.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    Save.Visibility = Visibility.Collapsed;
+                }
 
-            Saved.Visibility = Visibility.Collapsed;
+                Saved.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
@@ -93,7 +133,7 @@ namespace App3
                 var downloader = new BackgroundDownloader();
                 var regex = new Regex(@"[\\|/\:\*\?""<>\\|]");
                 var result_filename = regex.Replace(filename, " ").Replace(";", "");
-                result_filename= filename.Substring(filename.LastIndexOf('/')+1, filename.LastIndexOf('.')- filename.LastIndexOf('/')-1);
+                result_filename = filename.Substring(filename.LastIndexOf('/') + 1, filename.LastIndexOf('.') - filename.LastIndexOf('/') - 1);
                 FolderPicker fo = new FolderPicker();
                 fo.SuggestedStartLocation = PickerLocationId.Downloads;
                 fo.FileTypeFilter.Add(fileType);
