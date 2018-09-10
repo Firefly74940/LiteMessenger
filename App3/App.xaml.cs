@@ -172,7 +172,7 @@ LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Error, LogLevel.Fatal,
                     if (rootFrame.Content is ChatList)
                     {
                         var chat = rootFrame.Content as ChatList;
-                       AccountViewModel.Instance.RefreshChatList();
+                       AccountViewModel.Instance.RefreshChatList(DataSource.RequestType.Start);
                     }
                     else
                     {

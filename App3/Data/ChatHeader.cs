@@ -227,7 +227,6 @@ namespace App3.Data
                 };
             httpRequestMessage.Headers.Add("User-Agent", DataSource.CustomUserAgent);
 
-            bool success = false;
             try
             {
                 //Send the GET request

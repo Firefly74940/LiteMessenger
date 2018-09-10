@@ -17,7 +17,6 @@ namespace App3.Data
     {
 
         public static ObservableCollection<ChatHeader> Names = new ObservableCollection<ChatHeader>();
-        public static string NewMessageLink="";
         public static Uri requestUri = new Uri("https://mbasic.facebook.com");
         public static string requestUriString = "https://mbasic.facebook.com";
         public const string CustomUserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.2490.71 Safari/537.36";
@@ -60,15 +59,36 @@ namespace App3.Data
                 localSettings.Values["username"] = value;
             }
         }
-
+        public static string NewMessageLink = "";
         public static Windows.Storage.ApplicationDataContainer localSettings;
 
-
-
-        public static async void RefreshChatList()
+        const int ChatCountPerPage = 10;
+        const int ChatPagesToCrawlAtStart = 4;
+        const int ChatPagesToCrawlForSmallRefreshes = 2;
+        private static int _currentConvRefreshOrder = 0;
+        public static bool ConvRefreshInProgress = false;
+        public static int NextRefreshInXMs = 0;
+        public enum RequestType
         {
+            Start,
+            Refresh,
+        }
+        public static async void TryRefreshConversationList(RequestType requestType = RequestType.Refresh)
+        {
+            if (ConvRefreshInProgress) return;
+            ConvRefreshInProgress = true;
 
-            var htmlDoc = await GetHtmlDoc("/messages/");
+            await RefreshChatList(null, requestType == RequestType.Refresh ? ChatPagesToCrawlForSmallRefreshes : ChatPagesToCrawlAtStart);
+
+            ConvRefreshInProgress = false;
+
+        }
+        static async Task RefreshChatList(string requestedUrl = null, int maxPageToCrawl = 1)
+        {
+            maxPageToCrawl--;
+            var isFirstPass = string.IsNullOrEmpty(requestedUrl);
+            var chatListUrl = isFirstPass ? "/messages/" : requestedUrl;
+            var htmlDoc = await GetHtmlDoc(chatListUrl);
 
             {
                 var profileNode = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"header\"]/div/a[2]");
@@ -81,7 +101,8 @@ namespace App3.Data
                     Username = namelink.Substring(1, end - 1);
                 }
             }
-            if(string.IsNullOrEmpty(NewMessageLink))
+          
+           if(string.IsNullOrEmpty(NewMessageLink))
             {
                 var newMessageNode = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"root\"]/div[1]/div[1]/table/tbody/tr/td[1]/a");
                 if (newMessageNode != null)
@@ -89,16 +110,34 @@ namespace App3.Data
                     NewMessageLink = HtmlEntity.DeEntitize(newMessageNode.GetAttributeValue("href", ""));
                 }
             }
-            var nodes = htmlDoc.DocumentNode.SelectNodes("//*[@id=\"root\"]/div[1]/div[2]/div[1]/table");
 
-
-            // tag all for potential deletion
-            for (var index = 0; index < Names.Count; index++)
+            string nextConvsPageLink = "";
+            if (maxPageToCrawl > 0)
             {
-                Names[index].NewOrder = -1;
+                var olderMessagesLinkNode= htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"see_older_threads\"]/a");
+                if (olderMessagesLinkNode != null)
+                {
+                    nextConvsPageLink = HtmlEntity.DeEntitize(olderMessagesLinkNode.GetAttributeValue("href", ""));
+                }
+
             }
 
-            int order = 0;
+            var messagesNodeXPath = isFirstPass ? "//*[@id=\"root\"]/div[1]/div[2]/div[1]/table" : "//*[@id=\"root\"]/div[1]/div[2]/div[2]/table";
+            var nodes = htmlDoc.DocumentNode.SelectNodes(messagesNodeXPath);
+
+            if (isFirstPass)
+            {
+                // tag all for potential deletion
+                for (var index = 0; index < Names.Count; index++)
+                {
+                    if (Names[index].NewOrder < 500)
+                        Names[index].NewOrder += 100;
+                }
+
+
+                _currentConvRefreshOrder = 0;
+            }
+
             if (nodes != null)
             {
                 foreach (var node in nodes)
@@ -111,7 +150,7 @@ namespace App3.Data
 
                     if (badgeCount == 0)
                     {
-                        badgeCount = node.GetClasses().Count() > 8 ? -1 : 0;// was "cp" now "cc" maybe class count is more concistent ? 
+                        badgeCount = node.GetClasses().Count() > 8 ? -1 : 0;
                     }
 
 
@@ -122,9 +161,9 @@ namespace App3.Data
                     var header = FindOrCreateHeader(href);
                     header.Name = HtmlEntity.DeEntitize(name);
                     header.UnreadCount = badgeCount;
-                    header.NewOrder = order;
+                    header.NewOrder = _currentConvRefreshOrder;
                     header.MessagePreview = HtmlEntity.DeEntitize(GetTextmessageFromNode(messagePreviewNode.FirstChild));
-                    order++;
+                    _currentConvRefreshOrder++;
                 }
             }
 
@@ -157,7 +196,7 @@ namespace App3.Data
                         }
                     }
                 }
-                else
+                else if(sortingData[i].NewOrder<100)
                 {
                     if (sortingData[i].NewOrder == sortingData[i].Order) // allredy at the right place
                     {
@@ -170,11 +209,16 @@ namespace App3.Data
                         for (int j = 0; j < sortingData.Count; j++)
                         {
                             //if item was before and is now after moved element it now supposed order is higher
-                            if ((sortingData[i].Order > sortingData[j].Order) && (sortingData[i].NewOrder <= sortingData[j].Order))
+                            if ((sortingData[i].Order > sortingData[j].Order) && (sortingData[i].NewOrder <= sortingData[j].Order) && sortingData[j].Order<100)
                                 sortingData[j].Order += 1;
                         }
                     }
                 }
+            }
+
+            if (maxPageToCrawl > 0 && !string.IsNullOrEmpty(NewMessageLink))
+            {
+                await RefreshChatList(nextConvsPageLink, maxPageToCrawl);
             }
         }
 
@@ -377,9 +421,9 @@ namespace App3.Data
                                 }
                                 catch (Exception e)
                                 {
-                                    
+
                                 }
-                               
+
                             }
 
                         }

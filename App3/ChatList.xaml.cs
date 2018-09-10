@@ -1,4 +1,5 @@
-﻿using Windows.UI.Core;
+﻿using System;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -14,11 +15,27 @@ namespace App3
     /// </summary>
     public sealed partial class ChatList : MessengerLightPage
     {
+        DispatcherTimer dispatcherTimer;
         public ChatList()
         {
+            dispatcherTimer = new DispatcherTimer();
+            dispatcherTimer.Tick += DispatcherTimer_Tick;
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 0,0,Consts.DispatchTimerInterval);
             this.InitializeComponent();
             listView.ItemsSource = AccountViewModel.Instance.Chats;
             NoInternetRibon.Visibility = ShouldShowInternetConectivityRibon;
+        }
+        private void DispatcherTimer_Tick(object sender, object e)
+        {
+            if (!AccountViewModel.Instance.RefreshInProgress)
+            {
+                AccountViewModel.Instance.NextRefreshInXMs -= Consts.DispatchTimerInterval;
+                if (AccountViewModel.Instance.NextRefreshInXMs <= 0)
+                {
+                    AccountViewModel.Instance.RefreshChatList(DataSource.RequestType.Refresh);
+                    AccountViewModel.Instance.NextRefreshInXMs = 3000;
+                }
+            }
         }
 
         protected override void OnInternetConnectivityChanged(bool newHasInternet)
@@ -27,7 +44,7 @@ namespace App3
             NoInternetRibon.Visibility = ShouldShowInternetConectivityRibon;
             if (newHasInternet)
             {
-                AccountViewModel.Instance.RefreshChatList();
+                AccountViewModel.Instance.RefreshChatList(DataSource.RequestType.Start);
             }
         }
         public override bool OnBackPressed()
@@ -44,10 +61,10 @@ namespace App3
         {
             base.OnNavigatedTo(e);
             Frame.BackStack.Clear();
-
+            dispatcherTimer.Start();
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
                 AppViewBackButtonVisibility.Visible;
-            AccountViewModel.Instance.RefreshChatList();
+            AccountViewModel.Instance.RefreshChatList(DataSource.RequestType.Start);
 
         }
 

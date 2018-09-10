@@ -36,12 +36,18 @@ namespace App3.ViewModels
         private AdvancedCollectionView _chatsAcv;
 
         public AdvancedCollectionView Chats => _chatsAcv;
+        public bool RefreshInProgress => DataSource.ConvRefreshInProgress;
+        public int NextRefreshInXMs
+        {
+            get => DataSource.NextRefreshInXMs;
+            set => DataSource.NextRefreshInXMs = value;
+        }
 
 
-        public  void RefreshChatList()
+        public void RefreshChatList(DataSource.RequestType requestType = DataSource.RequestType.Refresh)
         {
            
-                DataSource.RefreshChatList();
+                DataSource.TryRefreshConversationList(requestType);
             
         }
     }

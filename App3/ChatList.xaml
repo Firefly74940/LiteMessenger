@@ -10,7 +10,7 @@
     mc:Ignorable="d">
   
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <ListView x:Name="listView" Margin="10" ItemClick="listView_ItemClick" IsItemClickEnabled="True">
+        <ListView x:Name="listView" Margin="10,10,10,24" ItemClick="listView_ItemClick" IsItemClickEnabled="True">
             <ListView.Resources>
                 <Style x:Key="ListViewStyle1" TargetType="ListView">
                     
