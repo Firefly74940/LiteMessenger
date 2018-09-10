@@ -71,6 +71,46 @@ namespace App3
                         new[]
                         {
                             @"
+                              var cols =     document.getElementsByTagName('BODY');
+                              for(i=0; i<cols.length; i++) {
+                                cols[i].style.backgroundColor =    '#444';
+                              }
+"
+                        });
+                    htmlcss = await WebView.InvokeScriptAsync("eval",
+                        new[]
+                        {
+                            @"
+                              var cols =     document.getElementsByClassName('z');
+                              for(i=0; i<cols.length; i++) {
+                                cols[i].style.backgroundColor =    '#888';
+                              }
+"
+                        });
+                    htmlcss = await WebView.InvokeScriptAsync("eval",
+                        new[]
+                        {
+                            @"
+                              var cols =     document.getElementsByClassName('e');
+                              for(i=0; i<cols.length; i++) {
+                                cols[i].style.backgroundColor =    '#888';
+                              }
+"
+                        });
+                    htmlcss = await WebView.InvokeScriptAsync("eval",
+                        new[]
+                        {
+                            @"
+                              var cols =     document.getElementById('root');
+                             if(cols)
+                                cols.style.backgroundColor =    '#444';
+                              
+"
+                        });
+                    htmlcss = await WebView.InvokeScriptAsync("eval",
+                        new[]
+                        {
+                            @"
                               var cols =     document.getElementsByClassName('x');
                               for(i=0; i<cols.length; i++) {
                                 cols[i].style.backgroundColor =    '#444';
