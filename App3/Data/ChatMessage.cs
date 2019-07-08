@@ -50,7 +50,7 @@ namespace App3.Data
         {
 
             bool isDataTheSame = MessageData == other.MessageData;
-            if (MessageType == MessageTypes.Link)
+            if (MessageType == MessageTypes.Link && MessageData!=null && other.MessageData!=null)
             {
                 var indexOf1 = MessageData.IndexOf('&');
                 var indexOf2 = other.MessageData.IndexOf('&');
@@ -58,8 +58,8 @@ namespace App3.Data
                 {
                     if (indexOf1 == indexOf2)
                     {
-                        isDataTheSame = MessageData.Substring(0, indexOf1) ==
-                                        other.MessageData.Substring(0, indexOf2);
+                        // no choice to trust as fb generate new link data each time 
+                        isDataTheSame = true; // MessageData.Substring(0, indexOf1) == other.MessageData.Substring(0, indexOf2);
                     }
                     else
                     {
@@ -69,6 +69,22 @@ namespace App3.Data
             }else if (MessageType == MessageTypes.Video || MessageType==MessageTypes.Photo)
             {
                 isDataTheSame = MessageAditionalData == other.MessageAditionalData;
+            }
+            else if( MessageType==MessageTypes.Img)
+            {
+                var indexOf1 = MessageData.IndexOf("ht=scontent");
+                var indexOf2 = other.MessageData.IndexOf("ht=scontent");
+                if (indexOf1 >= 0 && indexOf2 >= 0)
+                {
+                    if (indexOf1 == indexOf2)
+                    {
+                        isDataTheSame = MessageData.Substring(0, indexOf1) == other.MessageData.Substring(0, indexOf2);
+                    }
+                    else
+                    {
+                        isDataTheSame = false;
+                    }
+                }
             }
             if (MessageType == other.MessageType &&
                 MessageSource == other.MessageSource &&
