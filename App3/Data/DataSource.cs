@@ -101,8 +101,8 @@ namespace App3.Data
                     Username = namelink.Substring(1, end - 1);
                 }
             }
-          
-           if(string.IsNullOrEmpty(NewMessageLink))
+
+            if (string.IsNullOrEmpty(NewMessageLink))
             {
                 var newMessageNode = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"root\"]/div[1]/div[1]/table/tbody/tr/td[1]/a");
                 if (newMessageNode != null)
@@ -114,7 +114,7 @@ namespace App3.Data
             string nextConvsPageLink = "";
             if (maxPageToCrawl > 0)
             {
-                var olderMessagesLinkNode= htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"see_older_threads\"]/a");
+                var olderMessagesLinkNode = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"see_older_threads\"]/a");
                 if (olderMessagesLinkNode != null)
                 {
                     nextConvsPageLink = HtmlEntity.DeEntitize(olderMessagesLinkNode.GetAttributeValue("href", ""));
@@ -146,7 +146,14 @@ namespace App3.Data
 
                     var split = NameNode.InnerText.Split(new[] { '(', ')' });
                     var name = split[0];
-                    int badgeCount = split.Length > 1 ? int.Parse(split[1]) : 0;
+                    int badgeCount = 0;
+
+                    if (split.Length > 1)
+                    {
+                        int parsedInt = 0;
+                        if (int.TryParse(split[1], out parsedInt))
+                            badgeCount = parsedInt;
+                    }
 
                     if (badgeCount == 0)
                     {
@@ -196,7 +203,7 @@ namespace App3.Data
                         }
                     }
                 }
-                else if(sortingData[i].NewOrder<100)
+                else if (sortingData[i].NewOrder < 100)
                 {
                     if (sortingData[i].NewOrder == sortingData[i].Order) // allredy at the right place
                     {
@@ -209,7 +216,7 @@ namespace App3.Data
                         for (int j = 0; j < sortingData.Count; j++)
                         {
                             //if item was before and is now after moved element it now supposed order is higher
-                            if ((sortingData[i].Order > sortingData[j].Order) && (sortingData[i].NewOrder <= sortingData[j].Order) && sortingData[j].Order<100)
+                            if ((sortingData[i].Order > sortingData[j].Order) && (sortingData[i].NewOrder <= sortingData[j].Order) && sortingData[j].Order < 100)
                                 sortingData[j].Order += 1;
                         }
                     }
@@ -389,8 +396,12 @@ namespace App3.Data
                             var codes = name.Split('_');
                             foreach (var code in codes)
                             {
-                                var x = char.ConvertFromUtf32(int.Parse(code, NumberStyles.HexNumber));
-                                buildedMessage += x;
+                                int parsedInt = 0;
+                                if (int.TryParse(code,  NumberStyles.HexNumber, CultureInfo.InvariantCulture, out parsedInt))
+                                {
+                                    var x = char.ConvertFromUtf32(parsedInt);
+                                    buildedMessage += x;
+                                }
                             }
 
                         }

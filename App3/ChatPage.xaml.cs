@@ -178,7 +178,7 @@ namespace App3
             //else
             //    Debug.WriteLine("Element is no longer visible");
         }
-        private async void Send_Click(object sender, RoutedEventArgs e)
+        private void Send_Click(object sender, RoutedEventArgs e)
         {
             _currentChat.SendMessage(new ChatMessage() { Message = NewMessageBox.Text, UserID = DataSource.Username, DisplayName = DataSource.Username, SendingInProgress = true });
 

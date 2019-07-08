@@ -54,81 +54,81 @@ namespace App3
         private async void WebView_DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
         {
             //dark theme
-            if (Application.Current.RequestedTheme == ApplicationTheme.Dark)
-            {
-                {
-                    string htmlcss = await WebView.InvokeScriptAsync("eval",
-                        new[]
-                        {
-                            @"
-                              var cols =     document.getElementsByClassName('f');
-                              for(i=0; i<cols.length; i++) {
-                                cols[i].style.backgroundColor =    '#444';
-                              }
-"
-                        });
-                    htmlcss = await WebView.InvokeScriptAsync("eval",
-                        new[]
-                        {
-                            @"
-                              var cols =     document.getElementsByTagName('BODY');
-                              for(i=0; i<cols.length; i++) {
-                                cols[i].style.backgroundColor =    '#444';
-                              }
-"
-                        });
-                    htmlcss = await WebView.InvokeScriptAsync("eval",
-                        new[]
-                        {
-                            @"
-                              var cols =     document.getElementsByClassName('z');
-                              for(i=0; i<cols.length; i++) {
-                                cols[i].style.backgroundColor =    '#888';
-                              }
-"
-                        });
-                    htmlcss = await WebView.InvokeScriptAsync("eval",
-                        new[]
-                        {
-                            @"
-                              var cols =     document.getElementsByClassName('e');
-                              for(i=0; i<cols.length; i++) {
-                                cols[i].style.backgroundColor =    '#888';
-                              }
-"
-                        });
-                    htmlcss = await WebView.InvokeScriptAsync("eval",
-                        new[]
-                        {
-                            @"
-                              var cols =     document.getElementById('root');
-                             if(cols)
-                                cols.style.backgroundColor =    '#444';
+//            if (Application.Current.RequestedTheme == ApplicationTheme.Dark)
+//            {
+//                {
+//                    string htmlcss = await WebView.InvokeScriptAsync("eval",
+//                        new[]
+//                        {
+//                            @"
+//                              var cols =     document.getElementsByClassName('f');
+//                              for(i=0; i<cols.length; i++) {
+//                                cols[i].style.backgroundColor =    '#444';
+//                              }
+//"
+//                        });
+//                    htmlcss = await WebView.InvokeScriptAsync("eval",
+//                        new[]
+//                        {
+//                            @"
+//                              var cols =     document.getElementsByTagName('BODY');
+//                              for(i=0; i<cols.length; i++) {
+//                                cols[i].style.backgroundColor =    '#444';
+//                              }
+//"
+//                        });
+//                    htmlcss = await WebView.InvokeScriptAsync("eval",
+//                        new[]
+//                        {
+//                            @"
+//                              var cols =     document.getElementsByClassName('z');
+//                              for(i=0; i<cols.length; i++) {
+//                                cols[i].style.backgroundColor =    '#888';
+//                              }
+//"
+//                        });
+//                    htmlcss = await WebView.InvokeScriptAsync("eval",
+//                        new[]
+//                        {
+//                            @"
+//                              var cols =     document.getElementsByClassName('e');
+//                              for(i=0; i<cols.length; i++) {
+//                                cols[i].style.backgroundColor =    '#888';
+//                              }
+//"
+//                        });
+//                    htmlcss = await WebView.InvokeScriptAsync("eval",
+//                        new[]
+//                        {
+//                            @"
+//                              var cols =     document.getElementById('root');
+//                             if(cols)
+//                                cols.style.backgroundColor =    '#444';
                               
-"
-                        });
-                    htmlcss = await WebView.InvokeScriptAsync("eval",
-                        new[]
-                        {
-                            @"
-                              var cols =     document.getElementsByClassName('x');
-                              for(i=0; i<cols.length; i++) {
-                                cols[i].style.backgroundColor =    '#444';
-                              }
-"
-                        });
-                    htmlcss = await WebView.InvokeScriptAsync("eval",
-                        new[]
-                        {
-                            @"
-                              var cols = document.getElementsByTagName('TEXTAREA');
-                              for(i=0; i<cols.length; i++) {
-                                cols[i].style.backgroundColor =    '#4444';
-                              }
-                            "
-                        });
-                }
-            }
+//"
+//                        });
+//                    htmlcss = await WebView.InvokeScriptAsync("eval",
+//                        new[]
+//                        {
+//                            @"
+//                              var cols =     document.getElementsByClassName('x');
+//                              for(i=0; i<cols.length; i++) {
+//                                cols[i].style.backgroundColor =    '#444';
+//                              }
+//"
+//                        });
+//                    htmlcss = await WebView.InvokeScriptAsync("eval",
+//                        new[]
+//                        {
+//                            @"
+//                              var cols = document.getElementsByTagName('TEXTAREA');
+//                              for(i=0; i<cols.length; i++) {
+//                                cols[i].style.backgroundColor =    '#4444';
+//                              }
+//                            "
+//                        });
+//                }
+//            }
 
             //jpg custom
             {
@@ -139,7 +139,7 @@ namespace App3
                         new[] { @"document.body.setAttribute(""style"",""margin: 0px; background: #0e0e0e;"");" });
                     var text = html;
                     //WebView.InvokeScriptAsync("eval", new string[] { "document.body.zoom = (window.innerWidth * 100 / document.body.clientWidth) + '%'" });
-                    WebView.InvokeScriptAsync("eval", new[]
+                    await WebView.InvokeScriptAsync("eval", new[]
                     {
                         @"
              var images = document.getElementsByTagName('img'); 
