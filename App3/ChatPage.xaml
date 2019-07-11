@@ -9,6 +9,7 @@
     xmlns:Converters="using:Microsoft.Toolkit.Uwp.UI.Converters"
     xmlns:viewModels="using:App3.ViewModels"
     xmlns:helpers="using:App3.Helpers"
+    xmlns:controls="using:App3.Controls"
     x:Name="messengerLightPage"
     x:Class="App3.ChatPage"
     mc:Ignorable="d" >
@@ -21,11 +22,7 @@
         </MenuFlyout>
         <Visibility x:Key="CurrentChat.IsGroup">Collapsed</Visibility>
         <DataTemplate x:Key="OtherTextMessageDataTemplate" x:DataType="viewModels:ChatMessageViewModel">
-            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark1}" Margin="{Binding Margins}"  HorizontalAlignment="Left" Padding="7" >
-                <TextBlock Text="{Binding DisplayName}" HorizontalAlignment="Left" FontSize="10" Foreground="LightGray" TextAlignment="Right" TextWrapping="WrapWholeWords" Visibility="{ThemeResource  CurrentChat.IsGroup}" />
-
-                <TextBlock Text="{Binding Message}" HorizontalAlignment="Right" TextAlignment="Left" TextWrapping="WrapWholeWords" />
-            </StackPanel>
+            <controls:OtherTextMessage IsGroup="{ ThemeResource CurrentChat.IsGroup }"></controls:OtherTextMessage>
         </DataTemplate>
 
         <DataTemplate x:Key="OtherLinkMessageDataTemplate" x:DataType="viewModels:ChatMessageViewModel">
@@ -34,7 +31,7 @@
 
                 <TextBlock HorizontalAlignment="Right" TextAlignment="Left" TextWrapping="WrapWholeWords"  >
                     <Hyperlink NavigateUri="{Binding MessageData}" >
-                            <Run Text="{Binding Message}" Foreground="{ThemeResource AccentButtonForeground}" />
+                            <Run Text="{Binding MessageAsString}" Foreground="{ThemeResource AccentButtonForeground}" />
                     </Hyperlink>
                 </TextBlock>
             </StackPanel>
@@ -47,7 +44,7 @@
                 <TextBlock HorizontalAlignment="Right" TextAlignment="Left" TextWrapping="WrapWholeWords"  >
                     <Run Text="Download file : "/>
                     <Hyperlink NavigateUri="{Binding MessageData}" >
-                            <Run Text="{Binding Message}" Foreground="{ThemeResource AccentButtonForeground}"/>
+                            <Run Text="{Binding MessageAsString}" Foreground="{ThemeResource AccentButtonForeground}"/>
                     </Hyperlink>
                 </TextBlock>
             </StackPanel>
@@ -59,7 +56,7 @@
 
                 <Image  HorizontalAlignment="Right" MaxHeight="100" MaxWidth="100">
                     <ToolTipService.ToolTip>
-                        <TextBlock Text="{Binding Message}"/>
+                        <TextBlock Text="{Binding MessageAsString}"/>
                     </ToolTipService.ToolTip>
                     <Image.Source >
                         <BitmapImage UriSource="{Binding MessageData}"/>
@@ -74,7 +71,7 @@
 
                 <Image  HorizontalAlignment="Right" MaxHeight="250" MaxWidth="250" Tapped="Image_Tapped">
                     <ToolTipService.ToolTip>
-                        <TextBlock Text="{Binding Message}"/>
+                        <TextBlock Text="{Binding MessageAsString}"/>
                     </ToolTipService.ToolTip>
                     <Image.Source >
                         <BitmapImage UriSource="{Binding MessageData}"/>
@@ -87,7 +84,7 @@
                 <Grid MaxHeight="250" MaxWidth="250">
                     <Image HorizontalAlignment="Center" VerticalAlignment="Center" MaxHeight="130" MaxWidth="250" Tapped="Image_Tapped" >
                         <ToolTipService.ToolTip>
-                            <TextBlock Text="{Binding Message}"/>
+                            <TextBlock Text="{Binding MessageAsString}"/>
                         </ToolTipService.ToolTip>
                         <Image.Source>
                             <BitmapImage UriSource="{Binding MessageData}"/>
@@ -104,16 +101,17 @@
 
 
         <DataTemplate x:Key="SelfTextMessageDataTemplate" x:DataType="viewModels:ChatMessageViewModel">
-            <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="{Binding Margins}"  HorizontalAlignment="Right" Padding="7">
+            <!--<StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="{Binding Margins}"  HorizontalAlignment="Right" Padding="7">
                 <TextBlock Text="{Binding Message}" HorizontalAlignment="Right" TextAlignment="Right" TextWrapping="WrapWholeWords" />
-            </StackPanel>
+            </StackPanel>-->
+            <controls:SelfTextMessage></controls:SelfTextMessage>
         </DataTemplate>
 
         <DataTemplate x:Key="SelfLinkMessageDataTemplate" x:DataType="viewModels:ChatMessageViewModel">
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}"  Margin="{Binding Margins}"  HorizontalAlignment="Right" Padding="7">
                 <TextBlock  HorizontalAlignment="Right" TextAlignment="Right" TextWrapping="WrapWholeWords" >
                 <Hyperlink NavigateUri="{Binding MessageData}" >
-                        <Run Text="{Binding Message}" Foreground="{ThemeResource AccentButtonForeground}" />
+                        <Run Text="{Binding MessageAsString}" Foreground="{ThemeResource AccentButtonForeground}" />
                 </Hyperlink>
                 </TextBlock>
             </StackPanel>
@@ -124,7 +122,7 @@
                 <TextBlock  HorizontalAlignment="Right" TextAlignment="Right" TextWrapping="WrapWholeWords" >
                     <Run Text="Download file : "/>
                     <Hyperlink NavigateUri="{Binding MessageData}" >
-                            <Run Text="{Binding Message}"  Foreground="{ThemeResource AccentButtonForeground}" />
+                            <Run Text="{Binding MessageAsString}"  Foreground="{ThemeResource AccentButtonForeground}" />
                     </Hyperlink>
                 </TextBlock>
             </StackPanel>
@@ -134,7 +132,7 @@
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}" Margin="{Binding Margins}"  HorizontalAlignment="Right" Padding="7">
                 <Image  HorizontalAlignment="Right" MaxHeight="100" MaxWidth="100">
                     <ToolTipService.ToolTip>
-                        <TextBlock Text="{Binding Message}"/>
+                        <TextBlock Text="{Binding MessageAsString}"/>
                     </ToolTipService.ToolTip>
                     <Image.Source>
                         <BitmapImage UriSource="{Binding MessageData}"/>
@@ -148,7 +146,7 @@
             <StackPanel  UseLayoutRounding="True" Background="{ThemeResource SystemAccentColorDark2}" Margin="{Binding Margins}"  HorizontalAlignment="Right" Padding="7">
                 <Image  HorizontalAlignment="Right" MaxHeight="250" MaxWidth="250" Tapped="Image_Tapped" >
                     <ToolTipService.ToolTip>
-                        <TextBlock Text="{Binding Message}"/>
+                        <TextBlock Text="{Binding MessageAsString}"/>
                     </ToolTipService.ToolTip>
                     <Image.Source>
                         <BitmapImage UriSource="{Binding MessageData}"/>
@@ -163,7 +161,7 @@
                 <Grid MaxHeight="250" MaxWidth="250">
                     <Image HorizontalAlignment="Center" VerticalAlignment="Center" MaxHeight="130" MaxWidth="250" Tapped="Image_Tapped" >
                         <ToolTipService.ToolTip>
-                            <TextBlock Text="{Binding Message}"/>
+                            <TextBlock Text="{Binding MessageAsString}"/>
                         </ToolTipService.ToolTip>
                         <Image.Source>
                             <BitmapImage UriSource="{Binding MessageData}"/>
@@ -179,7 +177,7 @@
 
         <DataTemplate x:Key="InfoMessageDataTemplate" x:DataType="viewModels:ChatMessageViewModel">
             <StackPanel  UseLayoutRounding="True"  Margin="50,7,50,7"  HorizontalAlignment="Right" Padding="7">
-                <TextBlock Text="{Binding Message}" Foreground="#FF5F5F5F" HorizontalAlignment="Center" FocusVisualPrimaryBrush="#FF5F5F5F" TextAlignment="Center" TextWrapping="WrapWholeWords" />
+                <TextBlock Text="{Binding MessageAsString}" Foreground="#FF5F5F5F" HorizontalAlignment="Center" FocusVisualPrimaryBrush="#FF5F5F5F" TextAlignment="Center" TextWrapping="WrapWholeWords" />
             </StackPanel>
         </DataTemplate>
 

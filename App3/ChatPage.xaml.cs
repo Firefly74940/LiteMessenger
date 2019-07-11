@@ -180,7 +180,7 @@ namespace App3
         }
         private void Send_Click(object sender, RoutedEventArgs e)
         {
-            _currentChat.SendMessage(new ChatMessage() { Message = NewMessageBox.Text, UserID = DataSource.Username, DisplayName = DataSource.Username, SendingInProgress = true });
+            _currentChat.SendMessage(new ChatMessage() { Message = { new MessageItem { Text = NewMessageBox.Text } }, UserID = DataSource.Username, DisplayName = DataSource.Username, SendingInProgress = true });
 
             NewMessageBox.Text = "";
 
@@ -240,7 +240,7 @@ namespace App3
         private void Copy_Click(object sender, RoutedEventArgs e)
         {
             var dataPackage = new DataPackage();
-            dataPackage.SetText(_currentFlyoutContext.Message);
+            dataPackage.SetText(_currentFlyoutContext.MessageAsString);
             Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
         }
 

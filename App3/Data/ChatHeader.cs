@@ -145,7 +145,7 @@ namespace App3.Data
                 new HttpRequestMessage(HttpMethod.Post,
                     new Uri(DataSource.requestUri, _formAction))
                 {
-                    Content = new HttpStringContent(_formEncodedSendMessage += "&body=" + Uri.EscapeDataString(message.Message),
+                    Content = new HttpStringContent(_formEncodedSendMessage += "&body=" + Uri.EscapeDataString(message.GetMessageAsString()),
                         UnicodeEncoding.Utf8, "application/x-www-form-urlencoded")
                 };
             httpRequestMessage.Headers.Add("User-Agent", DataSource.CustomUserAgent);
@@ -209,13 +209,14 @@ namespace App3.Data
 
             _sendLikeInProgress = false;
         }
+
         public async Task<string> GetSendPhotoLink()
         {
             string httpResponseBody = "";
             if (_sendPhotoInProgress) return httpResponseBody;
             _sendPhotoInProgress = true;
             Windows.Web.Http.HttpResponseMessage httpResponse = new Windows.Web.Http.HttpResponseMessage();
-            
+
 
             Windows.Web.Http.HttpClient httpClient = new Windows.Web.Http.HttpClient();
             HttpRequestMessage httpRequestMessage =
@@ -243,6 +244,7 @@ namespace App3.Data
             _sendPhotoInProgress = false;
             return httpResponseBody;
         }
+
         public async void RefreshConversation(RequestType requestType, HtmlDocument htmlDoc = null)
         {
             if (_refreshInProgress) return;
@@ -322,16 +324,18 @@ namespace App3.Data
                 {
                     foreach (var messageNode in messageNodes)
                     {
+
+                       // MessageTypes MessageType = GetMessageType(messageNode);
                         #region MessageText
                         if (messageNode.FirstChild.Name == "span")
                         {
-                            string buildedMessage = "";
+                            List<MessageItem> buildedMessage = new List<MessageItem>();
 
                             foreach (var textNode in messageNode.FirstChild.ChildNodes)
                             {
                                 if (textNode.Name == "#text")
                                 {
-                                    buildedMessage += textNode.InnerText;
+                                    buildedMessage.Add(new MessageItem { Text = HtmlEntity.DeEntitize(textNode.InnerText), Type = MessageItemTypes.Text });
                                 }
                                 else if (textNode.Name == "i")
                                 {
@@ -349,7 +353,7 @@ namespace App3.Data
                                             foreach (var code in codes)
                                             {
                                                 var x = char.ConvertFromUtf32(int.Parse(code, NumberStyles.HexNumber));
-                                                buildedMessage += x;
+                                                buildedMessage.Add(new MessageItem { Text = HtmlEntity.DeEntitize(x), Type = MessageItemTypes.Text });
                                             }
 
                                         }
@@ -368,7 +372,7 @@ namespace App3.Data
                                         {
                                             var name = isrc.Substring(nameStart + 1, nameEnd - nameStart - 1);
                                             var x = char.ConvertFromUtf32(int.Parse(name, NumberStyles.HexNumber));
-                                            buildedMessage += x;
+                                            buildedMessage.Add(new MessageItem { Text = HtmlEntity.DeEntitize(x), Type = MessageItemTypes.Text });
                                         }
                                         else
                                         {
@@ -379,26 +383,17 @@ namespace App3.Data
                                 }
                                 else if (textNode.Name == "a")
                                 {
-
-                                    newMessages.Add(new ChatMessage()
-                                    {
-                                        MessageData = HtmlEntity.DeEntitize(textNode.GetAttributeValue("href", "")),
-                                        Message = HtmlEntity.DeEntitize(textNode.InnerText),
-                                        MessageType = MessageTypes.Link,
-                                        MessageSource = messageSource,
-                                        UserID = messageUsername,
-                                        DisplayName = messageDisplayUsername,
-                                    }); // is Added before any text 
+                                    buildedMessage.Add(new MessageItem { Text = HtmlEntity.DeEntitize(textNode.InnerText), Data = HtmlEntity.DeEntitize(textNode.GetAttributeValue("href", "")), Type = MessageItemTypes.Link });
 
                                 }
                             }
 
-                            if (!string.IsNullOrEmpty(buildedMessage))
+                            if (buildedMessage.Count > 0)
                             {
                                 ChatMessage newMessage = new ChatMessage()
                                 {
                                     MessageSource = messageSource,
-                                    Message = HtmlEntity.DeEntitize(buildedMessage),
+                                    Message = buildedMessage,
                                     UserID = messageUsername,
                                     DisplayName = messageDisplayUsername,
                                     MessageType = MessageTypes.Text
@@ -440,7 +435,7 @@ namespace App3.Data
                                     newMessages.Add(new ChatMessage()
                                     {
                                         MessageData = HtmlEntity.DeEntitize(userImages[0].GetAttributeValue("href", "")),
-                                        Message = HtmlEntity.DeEntitize(linkTitle),
+                                        Message = { new MessageItem { Text = HtmlEntity.DeEntitize(linkTitle) } },
                                         MessageType = MessageTypes.Link,
                                         MessageSource = messageSource,
                                         UserID = messageUsername,
@@ -458,7 +453,7 @@ namespace App3.Data
                                     {
                                         MessageAditionalData = HtmlEntity.DeEntitize(userImages[0].GetAttributeValue("href", "")),
                                         MessageData = imgSrc,
-                                        Message = HtmlEntity.DeEntitize(userImages[0].FirstChild.GetAttributeValue("alt", "")),
+                                        Message = { new MessageItem { Text = HtmlEntity.DeEntitize(userImages[0].FirstChild.GetAttributeValue("alt", "")) } },
                                         MessageType = MessageTypes.Photo,
                                         MessageSource = messageSource,
                                         UserID = messageUsername,
@@ -479,7 +474,7 @@ namespace App3.Data
                                 {
                                     MessageAditionalData = videoLink,
                                     MessageData = HtmlEntity.DeEntitize(previewSrc),
-                                    Message = HtmlEntity.DeEntitize(userVideo[0].FirstChild.GetAttributeValue("alt", "")),
+                                    Message = { new MessageItem { Text = HtmlEntity.DeEntitize(userVideo[0].FirstChild.GetAttributeValue("alt", "")) } },
                                     MessageType = MessageTypes.Video,
                                     MessageSource = messageSource,
                                     UserID = messageUsername,
@@ -493,17 +488,18 @@ namespace App3.Data
                                     if (image.FirstChild.Name == "img")
                                     {
                                         var imgSrc = HtmlEntity.DeEntitize(image.FirstChild.GetAttributeValue("src", ""));
-
-                                        newMessages.Add(new ChatMessage()
+                                        var textItem = new MessageItem { Text = HtmlEntity.DeEntitize(image.FirstChild.GetAttributeValue("alt", "")) };
+                                        var chatMessage = new ChatMessage()
                                         {
                                             MessageAditionalData = HtmlEntity.DeEntitize(image.GetAttributeValue("href", "")),
                                             MessageData = imgSrc,
-                                            Message = HtmlEntity.DeEntitize(image.FirstChild.GetAttributeValue("alt", "")),
+                                            Message = { textItem },
                                             MessageType = MessageTypes.Photo,
                                             MessageSource = messageSource,
                                             UserID = messageUsername,
-                                            DisplayName = messageDisplayUsername,
-                                        });
+                                            DisplayName = messageDisplayUsername
+                                        };
+                                        newMessages.Add(chatMessage);
                                     }
                                 }
                             }
@@ -517,7 +513,7 @@ namespace App3.Data
                                     newMessages.Add(new ChatMessage()
                                     {
                                         MessageData = imgSrc,
-                                        Message = HtmlEntity.DeEntitize(otherImage.GetAttributeValue("alt", "")),
+                                        Message = { new MessageItem { Text = HtmlEntity.DeEntitize(otherImage.GetAttributeValue("alt", "")) } },
                                         MessageType = MessageTypes.Img,
                                         MessageSource = messageSource,
                                         UserID = messageUsername,
@@ -534,7 +530,7 @@ namespace App3.Data
                                     newMessages.Add(new ChatMessage()
                                     {
                                         MessageData = DataSource.requestUriString + HtmlEntity.DeEntitize(fileNode.GetAttributeValue("href", "")),
-                                        Message = HtmlEntity.DeEntitize(fileNode.InnerText),
+                                        Message = { new MessageItem { Text = HtmlEntity.DeEntitize(fileNode.InnerText) } },
                                         MessageType = MessageTypes.File,
                                         MessageSource = messageSource,
                                         UserID = messageUsername,
@@ -549,7 +545,7 @@ namespace App3.Data
                 }
                 else if (!string.IsNullOrEmpty(messagePackNode.InnerText))
                 {
-                    newMessages.Add(new ChatMessage() { Message = HtmlEntity.DeEntitize(messagePackNode.InnerText), MessageSource = MessageSources.None, MessageType = MessageTypes.Info });
+                    newMessages.Add(new ChatMessage() { Message = { new MessageItem { Text = HtmlEntity.DeEntitize(messagePackNode.InnerText) } }, MessageSource = MessageSources.None, MessageType = MessageTypes.Info });
                 }
                 //   Names.Add(new ChatHeader() { Name = NameNode.InnerText, Href = NameNode.GetAttributeValue("href", "") });
             }
@@ -588,13 +584,18 @@ namespace App3.Data
             _refreshInProgress = false;
         }
 
+        //private MessageTypes GetMessageType(HtmlNode messageNode)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
         private void LogErrorParsing()
         {
             var newMessage = new ChatMessage()
             {
                 MessageSource = MessageSources.None,
                 MessageType = MessageTypes.Info,
-                Message = "Error parsing messages"
+                Message = { new MessageItem { Text = "Error parsing messages" } }
             };
             Messages.Add(newMessage);
         }

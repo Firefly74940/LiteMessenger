@@ -1,4 +1,6 @@
 ﻿
+using System.Collections.Generic;
+
 namespace App3.Data
 {
     public enum MessageTypes
@@ -12,7 +14,18 @@ namespace App3.Data
         Photo,
         Video,
     }
-
+    public enum MessageItemTypes
+    {
+        Text,
+        Link,
+        Img
+    }
+    public class MessageItem
+    {
+        public MessageItemTypes Type = MessageItemTypes.Text;
+        public string Text;
+        public string Data;
+    }
     public enum MessageSources
     {
         Self,
@@ -27,11 +40,20 @@ namespace App3.Data
         public MessageSources MessageSource { get; set; }
         public string DisplayName { get; set; }
         public string UserID { get; set; }
-        public string Message { get; set; }
+        public List<MessageItem> Message { get; set; } = new List<MessageItem>();
+        public string GetMessageAsString()
+        {
+            string messageStr = "";
+            foreach (var item in Message)
+            {
+                messageStr += item.Text;
+            }
+            return messageStr;
+        }
         public string MessageData { get; set; }
         public string MessageAditionalData { get; set; }
         public bool SendingInProgress { get; set; }
-    
+
         private bool _previousMessageHasSameSender;
         public bool PreviousMessageHasSameSender
         {
@@ -41,16 +63,17 @@ namespace App3.Data
 
         public override string ToString()
         {
+            string messageStr = GetMessageAsString();
             if (MessageSource == MessageSources.None)
-                return Message;
-            return DisplayName + ": " + Message;
+                return messageStr;
+            return DisplayName + ": " + messageStr;
         }
 
         public bool Equals(ChatMessage other)
         {
 
             bool isDataTheSame = MessageData == other.MessageData;
-            if (MessageType == MessageTypes.Link && MessageData!=null && other.MessageData!=null)
+            if (MessageType == MessageTypes.Link && MessageData != null && other.MessageData != null)
             {
                 var indexOf1 = MessageData.IndexOf('&');
                 var indexOf2 = other.MessageData.IndexOf('&');
@@ -66,11 +89,12 @@ namespace App3.Data
                         isDataTheSame = false;
                     }
                 }
-            }else if (MessageType == MessageTypes.Video || MessageType==MessageTypes.Photo)
+            }
+            else if (MessageType == MessageTypes.Video || MessageType == MessageTypes.Photo)
             {
                 isDataTheSame = MessageAditionalData == other.MessageAditionalData;
             }
-            else if( MessageType==MessageTypes.Img)
+            else if (MessageType == MessageTypes.Img)
             {
                 var indexOf1 = MessageData.IndexOf("ht=scontent");
                 var indexOf2 = other.MessageData.IndexOf("ht=scontent");
@@ -90,7 +114,7 @@ namespace App3.Data
                 MessageSource == other.MessageSource &&
                 DisplayName == other.DisplayName &&
                 UserID == other.UserID &&
-                Message == other.Message &&
+                GetMessageAsString() == other.GetMessageAsString() && 
                 isDataTheSame)
                 return true;
 

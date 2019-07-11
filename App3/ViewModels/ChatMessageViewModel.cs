@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using Windows.UI.Xaml;
 using App3.Data;
+using System.Collections.Generic;
 
 namespace App3.ViewModels
 {
@@ -18,7 +19,20 @@ namespace App3.ViewModels
 
         public string UserID => This.UserID;
 
-        public string Message => This.Message;
+        public List<MessageItem> Message => This.Message;
+
+        public string MessageAsString
+        {
+            get
+            {
+                string messageStr = "";
+                foreach (var item in Message)
+                {
+                    messageStr += item.Text;
+                }
+                return messageStr;
+            }
+        }
 
         public string MessageData => This.MessageData;
         public string MessageAditionalData => This.MessageAditionalData;
